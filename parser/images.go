@@ -5,8 +5,8 @@ import (
 	"github.com/Twyer/discogs/model"
 )
 
-func ParseImage(se xml.StartElement) model.Image {
-	img := model.Image{}
+func ParseImage(se xml.StartElement) *model.Image {
+	img := &model.Image{}
 	if se.Name.Local != "image" {
 		return img
 	}

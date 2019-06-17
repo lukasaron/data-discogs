@@ -5,8 +5,8 @@ import (
 	"github.com/Twyer/discogs/model"
 )
 
-func ParseArtist(se xml.StartElement, tr xml.TokenReader) model.Artist {
-	artist := model.Artist{}
+func ParseArtist(se xml.StartElement, tr xml.TokenReader) *model.Artist {
+	artist := &model.Artist{}
 	if se.Name.Local != "artist" {
 		return artist
 	}
@@ -44,15 +44,15 @@ func ParseArtist(se xml.StartElement, tr xml.TokenReader) model.Artist {
 	return artist
 }
 
-func parseAliases(tr xml.TokenReader) []model.Artist {
-	aliases := make([]model.Artist, 0, 0)
+func parseAliases(tr xml.TokenReader) []*model.Artist {
+	aliases := make([]*model.Artist, 0, 0)
 	for {
 		t, _ := tr.Token()
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "aliases" {
 			break
 		}
 		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "name" {
-			alias := model.Artist{
+			alias := &model.Artist{
 				Id:   se.Attr[0].Value,
 				Name: parseValue(tr),
 			}

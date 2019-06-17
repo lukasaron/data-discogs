@@ -4,10 +4,10 @@ type Artist struct {
 	Id             string
 	Name           string
 	RealName       string
-	Images         []Image
+	Images         []*Image
 	Profile        string
 	DataQuality    string
 	NameVariations []string
 	Urls           []string
-	Aliases        []Artist
+	Aliases        []*Artist
 }
