@@ -23,7 +23,7 @@ func Parse() {
 	f, _ := os.Open("/Users/lukas/Downloads/Discogs/artists.xml")
 	defer f.Close()
 	d := xml.NewDecoder(f)
-	artists := make([]model.Artist, 0, 0)
+	artists := make([]*model.Artist, 0, 0)
 	for t, err := d.Token(); t != nil && err == nil; t, err = d.Token() {
 		if IsStartElement(t) {
 			element := t.(xml.StartElement)
