@@ -6,11 +6,11 @@ import (
 )
 
 func ParseArtist(se xml.StartElement, tr xml.TokenReader) *model.Artist {
-	artist := &model.Artist{}
 	if se.Name.Local != "artist" {
-		return artist
+		return nil
 	}
 
+	artist := &model.Artist{}
 	for {
 		t, _ := tr.Token()
 		if se, ok := t.(xml.StartElement); ok {
@@ -25,7 +25,7 @@ func ParseArtist(se xml.StartElement, tr xml.TokenReader) *model.Artist {
 			case "realname":
 				artist.RealName = parseValue(tr)
 			case "namevariations":
-				artist.NameVariations = parseChildValue("namevariations", "name", tr)
+				artist.NameVariations = parseChildValues("namevariations", "name", tr)
 			case "aliases":
 				artist.Aliases = parseAliases(tr)
 			case "profile":
@@ -33,7 +33,7 @@ func ParseArtist(se xml.StartElement, tr xml.TokenReader) *model.Artist {
 			case "data_quality":
 				artist.DataQuality = parseValue(tr)
 			case "urls":
-				artist.Urls = parseChildValue("urls", "url", tr)
+				artist.Urls = parseChildValues("urls", "url", tr)
 			}
 		}
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "artist" {
@@ -44,15 +44,15 @@ func ParseArtist(se xml.StartElement, tr xml.TokenReader) *model.Artist {
 	return artist
 }
 
-func parseAliases(tr xml.TokenReader) []*model.Artist {
-	aliases := make([]*model.Artist, 0, 0)
+func parseAliases(tr xml.TokenReader) []*model.ArtistAlias {
+	aliases := make([]*model.ArtistAlias, 0, 0)
 	for {
 		t, _ := tr.Token()
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "aliases" {
 			break
 		}
 		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "name" {
-			alias := &model.Artist{
+			alias := &model.ArtistAlias{
 				Id:   se.Attr[0].Value,
 				Name: parseValue(tr),
 			}

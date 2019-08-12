@@ -5,7 +5,6 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
-	"github.com/Twyer/discogs/model"
 	"os"
 	"strings"
 )
@@ -20,20 +19,19 @@ func IsStartElement(token xml.Token) bool {
 }
 
 func Parse() {
-	f, _ := os.Open("/Users/lukas/Downloads/Discogs/artists.xml")
+	f, _ := os.Open("/Users/aron_lukas/Workspace/Go/src/github.com/Twyer/discogs/data/discogs_20190101_labels.xml")
 	defer f.Close()
 	d := xml.NewDecoder(f)
-	artists := make([]*model.Artist, 0, 0)
 	for t, err := d.Token(); t != nil && err == nil; t, err = d.Token() {
 		if IsStartElement(t) {
 			element := t.(xml.StartElement)
-			if element.Name.Local == "artist" {
-				artists = append(artists, ParseArtist(element, d))
+			if element.Name.Local == "label" {
+				release := ParseLabel(element, d)
+				j, _ := json.Marshal(release)
+				fmt.Println(string(j))
 			}
 		}
 	}
-	j, _ := json.Marshal(artists)
-	fmt.Println(string(j))
 }
 
 func parseValue(tr xml.TokenReader) string {
@@ -50,7 +48,7 @@ func parseValue(tr xml.TokenReader) string {
 	return sb.String()
 }
 
-func parseChildValue(parentName, childName string, tr xml.TokenReader) []string {
+func parseChildValues(parentName, childName string, tr xml.TokenReader) []string {
 	nv := make([]string, 0, 0)
 	for {
 		t, _ := tr.Token()

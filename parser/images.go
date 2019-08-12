@@ -6,10 +6,11 @@ import (
 )
 
 func ParseImage(se xml.StartElement) *model.Image {
-	img := &model.Image{}
 	if se.Name.Local != "image" {
-		return img
+		return nil
 	}
+
+	img := &model.Image{}
 
 	for _, attr := range se.Attr {
 		switch attr.Name.Local {

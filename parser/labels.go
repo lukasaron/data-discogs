@@ -26,11 +26,14 @@ func ParseLabel(se xml.StartElement, tr xml.TokenReader) model.Label {
 			case "profile":
 				label.Profile = parseValue(tr)
 			case "sublabels":
-				label.SubLabels = parseChildValue("sublabels", "label", tr)
+				label.SubLabels = parseLabelLabels("sublabels", tr)
 			case "data_quality":
 				label.DataQuality = parseValue(tr)
 			case "parentLabel":
-				label.ParentLabel = parseValue(tr)
+				pl := parseLabelLabels("parentLabel", tr)
+				if len(pl) > 0 {
+					label.ParentLabel = pl[0]
+				}
 			}
 		}
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "label" {
@@ -39,4 +42,21 @@ func ParseLabel(se xml.StartElement, tr xml.TokenReader) model.Label {
 	}
 
 	return label
+}
+
+func parseLabelLabels(wrapperName string, tr xml.TokenReader) []*model.LabelLabels {
+	labels := make([]*model.LabelLabels, 0, 0)
+	for {
+		t, _ := tr.Token()
+		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == wrapperName {
+			break
+		}
+		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "label" {
+			label := &model.LabelLabels{}
+			label.Id = se.Attr[0].Value
+			label.Name = parseValue(tr)
+			labels = append(labels, label)
+		}
+	}
+	return labels
 }
