@@ -1,8 +1,19 @@
 package model
 
+type Master struct {
+	Id          string
+	MainRelease string
+	Images      []*Image
+	Artists     []*ReleaseArtist
+	Genres      []string
+	Styles      []string
+	Year        string
+	Title       string
+	DataQuality string
+	Videos      []*ReleaseVideo
+}
+
 /*
-
-
 <?xml version="1.0" encoding="UTF-8"?>
 <master id="33228">
    <main_release>341048</main_release>
