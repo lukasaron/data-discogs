@@ -48,22 +48,6 @@ func ParseArtists(d *xml.Decoder, limit int) []model.Artist {
 	return artists
 }
 
-//func Parse() {
-//	f, _ := os.Open("/Users/aron_lukas/Workspace/Go/src/github.com/Twyer/discogs/data/discogs_20190101_labels.xml")
-//	defer f.Close()
-//	d := xml.NewDecoder(f)
-//	for t, err := d.Token(); t != nil && err == nil; t, err = d.Token() {
-//		if IsStartElement(t) {
-//			element := t.(xml.StartElement)
-//			if element.Name.Local == "label" {
-//				release := ParseLabel(element, d)
-//				j, _ := json.Marshal(release)
-//				fmt.Println(string(j))
-//			}
-//		}
-//	}
-//}
-
 func parseValue(tr xml.TokenReader) string {
 	sb := strings.Builder{}
 	for {
@@ -75,7 +59,6 @@ func parseValue(tr xml.TokenReader) string {
 		if cr, ok := t.(xml.CharData); ok {
 			sb.Write(cr)
 		}
-
 	}
 	return sb.String()
 }

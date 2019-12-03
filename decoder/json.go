@@ -3,24 +3,18 @@ package decoder
 import (
 	"encoding/json"
 	"github.com/Twyer/discogs/parser"
-	"io"
 )
 
-func (d *Decoder) DecodeArtistJson(w io.Writer, limit int) (int, error) {
+func (d *Decoder) DecodeArtistJson(limit int) (int, []byte, error) {
 	if d.Error == nil {
 		artists := parser.ParseArtists(d.decoder, limit)
-		n := len(artists)
-		if n == 0 {
-			return 0, nil
-		}
-
 		b, err := json.Marshal(artists)
 		if err != nil {
-			return 0, err
+			return 0, b, err
 		}
-		_, err = w.Write(b)
-		return n, err
+
+		return len(artists), b, err
 	}
 
-	return 0, d.Error
+	return 0, nil, d.Error
 }
