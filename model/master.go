@@ -3,7 +3,7 @@ package model
 type Master struct {
 	Id          string
 	MainRelease string
-	Images      []*Image
+	Images      []Image
 	Artists     []*ReleaseArtist
 	Genres      []string
 	Styles      []string

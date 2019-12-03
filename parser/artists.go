@@ -5,19 +5,18 @@ import (
 	"github.com/Twyer/discogs/model"
 )
 
-func ParseArtist(se xml.StartElement, tr xml.TokenReader) *model.Artist {
+func ParseArtist(se xml.StartElement, tr xml.TokenReader) model.Artist {
+	artist := model.Artist{}
 	if se.Name.Local != "artist" {
-		return nil
+		return artist
 	}
 
-	artist := &model.Artist{}
 	for {
 		t, _ := tr.Token()
 		if se, ok := t.(xml.StartElement); ok {
 			switch se.Name.Local {
-			case "image":
-				img := ParseImage(se)
-				artist.Images = append(artist.Images, img)
+			case "images":
+				artist.Images = ParseImages(se, tr)
 			case "id":
 				artist.Id = parseValue(tr)
 			case "name":
@@ -36,7 +35,7 @@ func ParseArtist(se xml.StartElement, tr xml.TokenReader) *model.Artist {
 				artist.Urls = parseChildValues("urls", "url", tr)
 			}
 		}
-		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "artist" {
+		if IsEndElementName(t, "artist") {
 			break
 		}
 	}
@@ -44,15 +43,15 @@ func ParseArtist(se xml.StartElement, tr xml.TokenReader) *model.Artist {
 	return artist
 }
 
-func parseAliases(tr xml.TokenReader) []*model.ArtistAlias {
-	aliases := make([]*model.ArtistAlias, 0, 0)
+func parseAliases(tr xml.TokenReader) []model.Alias {
+	aliases := make([]model.Alias, 0, 0)
 	for {
 		t, _ := tr.Token()
-		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "aliases" {
+		if IsEndElementName(t, "aliases") {
 			break
 		}
 		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "name" {
-			alias := &model.ArtistAlias{
+			alias := model.Alias{
 				Id:   se.Attr[0].Value,
 				Name: parseValue(tr),
 			}

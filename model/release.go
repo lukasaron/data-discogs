@@ -3,7 +3,7 @@ package model
 type Release struct {
 	Id           string
 	Status       string
-	Images       []*Image
+	Images       []Image
 	Artists      []*ReleaseArtist
 	ExtraArtists []*ReleaseArtist
 	Title        string
