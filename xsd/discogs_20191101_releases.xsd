@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="releases">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="release"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="release">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="images"/>
+        <xs:element ref="artists"/>
+        <xs:element ref="title"/>
+        <xs:element ref="labels"/>
+        <xs:element ref="extraartists"/>
+        <xs:element ref="formats"/>
+        <xs:element minOccurs="0" ref="genres"/>
+        <xs:element minOccurs="0" ref="styles"/>
+        <xs:element minOccurs="0" ref="country"/>
+        <xs:element minOccurs="0" ref="released"/>
+        <xs:element minOccurs="0" ref="notes"/>
+        <xs:element ref="data_quality"/>
+        <xs:element minOccurs="0" ref="master_id"/>
+        <xs:element ref="tracklist"/>
+        <xs:element ref="identifiers"/>
+        <xs:element minOccurs="0" ref="videos"/>
+        <xs:element ref="companies"/>
+      </xs:sequence>
+      <xs:attribute name="id" use="required" type="xs:integer"/>
+      <xs:attribute name="status" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="images">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="image"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="image">
+    <xs:complexType>
+      <xs:attribute name="height" use="required" type="xs:integer"/>
+      <xs:attribute name="type" use="required" type="xs:NCName"/>
+      <xs:attribute name="uri" use="required"/>
+      <xs:attribute name="uri150" use="required"/>
+      <xs:attribute name="width" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="labels">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="label"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="label">
+    <xs:complexType>
+      <xs:attribute name="catno" use="required"/>
+      <xs:attribute name="id" use="required" type="xs:integer"/>
+      <xs:attribute name="name" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="formats">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="format"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="format">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="descriptions"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required"/>
+      <xs:attribute name="qty" use="required" type="xs:integer"/>
+      <xs:attribute name="text" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="descriptions">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="description"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="genres">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="genre"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="genre" type="xs:string"/>
+  <xs:element name="styles">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="style"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="style" type="xs:string"/>
+  <xs:element name="country" type="xs:string"/>
+  <xs:element name="released" type="xs:string"/>
+  <xs:element name="notes" type="xs:string"/>
+  <xs:element name="data_quality" type="xs:string"/>
+  <xs:element name="master_id">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:integer">
+          <xs:attribute name="is_main_release" use="required" type="xs:boolean"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="tracklist">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="track"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="identifiers">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="identifier"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="identifier">
+    <xs:complexType>
+      <xs:attribute name="description"/>
+      <xs:attribute name="type" use="required"/>
+      <xs:attribute name="value" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="videos">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="video"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="video">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="title"/>
+        <xs:element ref="description"/>
+      </xs:sequence>
+      <xs:attribute name="duration" use="required" type="xs:integer"/>
+      <xs:attribute name="embed" use="required" type="xs:boolean"/>
+      <xs:attribute name="src" use="required" type="xs:anyURI"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="companies">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="company"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="company">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="id"/>
+        <xs:element ref="name"/>
+        <xs:element ref="catno"/>
+        <xs:element ref="entity_type"/>
+        <xs:element ref="entity_type_name"/>
+        <xs:element ref="resource_url"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="catno" type="xs:string"/>
+  <xs:element name="entity_type" type="xs:integer"/>
+  <xs:element name="entity_type_name" type="xs:string"/>
+  <xs:element name="resource_url" type="xs:anyURI"/>
+  <xs:element name="artists">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="artist"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="title" type="xs:string"/>
+  <xs:element name="extraartists">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="artist"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="description" type="xs:string"/>
+  <xs:element name="track">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="artists"/>
+        <xs:element ref="extraartists"/>
+        <xs:element ref="title"/>
+        <xs:element ref="duration"/>
+        <xs:element ref="position"/>
+        <xs:element ref="sub_tracks"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="duration" type="xs:string"/>
+  <xs:element name="position" type="xs:string"/>
+  <xs:element name="sub_tracks">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="track"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="id" type="xs:integer"/>
+  <xs:element name="name" type="xs:string"/>
+  <xs:element name="artist">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="id"/>
+        <xs:element ref="name"/>
+        <xs:element ref="anv"/>
+        <xs:element ref="join"/>
+        <xs:element ref="role"/>
+        <xs:element ref="tracks"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="anv" type="xs:string"/>
+  <xs:element name="join" type="xs:string"/>
+  <xs:element name="role" type="xs:string"/>
+  <xs:element name="tracks" type="xs:string"/>
+</xs:schema>

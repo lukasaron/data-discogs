@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="masters">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="master"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="master">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="main_release"/>
+        <xs:element minOccurs="0" ref="images"/>
+        <xs:element ref="artists"/>
+        <xs:element minOccurs="0" ref="genres"/>
+        <xs:element minOccurs="0" ref="styles"/>
+        <xs:element minOccurs="0" ref="notes"/>
+        <xs:element ref="year"/>
+        <xs:element ref="title"/>
+        <xs:element ref="data_quality"/>
+        <xs:element minOccurs="0" ref="videos"/>
+      </xs:sequence>
+      <xs:attribute name="id" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="main_release" type="xs:integer"/>
+  <xs:element name="images">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="image"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="image">
+    <xs:complexType>
+      <xs:attribute name="height" use="required" type="xs:integer"/>
+      <xs:attribute name="type" use="required" type="xs:NCName"/>
+      <xs:attribute name="uri" use="required"/>
+      <xs:attribute name="uri150" use="required"/>
+      <xs:attribute name="width" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="artists">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="artist"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="artist">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="id"/>
+        <xs:element ref="name"/>
+        <xs:element ref="anv"/>
+        <xs:element ref="join"/>
+        <xs:element ref="role"/>
+        <xs:element ref="tracks"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="id" type="xs:integer"/>
+  <xs:element name="name" type="xs:string"/>
+  <xs:element name="anv" type="xs:string"/>
+  <xs:element name="join" type="xs:string"/>
+  <xs:element name="role">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="tracks">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="genres">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="genre"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="genre" type="xs:string"/>
+  <xs:element name="styles">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="style"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="style" type="xs:string"/>
+  <xs:element name="notes" type="xs:string"/>
+  <xs:element name="year" type="xs:integer"/>
+  <xs:element name="data_quality" type="xs:string"/>
+  <xs:element name="videos">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="video"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="video">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="title"/>
+        <xs:element ref="description"/>
+      </xs:sequence>
+      <xs:attribute name="duration" use="required" type="xs:integer"/>
+      <xs:attribute name="embed" use="required" type="xs:boolean"/>
+      <xs:attribute name="src" use="required" type="xs:anyURI"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="description" type="xs:string"/>
+  <xs:element name="title" type="xs:string"/>
+</xs:schema>

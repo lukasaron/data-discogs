@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="artists">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="artist"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="artist">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="images"/>
+        <xs:element ref="id"/>
+        <xs:element ref="name"/>
+        <xs:element minOccurs="0" ref="realname"/>
+        <xs:element ref="profile"/>
+        <xs:element ref="data_quality"/>
+        <xs:element minOccurs="0" ref="urls"/>
+        <xs:element minOccurs="0" ref="namevariations"/>
+        <xs:element minOccurs="0" ref="aliases"/>
+        <xs:element minOccurs="0" ref="members"/>
+        <xs:element minOccurs="0" ref="groups"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="images">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="image"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="image">
+    <xs:complexType>
+      <xs:attribute name="height" use="required" type="xs:integer"/>
+      <xs:attribute name="type" use="required" type="xs:NCName"/>
+      <xs:attribute name="uri" use="required"/>
+      <xs:attribute name="uri150" use="required"/>
+      <xs:attribute name="width" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="realname" type="xs:string"/>
+  <xs:element name="profile" type="xs:string"/>
+  <xs:element name="data_quality" type="xs:string"/>
+  <xs:element name="urls">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="url"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="url" type="xs:string"/>
+  <xs:element name="namevariations">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="name"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="aliases">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="name"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="members">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="id"/>
+        <xs:element ref="name"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="groups">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="name"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="id" type="xs:integer"/>
+  <xs:element name="name">
+    <xs:complexType mixed="true">
+      <xs:attribute name="id" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

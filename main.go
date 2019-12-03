@@ -19,7 +19,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		n, err = d.DecodeArtistJson(f, 1000)
+		n, err = d.DecodeArtistJson(f, 100_000)
 		_ = f.Close()
 	}
 
