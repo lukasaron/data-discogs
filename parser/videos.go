@@ -5,9 +5,10 @@ import (
 	"github.com/Twyer/discogs/model"
 )
 
-func ParseVideos(tr xml.TokenReader) []model.Video {
+func ParseVideos(tr xml.TokenReader) ([]model.Video, error) {
 	videos := make([]model.Video, 0, 0)
 	video := model.Video{}
+
 	for {
 		t, _ := tr.Token()
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "videos" {
@@ -38,5 +39,6 @@ func ParseVideos(tr xml.TokenReader) []model.Video {
 			video = model.Video{}
 		}
 	}
-	return videos
+
+	return videos, nil
 }

@@ -2,60 +2,75 @@ package decoder
 
 import (
 	"encoding/json"
-	"github.com/Twyer/discogs/parser"
 )
 
-func (d *Decoder) ArtistJson(limit int) (int, []byte, error) {
+func (d *Decoder) JsonArtists(limit int) (int, []byte, error) {
 	if d.Error == nil {
-		artists := parser.ParseArtists(d.decoder, limit)
-		b, err := json.Marshal(artists)
+		n, a, err := d.Artists(limit)
+		if err != nil {
+			return n, nil, err
+		}
+
+		b, err := json.Marshal(a)
 		if err != nil {
 			return 0, b, err
 		}
 
-		return len(artists), b, err
+		return n, b, nil
 	}
 
 	return 0, nil, d.Error
 }
 
-func (d *Decoder) LabelJson(limit int) (int, []byte, error) {
+func (d *Decoder) JsonLabels(limit int) (int, []byte, error) {
 	if d.Error == nil {
-		labels := parser.ParseLabels(d.decoder, limit)
-		b, err := json.Marshal(labels)
+		n, l, err := d.Labels(limit)
+		if err != nil {
+			return n, nil, err
+		}
+
+		b, err := json.Marshal(l)
 		if err != nil {
 			return 0, b, err
 		}
 
-		return len(labels), b, err
+		return n, b, nil
 	}
 
 	return 0, nil, d.Error
 }
 
-func (d *Decoder) MasterJson(limit int) (int, []byte, error) {
+func (d *Decoder) JsonMasters(limit int) (int, []byte, error) {
 	if d.Error == nil {
-		masters := parser.ParseMasters(d.decoder, limit)
-		b, err := json.Marshal(masters)
+		n, m, err := d.Masters(limit)
 		if err != nil {
-			return 0, b, err
+			return n, nil, err
 		}
 
-		return len(masters), b, err
+		b, err := json.Marshal(m)
+		if err != nil {
+			return 0, nil, err
+		}
+
+		return n, b, nil
 	}
 
 	return 0, nil, d.Error
 }
 
-func (d *Decoder) ReleaseJson(limit int) (int, []byte, error) {
+func (d *Decoder) JsonReleases(limit int) (int, []byte, error) {
 	if d.Error == nil {
-		releases := parser.ParseReleases(d.decoder, limit)
-		b, err := json.Marshal(releases)
+		n, r, err := d.Releases(limit)
 		if err != nil {
-			return 0, b, err
+			return n, nil, err
 		}
 
-		return len(releases), b, err
+		b, err := json.Marshal(r)
+		if err != nil {
+			return 0, nil, err
+		}
+
+		return n, b, nil
 	}
 
 	return 0, nil, d.Error

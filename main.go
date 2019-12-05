@@ -1,10 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"github.com/Twyer/discogs/decoder"
+	"github.com/Twyer/discogs/writer"
 	"log"
-	"os"
-	"strconv"
 )
 
 func main() {
@@ -13,95 +13,25 @@ func main() {
 	d := decoder.NewDecoder("/Users/aronlukas/Downloads/discogs/discogs_20191101_releases.xml")
 	defer d.Close()
 
-	//for i := 0; ; i++ {
-	//	n, b, err := d.ArtistJson(100_000)
-	//	if err != nil {
-	//		log.Fatal(err)
-	//	}
-	//
-	//	if n == 0 {
-	//		break
-	//	}
-	//
-	//	f, err := os.Create("/Users/aronlukas/Downloads/discogs/discogs_20191101_artists" + strconv.Itoa(i) + ".json")
-	//	if err != nil {
-	//		log.Fatal(err)
-	//	}
-	//
-	//	_, err = f.Write(b)
-	//	if err != nil {
-	//		log.Fatal(err)
-	//	}
-	//
-	//	_ = f.Close()
-	//}
-
-	//for i := 0; ; i++ {
-	//	n, b, err := d.LabelJson(100_000)
-	//	if err != nil {
-	//		log.Fatal(err)
-	//	}
-	//
-	//	if n == 0 {
-	//		break
-	//	}
-	//
-	//	f, err := os.Create("/Users/aronlukas/Downloads/discogs/discogs_20191101_labels_" + strconv.Itoa(i) + ".json")
-	//	if err != nil {
-	//		log.Fatal(err)
-	//	}
-	//
-	//	_, err = f.Write(b)
-	//	if err != nil {
-	//		log.Fatal(err)
-	//	}
-	//
-	//	_ = f.Close()
-	//}
-
-	//for i := 0; i < 5; i++ {
-	//	n, b, err := d.MasterJson(10_000)
-	//	if err != nil {
-	//		log.Fatal(err)
-	//	}
-	//
-	//	if n == 0 {
-	//		break
-	//	}
-	//
-	//	f, err := os.Create("/Users/aronlukas/Downloads/discogs/discogs_20191101_masters_" + strconv.Itoa(i) + ".json")
-	//	if err != nil {
-	//		log.Fatal(err)
-	//	}
-	//
-	//	_, err = f.Write(b)
-	//	if err != nil {
-	//		log.Fatal(err)
-	//	}
-	//
-	//	_ = f.Close()
-	//}
-
-	for i := 0; i < 5; i++ {
-		n, b, err := d.ReleaseJson(3_000)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		if n == 0 {
-			break
-		}
-
-		f, err := os.Create("/Users/aronlukas/Downloads/discogs/discogs_20191101_releases_" + strconv.Itoa(i) + ".json")
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		_, err = f.Write(b)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		_ = f.Close()
+	pg := writer.NewPostgres("localhost", "discogs", "user", "password", "disable", 5432)
+	if pg.Error != nil {
+		log.Fatal(pg.Error)
 	}
+	defer pg.Close()
+	fmt.Print(pg.Ping())
+	num, data, err := d.Releases(1000)
+	if num != 1000 {
+
+		log.Fatalf("not exact number: %d", num)
+	}
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, release := range data {
+		err = pg.WriteRelease(release)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+
 }

@@ -5,9 +5,10 @@ import (
 	"github.com/Twyer/discogs/model"
 )
 
-func ParseTrackList(tr xml.TokenReader) []model.Track {
+func ParseTrackList(tr xml.TokenReader) ([]model.Track, error) {
 	trackList := make([]model.Track, 0, 0)
 	track := model.Track{}
+
 	for {
 		t, _ := tr.Token()
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "tracklist" {
@@ -29,5 +30,5 @@ func ParseTrackList(tr xml.TokenReader) []model.Track {
 			track = model.Track{}
 		}
 	}
-	return trackList
+	return trackList, nil
 }

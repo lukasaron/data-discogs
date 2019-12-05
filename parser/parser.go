@@ -7,7 +7,8 @@ import (
 )
 
 var (
-	notStartElement error = errors.New("token is not start element")
+	notStartElement       error = errors.New("token is not start element")
+	notCorrectStarElement error = errors.New("token is not a correct start element")
 )
 
 func IsStartElement(token xml.Token) bool {

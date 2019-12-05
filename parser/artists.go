@@ -5,23 +5,28 @@ import (
 	"github.com/Twyer/discogs/model"
 )
 
-func ParseArtists(d *xml.Decoder, limit int) []model.Artist {
+func ParseArtists(d *xml.Decoder, limit int) (artists []model.Artist, err error) {
+	var t xml.Token
 	cnt := 0
-	artists := make([]model.Artist, 0, 0)
-	for t, err := d.Token(); t != nil && err == nil && cnt+1 != limit; t, err = d.Token() {
+	artists = make([]model.Artist, 0, 0)
+	for t, err = d.Token(); t != nil && err == nil && cnt != limit; t, err = d.Token() {
 		if IsStartElementName(t, "artist") {
-			artists = append(artists, ParseArtist(t.(xml.StartElement), d))
+			artist, err := ParseArtist(t.(xml.StartElement), d)
+			if err != nil {
+				return artists, err
+			}
+			artists = append(artists, artist)
 			cnt++
 		}
 	}
 
-	return artists
+	return artists, err
 }
 
-func ParseArtist(se xml.StartElement, tr xml.TokenReader) model.Artist {
+func ParseArtist(se xml.StartElement, tr xml.TokenReader) (model.Artist, error) {
 	artist := model.Artist{}
 	if se.Name.Local != "artist" {
-		return artist
+		return artist, notCorrectStarElement
 	}
 
 	for {
@@ -29,7 +34,12 @@ func ParseArtist(se xml.StartElement, tr xml.TokenReader) model.Artist {
 		if se, ok := t.(xml.StartElement); ok {
 			switch se.Name.Local {
 			case "images":
-				artist.Images = ParseImages(se, tr)
+				imgs, err := ParseImages(se, tr)
+				if err != nil {
+					return artist, err
+				}
+
+				artist.Images = imgs
 			case "id":
 				artist.Id = parseValue(tr)
 			case "name":
@@ -53,7 +63,7 @@ func ParseArtist(se xml.StartElement, tr xml.TokenReader) model.Artist {
 		}
 	}
 
-	return artist
+	return artist, nil
 }
 
 func parseAliases(tr xml.TokenReader) []model.Alias {

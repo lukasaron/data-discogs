@@ -5,24 +5,29 @@ import (
 	"github.com/Twyer/discogs/model"
 )
 
-func ParseReleases(d *xml.Decoder, limit int) []model.Release {
+func ParseReleases(d *xml.Decoder, limit int) ([]model.Release, error) {
 	cnt := 0
 	releases := make([]model.Release, 0, 0)
-	for t, err := d.Token(); t != nil && err == nil && cnt+1 != limit; t, err = d.Token() {
+	for t, err := d.Token(); t != nil && err == nil && cnt != limit; t, err = d.Token() {
 		if IsStartElementName(t, "release") {
-			releases = append(releases, ParseRelease(t.(xml.StartElement), d))
+			rls, err := ParseRelease(t.(xml.StartElement), d)
+			if err != nil {
+				return releases, err
+			}
+
+			releases = append(releases, rls)
 			cnt++
 		}
 	}
 
-	return releases
+	return releases, nil
 }
 
-func ParseRelease(se xml.StartElement, tr xml.TokenReader) model.Release {
+func ParseRelease(se xml.StartElement, tr xml.TokenReader) (model.Release, error) {
 	release := model.Release{}
 
 	if se.Name.Local != "release" {
-		return release
+		return release, notCorrectStarElement
 	}
 
 	for _, attr := range se.Attr {
@@ -39,7 +44,11 @@ func ParseRelease(se xml.StartElement, tr xml.TokenReader) model.Release {
 		if se, ok := t.(xml.StartElement); ok {
 			switch se.Name.Local {
 			case "images":
-				release.Images = ParseImages(se, tr)
+				imgs, err := ParseImages(se, tr)
+				if err != nil {
+					return release, err
+				}
+				release.Images = imgs
 			case "artists":
 				release.Artists = parseArtists("artists", tr)
 			case "extraartists":
@@ -66,11 +75,11 @@ func ParseRelease(se xml.StartElement, tr xml.TokenReader) model.Release {
 				release.MainRelease = se.Attr[0].Value
 				release.MasterId = parseValue(tr)
 			case "tracklist":
-				release.TrackList = ParseTrackList(tr)
+				release.TrackList, _ = ParseTrackList(tr)
 			case "identifiers":
 				release.Identifiers = parseIdentifiers(tr)
 			case "videos":
-				release.Videos = ParseVideos(tr)
+				release.Videos, _ = ParseVideos(tr)
 			case "companies":
 				release.Companies = ParseCompanies(tr)
 			}
@@ -80,7 +89,7 @@ func ParseRelease(se xml.StartElement, tr xml.TokenReader) model.Release {
 		}
 	}
 
-	return release
+	return release, nil
 }
 
 func parseArtists(wrapperName string, tr xml.TokenReader) []model.ReleaseArtist {

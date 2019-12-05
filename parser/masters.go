@@ -5,24 +5,29 @@ import (
 	"github.com/Twyer/discogs/model"
 )
 
-func ParseMasters(d *xml.Decoder, limit int) []model.Master {
+func ParseMasters(d *xml.Decoder, limit int) ([]model.Master, error) {
 	cnt := 0
 	masters := make([]model.Master, 0, 0)
-	for t, err := d.Token(); t != nil && err == nil && cnt+1 != limit; t, err = d.Token() {
+	for t, err := d.Token(); t != nil && err == nil && cnt != limit; t, err = d.Token() {
 		if IsStartElementName(t, "master") {
-			masters = append(masters, ParseMaster(t.(xml.StartElement), d))
+			m, err := ParseMaster(t.(xml.StartElement), d)
+			if err != nil {
+				return masters, err
+			}
+
+			masters = append(masters, m)
 			cnt++
 		}
 	}
 
-	return masters
+	return masters, nil
 }
 
-func ParseMaster(se xml.StartElement, tr xml.TokenReader) model.Master {
+func ParseMaster(se xml.StartElement, tr xml.TokenReader) (model.Master, error) {
 	master := model.Master{}
 
 	if se.Name.Local != "master" {
-		return master
+		return master, notCorrectStarElement
 	}
 
 	master.Id = se.Attr[0].Value
@@ -31,7 +36,11 @@ func ParseMaster(se xml.StartElement, tr xml.TokenReader) model.Master {
 		if se, ok := t.(xml.StartElement); ok {
 			switch se.Name.Local {
 			case "images":
-				master.Images = ParseImages(se, tr)
+				imgs, err := ParseImages(se, tr)
+				if err != nil {
+					return master, err
+				}
+				master.Images = imgs
 			case "main_release":
 				master.MainRelease = parseValue(tr)
 			case "artists":
@@ -47,7 +56,7 @@ func ParseMaster(se xml.StartElement, tr xml.TokenReader) model.Master {
 			case "data_quality":
 				master.DataQuality = parseValue(tr)
 			case "videos":
-				master.Videos = ParseVideos(tr)
+				master.Videos, _ = ParseVideos(tr)
 			}
 		}
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "master" {
@@ -55,5 +64,5 @@ func ParseMaster(se xml.StartElement, tr xml.TokenReader) model.Master {
 		}
 	}
 
-	return master
+	return master, nil
 }
