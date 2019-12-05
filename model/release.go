@@ -4,10 +4,10 @@ type Release struct {
 	Id           string
 	Status       string
 	Images       []Image
-	Artists      []*ReleaseArtist
-	ExtraArtists []*ReleaseArtist
+	Artists      []ReleaseArtist
+	ExtraArtists []ReleaseArtist
 	Title        string
-	Formats      []*ReleaseFormat
+	Formats      []Format
 	Genres       []string
 	Styles       []string
 	Country      string
@@ -16,11 +16,11 @@ type Release struct {
 	DataQuality  string
 	MasterId     string
 	MainRelease  string
-	TrackList    []*ReleaseTrack
-	Identifiers  []*ReleaseIdentifier
-	Videos       []*ReleaseVideo
-	Labels       []*ReleaseLabel
-	Companies    []*ReleaseCompany
+	TrackList    []Track
+	Identifiers  []ReleaseIdentifier
+	Videos       []Video
+	Labels       []ReleaseLabel
+	Companies    []Company
 }
 
 type ReleaseArtist struct {
@@ -38,39 +38,10 @@ type ReleaseLabel struct {
 	Category string
 }
 
-type ReleaseFormat struct {
-	Name         string
-	Quantity     string
-	Text         string
-	Descriptions []string
-}
-
-type ReleaseTrack struct {
-	Position string
-	Title    string
-	Duration string
-}
-
 type ReleaseIdentifier struct {
 	Description string
 	Type        string
 	Value       string
-}
-type ReleaseVideo struct {
-	Duration    string
-	Embed       string
-	Src         string
-	Title       string
-	Description string
-}
-
-type ReleaseCompany struct {
-	Id             string
-	Name           string
-	Category       string
-	EntityType     string
-	EntityTypeName string
-	ResourceUrl    string
 }
 
 /*
@@ -78,7 +49,6 @@ type ReleaseCompany struct {
 <release id="2" status="Accepted">
    <images>
       <image height="394" type="primary" uri="" uri150="" width="400" />
-      <image height="600" type="secondary" uri="" uri150="" width="600" />
       <image height="600" type="secondary" uri="" uri150="" width="600" />
    </images>
    <artists>
@@ -113,22 +83,6 @@ type ReleaseCompany struct {
          <role>Producer, Recorded By</role>
          <tracks />
       </artist>
-      <artist>
-         <id>26</id>
-         <name>Alexi Delano</name>
-         <anv>A. Delano</anv>
-         <join />
-         <role>Written-By</role>
-         <tracks />
-      </artist>
-      <artist>
-         <id>27</id>
-         <name>Cari Lekebusch</name>
-         <anv>C. Lekebusch</anv>
-         <join />
-         <role>Written-By</role>
-         <tracks />
-      </artist>
    </extraartists>
    <formats>
       <format name="Vinyl" qty="1" text="">
@@ -144,7 +98,6 @@ type ReleaseCompany struct {
    <styles>
       <style>Broken Beat</style>
       <style>Techno</style>
-      <style>Tech House</style>
    </styles>
    <country>Sweden</country>
    <released>1998-06-00</released>
@@ -156,21 +109,6 @@ type ReleaseCompany struct {
          <position>A1</position>
          <title>A Sea Apart</title>
          <duration>5:08</duration>
-      </track>
-      <track>
-         <position>A2</position>
-         <title>Dutchmaster</title>
-         <duration>4:21</duration>
-      </track>
-      <track>
-         <position>B1</position>
-         <title>Inner City Lullaby</title>
-         <duration>4:22</duration>
-      </track>
-      <track>
-         <position>B2</position>
-         <title>Yeah Kid!</title>
-         <duration>4:46</duration>
       </track>
    </tracklist>
    <identifiers>
@@ -185,14 +123,6 @@ type ReleaseCompany struct {
       <video duration="266" embed="true" src="https://www.youtube.com/watch?v=wRzbbCgg_jY">
          <title>Mr. James Barth &amp; A.D. - Dutchmaster</title>
          <description>Mr. James Barth &amp; A.D. - Dutchmaster</description>
-      </video>
-      <video duration="316" embed="true" src="https://www.youtube.com/watch?v=6iZu93js2oM">
-         <title>Mr. James Barth &amp; A.D. - A Sea Apart</title>
-         <description>Mr. James Barth &amp; A.D. - A Sea Apart</description>
-      </video>
-      <video duration="271" embed="true" src="https://www.youtube.com/watch?v=yvwrhp0hrv8">
-         <title>Mr. James Barth &amp; A.D. - Inner City Lullaby</title>
-         <description>Mr. James Barth &amp; A.D. - Inner City Lullaby</description>
       </video>
    </videos>
    <companies>

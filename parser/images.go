@@ -5,6 +5,26 @@ import (
 	"github.com/Twyer/discogs/model"
 )
 
+func ParseImages(se xml.StartElement, tr xml.TokenReader) []model.Image {
+	images := make([]model.Image, 0, 0)
+	if se.Name.Local != "images" {
+		return nil
+	}
+
+	for {
+		t, _ := tr.Token()
+		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "image" {
+			images = append(images, ParseImage(se))
+		}
+
+		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "images" {
+			break
+		}
+	}
+
+	return images
+}
+
 func ParseImage(se xml.StartElement) model.Image {
 	img := model.Image{}
 	if se.Name.Local != "image" {
@@ -27,24 +47,4 @@ func ParseImage(se xml.StartElement) model.Image {
 	}
 
 	return img
-}
-
-func ParseImages(se xml.StartElement, tr xml.TokenReader) []model.Image {
-	images := make([]model.Image, 0, 0)
-	if se.Name.Local != "images" {
-		return nil
-	}
-
-	for {
-		t, _ := tr.Token()
-		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "image" {
-			images = append(images, ParseImage(se))
-		}
-
-		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "images" {
-			break
-		}
-	}
-
-	return images
 }

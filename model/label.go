@@ -8,11 +8,11 @@ type Label struct {
 	Profile     string
 	DataQuality string
 	Urls        []string
-	ParentLabel *LabelLabels
-	SubLabels   []*LabelLabels
+	ParentLabel *LabelLabel
+	SubLabels   []LabelLabel
 }
 
-type LabelLabels struct {
+type LabelLabel struct {
 	Id   string
 	Name string
 }

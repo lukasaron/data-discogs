@@ -5,6 +5,19 @@ import (
 	"github.com/Twyer/discogs/model"
 )
 
+func ParseLabels(d *xml.Decoder, limit int) []model.Label {
+	cnt := 0
+	labels := make([]model.Label, 0, 0)
+	for t, err := d.Token(); t != nil && err == nil && cnt+1 != limit; t, err = d.Token() {
+		if IsStartElementName(t, "label") {
+			labels = append(labels, ParseLabel(t.(xml.StartElement), d))
+			cnt++
+		}
+	}
+
+	return labels
+}
+
 func ParseLabel(se xml.StartElement, tr xml.TokenReader) model.Label {
 	label := model.Label{}
 	if se.Name.Local != "label" {
@@ -15,8 +28,8 @@ func ParseLabel(se xml.StartElement, tr xml.TokenReader) model.Label {
 		t, _ := tr.Token()
 		if se, ok := t.(xml.StartElement); ok {
 			switch se.Name.Local {
-			case "image":
-				label.Images = append(label.Images, ParseImage(se))
+			case "images":
+				label.Images = ParseImages(se, tr)
 			case "id":
 				label.Id = parseValue(tr)
 			case "name":
@@ -26,13 +39,13 @@ func ParseLabel(se xml.StartElement, tr xml.TokenReader) model.Label {
 			case "profile":
 				label.Profile = parseValue(tr)
 			case "sublabels":
-				label.SubLabels = parseLabelLabels("sublabels", tr)
+				label.SubLabels = parseSubLabels(tr)
 			case "data_quality":
 				label.DataQuality = parseValue(tr)
 			case "parentLabel":
-				pl := parseLabelLabels("parentLabel", tr)
-				if len(pl) > 0 {
-					label.ParentLabel = pl[0]
+				label.ParentLabel = &model.LabelLabel{
+					Id:   se.Attr[0].Value,
+					Name: parseValue(tr),
 				}
 			}
 		}
@@ -44,15 +57,15 @@ func ParseLabel(se xml.StartElement, tr xml.TokenReader) model.Label {
 	return label
 }
 
-func parseLabelLabels(wrapperName string, tr xml.TokenReader) []*model.LabelLabels {
-	labels := make([]*model.LabelLabels, 0, 0)
+func parseSubLabels(tr xml.TokenReader) []model.LabelLabel {
+	labels := make([]model.LabelLabel, 0, 0)
 	for {
 		t, _ := tr.Token()
-		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == wrapperName {
+		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "sublabels" {
 			break
 		}
 		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "label" {
-			label := &model.LabelLabels{}
+			label := model.LabelLabel{}
 			label.Id = se.Attr[0].Value
 			label.Name = parseValue(tr)
 			labels = append(labels, label)

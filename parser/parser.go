@@ -3,7 +3,6 @@ package parser
 import (
 	"encoding/xml"
 	"errors"
-	"github.com/Twyer/discogs/model"
 	"strings"
 )
 
@@ -29,23 +28,6 @@ func IsStartElementName(token xml.Token, name string) bool {
 func IsEndElementName(token xml.Token, name string) bool {
 	ee, ok := token.(xml.EndElement)
 	return ok && ee.Name.Local == name
-}
-
-func ParseArtists(d *xml.Decoder, limit int) []model.Artist {
-	cnt := 0
-	artists := make([]model.Artist, 0, 0)
-	for t, err := d.Token(); t != nil && err == nil; t, err = d.Token() {
-		if IsStartElementName(t, "artist") {
-			artists = append(artists, ParseArtist(t.(xml.StartElement), d))
-			cnt++
-		}
-
-		if cnt+1 == limit { // when we have limit 0/negative value it will return everything
-			break
-		}
-	}
-
-	return artists
 }
 
 func parseValue(tr xml.TokenReader) string {

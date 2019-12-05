@@ -5,6 +5,19 @@ import (
 	"github.com/Twyer/discogs/model"
 )
 
+func ParseArtists(d *xml.Decoder, limit int) []model.Artist {
+	cnt := 0
+	artists := make([]model.Artist, 0, 0)
+	for t, err := d.Token(); t != nil && err == nil && cnt+1 != limit; t, err = d.Token() {
+		if IsStartElementName(t, "artist") {
+			artists = append(artists, ParseArtist(t.(xml.StartElement), d))
+			cnt++
+		}
+	}
+
+	return artists
+}
+
 func ParseArtist(se xml.StartElement, tr xml.TokenReader) model.Artist {
 	artist := model.Artist{}
 	if se.Name.Local != "artist" {

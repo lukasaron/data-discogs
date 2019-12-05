@@ -5,12 +5,26 @@ import (
 	"github.com/Twyer/discogs/model"
 )
 
-func ParseRelease(se xml.StartElement, tr xml.TokenReader) *model.Release {
-	if se.Name.Local != "release" {
-		return nil
+func ParseReleases(d *xml.Decoder, limit int) []model.Release {
+	cnt := 0
+	releases := make([]model.Release, 0, 0)
+	for t, err := d.Token(); t != nil && err == nil && cnt+1 != limit; t, err = d.Token() {
+		if IsStartElementName(t, "release") {
+			releases = append(releases, ParseRelease(t.(xml.StartElement), d))
+			cnt++
+		}
 	}
 
-	release := &model.Release{}
+	return releases
+}
+
+func ParseRelease(se xml.StartElement, tr xml.TokenReader) model.Release {
+	release := model.Release{}
+
+	if se.Name.Local != "release" {
+		return release
+	}
+
 	for _, attr := range se.Attr {
 		switch attr.Name.Local {
 		case "id":
@@ -24,9 +38,8 @@ func ParseRelease(se xml.StartElement, tr xml.TokenReader) *model.Release {
 		t, _ := tr.Token()
 		if se, ok := t.(xml.StartElement); ok {
 			switch se.Name.Local {
-			case "image":
-				img := ParseImage(se)
-				release.Images = append(release.Images, img)
+			case "images":
+				release.Images = ParseImages(se, tr)
 			case "artists":
 				release.Artists = parseArtists("artists", tr)
 			case "extraartists":
@@ -36,7 +49,7 @@ func ParseRelease(se xml.StartElement, tr xml.TokenReader) *model.Release {
 			case "labels":
 				release.Labels = parseLabels(tr)
 			case "formats":
-				release.Formats = parseFormats(tr)
+				release.Formats = ParseFormats(tr)
 			case "genres":
 				release.Genres = parseChildValues("genres", "genre", tr)
 			case "styles":
@@ -53,13 +66,13 @@ func ParseRelease(se xml.StartElement, tr xml.TokenReader) *model.Release {
 				release.MainRelease = se.Attr[0].Value
 				release.MasterId = parseValue(tr)
 			case "tracklist":
-				release.TrackList = parseTrackList(tr)
+				release.TrackList = ParseTrackList(tr)
 			case "identifiers":
 				release.Identifiers = parseIdentifiers(tr)
 			case "videos":
-				release.Videos = parseVideos(tr)
+				release.Videos = ParseVideos(tr)
 			case "companies":
-				release.Companies = parseCompanies(tr)
+				release.Companies = ParseCompanies(tr)
 			}
 		}
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "release" {
@@ -70,9 +83,9 @@ func ParseRelease(se xml.StartElement, tr xml.TokenReader) *model.Release {
 	return release
 }
 
-func parseArtists(wrapperName string, tr xml.TokenReader) []*model.ReleaseArtist {
-	artists := make([]*model.ReleaseArtist, 0, 0)
-	artist := &model.ReleaseArtist{}
+func parseArtists(wrapperName string, tr xml.TokenReader) []model.ReleaseArtist {
+	artists := make([]model.ReleaseArtist, 0, 0)
+	artist := model.ReleaseArtist{}
 	for {
 		t, _ := tr.Token()
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == wrapperName {
@@ -97,21 +110,21 @@ func parseArtists(wrapperName string, tr xml.TokenReader) []*model.ReleaseArtist
 
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "artist" {
 			artists = append(artists, artist)
-			artist = &model.ReleaseArtist{}
+			artist = model.ReleaseArtist{}
 		}
 	}
 	return artists
 }
 
-func parseLabels(tr xml.TokenReader) []*model.ReleaseLabel {
-	labels := make([]*model.ReleaseLabel, 0, 0)
+func parseLabels(tr xml.TokenReader) []model.ReleaseLabel {
+	labels := make([]model.ReleaseLabel, 0, 0)
 	for {
 		t, _ := tr.Token()
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "labels" {
 			break
 		}
 		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "label" {
-			label := &model.ReleaseLabel{}
+			label := model.ReleaseLabel{}
 
 			for _, attr := range se.Attr {
 				switch attr.Name.Local {
@@ -130,111 +143,15 @@ func parseLabels(tr xml.TokenReader) []*model.ReleaseLabel {
 	return labels
 }
 
-func parseFormats(tr xml.TokenReader) []*model.ReleaseFormat {
-	formats := make([]*model.ReleaseFormat, 0, 0)
-	for {
-		t, _ := tr.Token()
-		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "formats" {
-			break
-		}
-		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "format" {
-			format := &model.ReleaseFormat{}
-			for _, attr := range se.Attr {
-				switch attr.Name.Local {
-				case "qty":
-					format.Quantity = attr.Value
-				case "name":
-					format.Name = attr.Value
-				case "text":
-					format.Text = attr.Value
-				}
-			}
-
-			format.Descriptions = parseChildValues("descriptions", "description", tr)
-			formats = append(formats, format)
-		}
-	}
-	return formats
-}
-
-func parseCompanies(tr xml.TokenReader) []*model.ReleaseCompany {
-	companies := make([]*model.ReleaseCompany, 0, 0)
-	company := &model.ReleaseCompany{}
-	for {
-		t, _ := tr.Token()
-		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "companies" {
-			break
-		}
-		if se, ok := t.(xml.StartElement); ok {
-			switch se.Name.Local {
-			case "id":
-				company.Id = parseValue(tr)
-			case "name":
-				company.Name = parseValue(tr)
-			case "catno":
-				company.Category = parseValue(tr)
-			case "entity_type":
-				company.EntityType = parseValue(tr)
-			case "entity_type_name":
-				company.EntityTypeName = parseValue(tr)
-			case "resource_url":
-				company.ResourceUrl = parseValue(tr)
-			}
-		}
-
-		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "company" {
-			companies = append(companies, company)
-			company = &model.ReleaseCompany{}
-		}
-	}
-	return companies
-}
-
-func parseVideos(tr xml.TokenReader) []*model.ReleaseVideo {
-	videos := make([]*model.ReleaseVideo, 0, 0)
-	video := &model.ReleaseVideo{}
-	for {
-		t, _ := tr.Token()
-		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "videos" {
-			break
-		}
-		if se, ok := t.(xml.StartElement); ok {
-			switch se.Name.Local {
-			case "video":
-				for _, attr := range se.Attr {
-					switch attr.Name.Local {
-					case "duration":
-						video.Duration = attr.Value
-					case "embed":
-						video.Embed = attr.Value
-					case "src":
-						video.Src = attr.Value
-					}
-				}
-			case "title":
-				video.Title = parseValue(tr)
-			case "description":
-				video.Description = parseValue(tr)
-			}
-		}
-
-		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "video" {
-			videos = append(videos, video)
-			video = &model.ReleaseVideo{}
-		}
-	}
-	return videos
-}
-
-func parseIdentifiers(tr xml.TokenReader) []*model.ReleaseIdentifier {
-	identifiers := make([]*model.ReleaseIdentifier, 0, 0)
+func parseIdentifiers(tr xml.TokenReader) []model.ReleaseIdentifier {
+	identifiers := make([]model.ReleaseIdentifier, 0, 0)
 	for {
 		t, _ := tr.Token()
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "identifiers" {
 			break
 		}
 		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "identifier" {
-			identifier := &model.ReleaseIdentifier{}
+			identifier := model.ReleaseIdentifier{}
 			for _, attr := range se.Attr {
 				switch attr.Name.Local {
 				case "description":
@@ -250,31 +167,4 @@ func parseIdentifiers(tr xml.TokenReader) []*model.ReleaseIdentifier {
 		}
 	}
 	return identifiers
-}
-
-func parseTrackList(tr xml.TokenReader) []*model.ReleaseTrack {
-	trackList := make([]*model.ReleaseTrack, 0, 0)
-	track := &model.ReleaseTrack{}
-	for {
-		t, _ := tr.Token()
-		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "tracklist" {
-			break
-		}
-		if se, ok := t.(xml.StartElement); ok {
-			switch se.Name.Local {
-			case "position":
-				track.Position = parseValue(tr)
-			case "title":
-				track.Title = parseValue(tr)
-			case "duration":
-				track.Duration = parseValue(tr)
-			}
-		}
-
-		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "track" {
-			trackList = append(trackList, track)
-			track = &model.ReleaseTrack{}
-		}
-	}
-	return trackList
 }
