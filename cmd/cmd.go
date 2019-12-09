@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"errors"
+	"fmt"
 	"github.com/Twyer/discogs/decoder"
 	"github.com/Twyer/discogs/writer"
 	"github.com/jinzhu/configor"
@@ -17,9 +18,10 @@ var Config struct {
 		Password string `default:"password" env:"DB_PASSWORD"`
 		Port     int    `default:"5432" env:"DB_PORT"`
 	}
-	FileName string `env:"FILE_NAME"`
-	FileType string `env:"FILE_TYPE"`
-	Num      int    `default:"10000" env:"NUM"`
+	FileName   string `env:"FILE_NAME"`
+	FileType   string `env:"FILE_TYPE"`
+	BlockSize  int    `default:"10000" env:"BLOCK_SIZE"`
+	DropBlocks int    `default:"0" env:"DROP_BLOCKS"`
 }
 
 func Start() (err error) {
@@ -70,73 +72,86 @@ func getDecoderFileType(fileType string) decoder.FileType {
 }
 
 func decodeData(d *decoder.Decoder, pg *writer.Postgres, ft decoder.FileType) error {
+	fn, err := getDecodeFunction(ft)
+	if err != nil {
+		return err
+	}
+
+	blockCount := 1
+	for ; ; blockCount++ {
+		err = fn(d, pg, blockCount >= Config.DropBlocks)
+		if err != nil {
+			fmt.Errorf("Block %d failed\n", blockCount)
+			return err
+		}
+
+		fmt.Printf("Block %d written\n", blockCount)
+	}
+}
+
+func getDecodeFunction(ft decoder.FileType) (func(*decoder.Decoder, *writer.Postgres, bool) error, error) {
 	switch ft {
 	case decoder.Artists:
-		return decodeArtists(d, pg)
+		return decodeArtists, nil
 	case decoder.Labels:
-		return decodeLabels(d, pg)
+		return decodeLabels, nil
 	case decoder.Masters:
-		return decodeMasters(d, pg)
+		return decodeMasters, nil
 	case decoder.Releases:
-		return decodeReleases(d, pg)
+		return decodeReleases, nil
 	default:
-		return wrongTypeSpecified
-	}
-
-}
-
-func decodeArtists(d *decoder.Decoder, pg *writer.Postgres) error {
-	for {
-		num, a, err := d.Artists(Config.Num)
-		if err != nil || num == 0 {
-			return err
-		}
-
-		err = pg.WriteArtists(a)
-		if err != nil {
-			return err
-		}
+		return nil, wrongTypeSpecified
 	}
 }
 
-func decodeLabels(d *decoder.Decoder, pg *writer.Postgres) error {
-	for {
-		num, l, err := d.Labels(Config.Num)
-		if err != nil || num == 0 {
-			return err
-		}
-
-		err = pg.WriteLabels(l)
-		if err != nil {
-			return err
-		}
+func decodeArtists(d *decoder.Decoder, pg *writer.Postgres, write bool) error {
+	num, a, err := d.Artists(Config.BlockSize)
+	if err != nil || num == 0 {
+		return err
 	}
+
+	if write {
+		return pg.WriteArtists(a)
+	}
+
+	return nil
 }
 
-func decodeMasters(d *decoder.Decoder, pg *writer.Postgres) error {
-	for {
-		num, m, err := d.Masters(Config.Num)
-		if err != nil || num == 0 {
-			return err
-		}
-
-		err = pg.WriteMasters(m)
-		if err != nil {
-			return err
-		}
+func decodeLabels(d *decoder.Decoder, pg *writer.Postgres, write bool) error {
+	num, l, err := d.Labels(Config.BlockSize)
+	if err != nil || num == 0 {
+		return err
 	}
+
+	if write {
+		return pg.WriteLabels(l)
+	}
+
+	return nil
 }
 
-func decodeReleases(d *decoder.Decoder, pg *writer.Postgres) error {
-	for {
-		num, r, err := d.Releases(Config.Num)
-		if err != nil || num == 0 {
-			return err
-		}
-
-		err = pg.WriteReleases(r)
-		if err != nil {
-			return err
-		}
+func decodeMasters(d *decoder.Decoder, pg *writer.Postgres, write bool) error {
+	num, m, err := d.Masters(Config.BlockSize)
+	if err != nil || num == 0 {
+		return err
 	}
+
+	if write {
+		return pg.WriteMasters(m)
+	}
+
+	return nil
+}
+
+func decodeReleases(d *decoder.Decoder, pg *writer.Postgres, write bool) error {
+	num, r, err := d.Releases(Config.BlockSize)
+	if err != nil || num == 0 {
+		return err
+	}
+
+	if write {
+		return pg.WriteReleases(r)
+	}
+
+	return nil
 }
