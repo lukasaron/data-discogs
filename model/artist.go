@@ -1,20 +1,20 @@
 package model
 
 type Artist struct {
-	Id             string
-	Name           string
-	RealName       string
-	Images         []Image
-	Profile        string
-	DataQuality    string
-	NameVariations []string
-	Urls           []string
-	Aliases        []Alias
+	Id             string   `json:"id"`
+	Name           string   `json:"name"`
+	RealName       string   `json:"realName"`
+	Images         []Image  `json:"images"`
+	Profile        string   `json:"profile"`
+	DataQuality    string   `json:"dataQuality"`
+	NameVariations []string `json:"nameVariations"`
+	Urls           []string `json:"urls"`
+	Aliases        []Alias  `json:"aliases"`
 }
 
 type Alias struct {
-	Id   string
-	Name string
+	Id   string `json:"id"`
+	Name string `json:"name"`
 }
 
 /*

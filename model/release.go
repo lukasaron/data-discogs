@@ -1,47 +1,47 @@
 package model
 
 type Release struct {
-	Id           string
-	Status       string
-	Images       []Image
-	Artists      []ReleaseArtist
-	ExtraArtists []ReleaseArtist
-	Title        string
-	Formats      []Format
-	Genres       []string
-	Styles       []string
-	Country      string
-	Released     string
-	Notes        string
-	DataQuality  string
-	MasterId     string
-	MainRelease  string
-	TrackList    []Track
-	Identifiers  []ReleaseIdentifier
-	Videos       []Video
-	Labels       []ReleaseLabel
-	Companies    []Company
+	Id           string          `json:"id"`
+	Status       string          `json:"status"`
+	Images       []Image         `json:"images"`
+	Artists      []ReleaseArtist `json:"artists"`
+	ExtraArtists []ReleaseArtist `json:"extraArtists"`
+	Title        string          `json:"title"`
+	Formats      []Format        `json:"formats"`
+	Genres       []string        `json:"genres"`
+	Styles       []string        `json:"styles"`
+	Country      string          `json:"country"`
+	Released     string          `json:"released"`
+	Notes        string          `json:"notes"`
+	DataQuality  string          `json:"dataQuality"`
+	MasterId     string          `json:"masterId"`
+	MainRelease  string          `json:"mainRelease"`
+	TrackList    []Track         `json:"trackList"`
+	Identifiers  []Identifier    `json:"identifiers"`
+	Videos       []Video         `json:"videos"`
+	Labels       []ReleaseLabel  `json:"labels"`
+	Companies    []Company       `json:"companies"`
 }
 
 type ReleaseArtist struct {
-	Id     string
-	Name   string
-	Join   string
-	Anv    string
-	Role   string
-	Tracks string
+	Id     string `json:"id"`
+	Name   string `json:"name"`
+	Join   string `json:"join"`
+	Anv    string `json:"anv"`
+	Role   string `json:"role"`
+	Tracks string `json:"tracks"`
 }
 
 type ReleaseLabel struct {
-	Id       string
-	Name     string
-	Category string
+	Id       string `json:"id"`
+	Name     string `json:"name"`
+	Category string `json:"category"`
 }
 
-type ReleaseIdentifier struct {
-	Description string
-	Type        string
-	Value       string
+type Identifier struct {
+	Description string `json:"description"`
+	Type        string `json:"type"`
+	Value       string `json:"value"`
 }
 
 /*

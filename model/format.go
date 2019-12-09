@@ -1,10 +1,10 @@
 package model
 
 type Format struct {
-	Name         string
-	Quantity     string
-	Text         string
-	Descriptions []string
+	Name         string   `json:"name"`
+	Quantity     string   `json:"quantity"`
+	Text         string   `json:"text"`
+	Descriptions []string `json:"description"`
 }
 
 /*

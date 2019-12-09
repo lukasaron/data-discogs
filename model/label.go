@@ -1,20 +1,20 @@
 package model
 
 type Label struct {
-	Id          string
-	Name        string
-	Images      []Image
-	ContactInfo string
-	Profile     string
-	DataQuality string
-	Urls        []string
-	ParentLabel *LabelLabel
-	SubLabels   []LabelLabel
+	Id          string       `json:"id"`
+	Name        string       `json:"name"`
+	Images      []Image      `json:"images"`
+	ContactInfo string       `json:"contactInfo"`
+	Profile     string       `json:"profile"`
+	DataQuality string       `json:"dataQuality"`
+	Urls        []string     `json:"urls"`
+	ParentLabel *LabelLabel  `json:"parentLabel,omitempty"`
+	SubLabels   []LabelLabel `json:"subLabels"`
 }
 
 type LabelLabel struct {
-	Id   string
-	Name string
+	Id   string `json:"id"`
+	Name string `json:"name"`
 }
 
 /*

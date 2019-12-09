@@ -1,9 +1,9 @@
 package model
 
 type Track struct {
-	Position string
-	Title    string
-	Duration string
+	Position string `json:"position"`
+	Title    string `json:"title"`
+	Duration string `json:"duration"`
 }
 
 /*

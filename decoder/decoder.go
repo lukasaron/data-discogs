@@ -7,6 +7,16 @@ import (
 	"os"
 )
 
+type FileType int
+
+const (
+	Unknown FileType = iota
+	Artists
+	Labels
+	Masters
+	Releases
+)
+
 type Decoder struct {
 	file    *os.File
 	decoder *xml.Decoder
@@ -15,10 +25,12 @@ type Decoder struct {
 
 func NewDecoder(fileName string) *Decoder {
 	d := &Decoder{}
+
 	d.file, d.Error = os.Open(fileName)
 	if d.Error == nil {
 		d.decoder = xml.NewDecoder(d.file)
 	}
+
 	return d
 }
 

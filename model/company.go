@@ -1,12 +1,12 @@
 package model
 
 type Company struct {
-	Id             string
-	Name           string
-	Category       string
-	EntityType     string
-	EntityTypeName string
-	ResourceUrl    string
+	Id             string `json:"id"`
+	Name           string `json:"name"`
+	Category       string `json:"category"`
+	EntityType     string `json:"entityType"`
+	EntityTypeName string `json:"entityTypeName"`
+	ResourceUrl    string `json:"resourceUrl"`
 }
 
 /*

@@ -1,11 +1,11 @@
 package model
 
 type Image struct {
-	Height string
-	Width  string
-	Type   string
-	Uri    string
-	Uri150 string
+	Height string `json:"height"`
+	Width  string `json:"width"`
+	Type   string `json:"type"`
+	Uri    string `json:"uri"`
+	Uri150 string `json:"uri150"`
 }
 
 /*

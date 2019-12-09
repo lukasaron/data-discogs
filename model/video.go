@@ -1,11 +1,11 @@
 package model
 
 type Video struct {
-	Duration    string
-	Embed       string
-	Src         string
-	Title       string
-	Description string
+	Duration    string `json:"duration"`
+	Embed       string `json:"embed"`
+	Src         string `json:"src"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
 }
 
 /*

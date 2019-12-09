@@ -1,16 +1,16 @@
 package model
 
 type Master struct {
-	Id          string
-	MainRelease string
-	Images      []Image
-	Artists     []ReleaseArtist
-	Genres      []string
-	Styles      []string
-	Year        string
-	Title       string
-	DataQuality string
-	Videos      []Video
+	Id          string          `json:"id"`
+	MainRelease string          `json:"mainRelease"`
+	Images      []Image         `json:"images"`
+	Artists     []ReleaseArtist `json:"artists"`
+	Genres      []string        `json:"genres"`
+	Styles      []string        `json:"styles"`
+	Year        string          `json:"year"`
+	Title       string          `json:"title"`
+	DataQuality string          `json:"dataQuality"`
+	Videos      []Video         `json:"videos"`
 }
 
 /*

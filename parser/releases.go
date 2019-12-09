@@ -152,15 +152,15 @@ func parseLabels(tr xml.TokenReader) []model.ReleaseLabel {
 	return labels
 }
 
-func parseIdentifiers(tr xml.TokenReader) []model.ReleaseIdentifier {
-	identifiers := make([]model.ReleaseIdentifier, 0, 0)
+func parseIdentifiers(tr xml.TokenReader) []model.Identifier {
+	identifiers := make([]model.Identifier, 0, 0)
 	for {
 		t, _ := tr.Token()
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "identifiers" {
 			break
 		}
 		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "identifier" {
-			identifier := model.ReleaseIdentifier{}
+			identifier := model.Identifier{}
 			for _, attr := range se.Attr {
 				switch attr.Name.Local {
 				case "description":
