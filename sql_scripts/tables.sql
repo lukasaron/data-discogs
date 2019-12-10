@@ -74,7 +74,7 @@ CREATE TABLE releases (
     notes TEXT,
     data_quality VARCHAR(20),
     master_id VARCHAR(10),
-    main_release VARCHAR(5)
+    main_release VARCHAR(10)
 );
 
 CREATE TABLE release_artists (
@@ -108,7 +108,7 @@ CREATE TABLE release_formats (
     name VARCHAR(1024),
     quantity VARCHAR(10),
     text TEXT,
-    description TEXT
+    descriptions TEXT
 );
 
 CREATE TABLE release_companies (
@@ -116,14 +116,14 @@ CREATE TABLE release_companies (
     release_company_id VARCHAR(10),
     name VARCHAR(1024),
     category VARCHAR(100),
-    entity_name VARCHAR(1024),
+    entity_type VARCHAR(1024),
     entity_type_name VARCHAR(1024),
     resource_url VARCHAR(1024)
 );
 
 CREATE TABLE release_tracks (
     release_id VARCHAR(10),
-    position VARCHAR(5),
+    position VARCHAR(10),
     title VARCHAR(100),
     duration VARCHAR(10)
 );

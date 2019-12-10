@@ -353,7 +353,7 @@ func (pg Postgres) writeRelease(tx *sql.Tx, r model.Release) (err error) {
 func (pg Postgres) writeCompany(tx *sql.Tx, c model.Company, releaseId string) error {
 	return pg.writeTransaction(
 		tx,
-		"INSERT INTO public.release_companies (release_id, release_company_id, name, category, entity_type, entity_type_name, resource_url) VALUES ($1, $2, $3, $4)",
+		"INSERT INTO public.release_companies (release_id, release_company_id, name, category, entity_type, entity_type_name, resource_url) VALUES ($1, $2, $3, $4, $5, $6, $7)",
 		releaseId,
 		c.Id,
 		c.Name,
@@ -404,12 +404,12 @@ func (pg Postgres) writeReleaseArtists(tx *sql.Tx, ras []model.ReleaseArtist, ma
 func (pg Postgres) writeFormat(tx *sql.Tx, f model.Format, releaseId string) error {
 	return pg.writeTransaction(
 		tx,
-		"INSERT INTO public.release_formats (release_id, name, quantity, text, description) VALUES ($1, $2, $3, $4, $5)",
+		"INSERT INTO public.release_formats (release_id, name, quantity, text, descriptions) VALUES ($1, $2, $3, $4, $5)",
 		releaseId,
 		f.Name,
 		f.Quantity,
 		f.Text,
-		f.Descriptions)
+		strings.Join(f.Descriptions, ","))
 }
 
 func (pg Postgres) writeFormats(tx *sql.Tx, fs []model.Format, releaseId string) (err error) {

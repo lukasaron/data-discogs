@@ -6,6 +6,7 @@ import (
 	"github.com/Twyer/discogs/decoder"
 	"github.com/Twyer/discogs/writer"
 	"github.com/jinzhu/configor"
+	"io"
 )
 
 var wrongTypeSpecified = errors.New("wrong file type specified")
@@ -27,6 +28,9 @@ var Config struct {
 		Size  int `default:"10000" env:"BLOCK_SIZE"`
 		Skip  int `default:"0" env:"BLOCK_SKIP"`
 		Limit int `default:"2147483647" env:"BLOCK_LIMIT"`
+	}
+	Filter struct {
+		Quality string `default:"Unknown" env:"FILTER_QUALITY"`
 	}
 }
 
@@ -83,8 +87,8 @@ func decodeData(d decoder.Decoder, w writer.Writer, ft decoder.FileType) error {
 	blockCount := 1
 	for ; blockCount <= Config.Block.Limit; blockCount++ {
 		num, err := fn(d, w, blockCount > Config.Block.Skip)
-		if err != nil {
-			_ = fmt.Errorf("Block %d failed\n", blockCount)
+		if err != nil && err != io.EOF {
+			_ = fmt.Errorf("Block %d failed [%d]\n", blockCount, num)
 			return err
 		}
 
@@ -93,11 +97,14 @@ func decodeData(d decoder.Decoder, w writer.Writer, ft decoder.FileType) error {
 		}
 
 		if blockCount > Config.Block.Skip {
-			fmt.Printf("Block %d written\n", blockCount)
+			fmt.Printf("Block %d written [%d]\n", blockCount, num)
 		} else {
-			fmt.Printf("Block %d skipped\n", blockCount)
+			fmt.Printf("Block %d skipped [%d]\n", blockCount, num)
 		}
 
+		if err == io.EOF {
+			break
+		}
 	}
 
 	return nil
