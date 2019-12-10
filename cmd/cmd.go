@@ -17,11 +17,17 @@ var Config struct {
 		User     string `default:"user" env:"DB_USERNAME"`
 		Password string `default:"password" env:"DB_PASSWORD"`
 		Port     int    `default:"5432" env:"DB_PORT"`
+		SslMode  string `default:"disable" env:"DB_SSL_MODE"`
 	}
-	FileName   string `env:"FILE_NAME"`
-	FileType   string `env:"FILE_TYPE"`
-	BlockSize  int    `default:"10000" env:"BLOCK_SIZE"`
-	DropBlocks int    `default:"0" env:"DROP_BLOCKS"`
+	File struct {
+		Name string `env:"FILE_NAME"`
+		Type string `env:"FILE_TYPE"`
+	}
+	Block struct {
+		Size  int `default:"10000" env:"BLOCK_SIZE"`
+		Skip  int `default:"0" env:"BLOCK_SKIP"`
+		Limit int `default:"2147483647" env:"BLOCK_LIMIT"`
+	}
 }
 
 func Start() (err error) {
@@ -30,12 +36,12 @@ func Start() (err error) {
 		return err
 	}
 
-	ft := getDecoderFileType(Config.FileType)
+	ft := getDecoderFileType(Config.File.Type)
 	if ft == decoder.Unknown {
 		return wrongTypeSpecified
 	}
 
-	d := decoder.NewDecoder(Config.FileName)
+	d := decoder.NewDecoder(Config.File.Name)
 	if d.Error != nil {
 		return err
 	}
@@ -46,7 +52,7 @@ func Start() (err error) {
 		Config.DB.Name,
 		Config.DB.User,
 		Config.DB.Password,
-		"disable",
+		Config.DB.SslMode,
 		Config.DB.Port)
 	if pg.Error != nil {
 		return pg.Error
@@ -56,19 +62,21 @@ func Start() (err error) {
 	return decodeData(d, pg, ft)
 }
 
-func getDecoderFileType(fileType string) decoder.FileType {
+func getDecoderFileType(fileType string) (ft decoder.FileType) {
 	switch fileType {
 	case "artists":
-		return decoder.Artists
+		ft = decoder.Artists
 	case "labels":
-		return decoder.Labels
+		ft = decoder.Labels
 	case "masters":
-		return decoder.Masters
+		ft = decoder.Masters
 	case "releases":
-		return decoder.Releases
+		ft = decoder.Releases
 	default:
-		return decoder.Unknown
+		ft = decoder.Unknown
 	}
+
+	return ft
 }
 
 func decodeData(d *decoder.Decoder, pg *writer.Postgres, ft decoder.FileType) error {
@@ -78,15 +86,22 @@ func decodeData(d *decoder.Decoder, pg *writer.Postgres, ft decoder.FileType) er
 	}
 
 	blockCount := 1
-	for ; ; blockCount++ {
-		err = fn(d, pg, blockCount >= Config.DropBlocks)
+	for ; blockCount <= Config.Block.Limit; blockCount++ {
+		err = fn(d, pg, blockCount > Config.Block.Skip)
 		if err != nil {
-			fmt.Errorf("Block %d failed\n", blockCount)
+			_ = fmt.Errorf("Block %d failed\n", blockCount)
 			return err
 		}
 
-		fmt.Printf("Block %d written\n", blockCount)
+		if blockCount > Config.Block.Skip {
+			fmt.Printf("Block %d written\n", blockCount)
+		} else {
+			fmt.Printf("Block %d skipped\n", blockCount)
+		}
+
 	}
+
+	return nil
 }
 
 func getDecodeFunction(ft decoder.FileType) (func(*decoder.Decoder, *writer.Postgres, bool) error, error) {
@@ -105,7 +120,7 @@ func getDecodeFunction(ft decoder.FileType) (func(*decoder.Decoder, *writer.Post
 }
 
 func decodeArtists(d *decoder.Decoder, pg *writer.Postgres, write bool) error {
-	num, a, err := d.Artists(Config.BlockSize)
+	num, a, err := d.Artists(Config.Block.Size)
 	if err != nil || num == 0 {
 		return err
 	}
@@ -118,7 +133,7 @@ func decodeArtists(d *decoder.Decoder, pg *writer.Postgres, write bool) error {
 }
 
 func decodeLabels(d *decoder.Decoder, pg *writer.Postgres, write bool) error {
-	num, l, err := d.Labels(Config.BlockSize)
+	num, l, err := d.Labels(Config.Block.Size)
 	if err != nil || num == 0 {
 		return err
 	}
@@ -131,7 +146,7 @@ func decodeLabels(d *decoder.Decoder, pg *writer.Postgres, write bool) error {
 }
 
 func decodeMasters(d *decoder.Decoder, pg *writer.Postgres, write bool) error {
-	num, m, err := d.Masters(Config.BlockSize)
+	num, m, err := d.Masters(Config.Block.Size)
 	if err != nil || num == 0 {
 		return err
 	}
@@ -144,7 +159,7 @@ func decodeMasters(d *decoder.Decoder, pg *writer.Postgres, write bool) error {
 }
 
 func decodeReleases(d *decoder.Decoder, pg *writer.Postgres, write bool) error {
-	num, r, err := d.Releases(Config.BlockSize)
+	num, r, err := d.Releases(Config.Block.Size)
 	if err != nil || num == 0 {
 		return err
 	}
