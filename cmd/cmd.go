@@ -42,9 +42,6 @@ func Start() (err error) {
 	}
 
 	d := decoder.NewDecoder(Config.File.Name)
-	if d.Error != nil {
-		return err
-	}
 	defer d.Close()
 
 	pg := writer.NewPostgres(
@@ -79,7 +76,7 @@ func getDecoderFileType(fileType string) (ft decoder.FileType) {
 	return ft
 }
 
-func decodeData(d *decoder.Decoder, pg *writer.Postgres, ft decoder.FileType) error {
+func decodeData(d *decoder.XMLDecoder, pg *writer.Postgres, ft decoder.FileType) error {
 	fn, err := getDecodeFunction(ft)
 	if err != nil {
 		return err
@@ -104,7 +101,7 @@ func decodeData(d *decoder.Decoder, pg *writer.Postgres, ft decoder.FileType) er
 	return nil
 }
 
-func getDecodeFunction(ft decoder.FileType) (func(*decoder.Decoder, *writer.Postgres, bool) error, error) {
+func getDecodeFunction(ft decoder.FileType) (func(*decoder.XMLDecoder, *writer.Postgres, bool) error, error) {
 	switch ft {
 	case decoder.Artists:
 		return decodeArtists, nil
@@ -119,7 +116,7 @@ func getDecodeFunction(ft decoder.FileType) (func(*decoder.Decoder, *writer.Post
 	}
 }
 
-func decodeArtists(d *decoder.Decoder, pg *writer.Postgres, write bool) error {
+func decodeArtists(d *decoder.XMLDecoder, pg *writer.Postgres, write bool) error {
 	num, a, err := d.Artists(Config.Block.Size)
 	if err != nil || num == 0 {
 		return err
@@ -132,7 +129,7 @@ func decodeArtists(d *decoder.Decoder, pg *writer.Postgres, write bool) error {
 	return nil
 }
 
-func decodeLabels(d *decoder.Decoder, pg *writer.Postgres, write bool) error {
+func decodeLabels(d *decoder.XMLDecoder, pg *writer.Postgres, write bool) error {
 	num, l, err := d.Labels(Config.Block.Size)
 	if err != nil || num == 0 {
 		return err
@@ -145,7 +142,7 @@ func decodeLabels(d *decoder.Decoder, pg *writer.Postgres, write bool) error {
 	return nil
 }
 
-func decodeMasters(d *decoder.Decoder, pg *writer.Postgres, write bool) error {
+func decodeMasters(d *decoder.XMLDecoder, pg *writer.Postgres, write bool) error {
 	num, m, err := d.Masters(Config.Block.Size)
 	if err != nil || num == 0 {
 		return err
@@ -158,7 +155,7 @@ func decodeMasters(d *decoder.Decoder, pg *writer.Postgres, write bool) error {
 	return nil
 }
 
-func decodeReleases(d *decoder.Decoder, pg *writer.Postgres, write bool) error {
+func decodeReleases(d *decoder.XMLDecoder, pg *writer.Postgres, write bool) error {
 	num, r, err := d.Releases(Config.Block.Size)
 	if err != nil || num == 0 {
 		return err

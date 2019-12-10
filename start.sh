@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#Example of usage 
+#Example of usage
 export DB_HOST=localhost
 export DB_PORT=5432
 export DB_NAME=discogs
