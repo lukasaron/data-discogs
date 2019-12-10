@@ -51,9 +51,7 @@ func Start() (err error) {
 		Config.DB.Password,
 		Config.DB.SslMode,
 		Config.DB.Port)
-	if pg.Error != nil {
-		return pg.Error
-	}
+
 	defer pg.Close()
 
 	return decodeData(d, pg, ft)
@@ -76,7 +74,7 @@ func getDecoderFileType(fileType string) (ft decoder.FileType) {
 	return ft
 }
 
-func decodeData(d *decoder.XMLDecoder, pg *writer.Postgres, ft decoder.FileType) error {
+func decodeData(d decoder.Decoder, w writer.Writer, ft decoder.FileType) error {
 	fn, err := getDecodeFunction(ft)
 	if err != nil {
 		return err
@@ -84,7 +82,7 @@ func decodeData(d *decoder.XMLDecoder, pg *writer.Postgres, ft decoder.FileType)
 
 	blockCount := 1
 	for ; blockCount <= Config.Block.Limit; blockCount++ {
-		err = fn(d, pg, blockCount > Config.Block.Skip)
+		err = fn(d, w, blockCount > Config.Block.Skip)
 		if err != nil {
 			_ = fmt.Errorf("Block %d failed\n", blockCount)
 			return err
@@ -101,7 +99,7 @@ func decodeData(d *decoder.XMLDecoder, pg *writer.Postgres, ft decoder.FileType)
 	return nil
 }
 
-func getDecodeFunction(ft decoder.FileType) (func(*decoder.XMLDecoder, *writer.Postgres, bool) error, error) {
+func getDecodeFunction(ft decoder.FileType) (func(decoder.Decoder, writer.Writer, bool) error, error) {
 	switch ft {
 	case decoder.Artists:
 		return decodeArtists, nil
@@ -116,53 +114,53 @@ func getDecodeFunction(ft decoder.FileType) (func(*decoder.XMLDecoder, *writer.P
 	}
 }
 
-func decodeArtists(d *decoder.XMLDecoder, pg *writer.Postgres, write bool) error {
+func decodeArtists(d decoder.Decoder, w writer.Writer, write bool) error {
 	num, a, err := d.Artists(Config.Block.Size)
 	if err != nil || num == 0 {
 		return err
 	}
 
 	if write {
-		return pg.WriteArtists(a)
+		return w.WriteArtists(a)
 	}
 
 	return nil
 }
 
-func decodeLabels(d *decoder.XMLDecoder, pg *writer.Postgres, write bool) error {
+func decodeLabels(d decoder.Decoder, w writer.Writer, write bool) error {
 	num, l, err := d.Labels(Config.Block.Size)
 	if err != nil || num == 0 {
 		return err
 	}
 
 	if write {
-		return pg.WriteLabels(l)
+		return w.WriteLabels(l)
 	}
 
 	return nil
 }
 
-func decodeMasters(d *decoder.XMLDecoder, pg *writer.Postgres, write bool) error {
+func decodeMasters(d decoder.Decoder, w writer.Writer, write bool) error {
 	num, m, err := d.Masters(Config.Block.Size)
 	if err != nil || num == 0 {
 		return err
 	}
 
 	if write {
-		return pg.WriteMasters(m)
+		return w.WriteMasters(m)
 	}
 
 	return nil
 }
 
-func decodeReleases(d *decoder.XMLDecoder, pg *writer.Postgres, write bool) error {
+func decodeReleases(d decoder.Decoder, w writer.Writer, write bool) error {
 	num, r, err := d.Releases(Config.Block.Size)
 	if err != nil || num == 0 {
 		return err
 	}
 
 	if write {
-		return pg.WriteReleases(r)
+		return w.WriteReleases(r)
 	}
 
 	return nil
