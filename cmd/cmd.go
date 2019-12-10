@@ -30,7 +30,7 @@ var Config struct {
 	}
 }
 
-func Start() (err error) {
+func Run() (err error) {
 	err = configor.Load(&Config)
 	if err != nil {
 		return err
@@ -82,10 +82,14 @@ func decodeData(d decoder.Decoder, w writer.Writer, ft decoder.FileType) error {
 
 	blockCount := 1
 	for ; blockCount <= Config.Block.Limit; blockCount++ {
-		err = fn(d, w, blockCount > Config.Block.Skip)
+		num, err := fn(d, w, blockCount > Config.Block.Skip)
 		if err != nil {
 			_ = fmt.Errorf("Block %d failed\n", blockCount)
 			return err
+		}
+
+		if num == 0 {
+			break
 		}
 
 		if blockCount > Config.Block.Skip {
@@ -99,7 +103,7 @@ func decodeData(d decoder.Decoder, w writer.Writer, ft decoder.FileType) error {
 	return nil
 }
 
-func getDecodeFunction(ft decoder.FileType) (func(decoder.Decoder, writer.Writer, bool) error, error) {
+func getDecodeFunction(ft decoder.FileType) (func(decoder.Decoder, writer.Writer, bool) (int, error), error) {
 	switch ft {
 	case decoder.Artists:
 		return decodeArtists, nil
@@ -114,54 +118,54 @@ func getDecodeFunction(ft decoder.FileType) (func(decoder.Decoder, writer.Writer
 	}
 }
 
-func decodeArtists(d decoder.Decoder, w writer.Writer, write bool) error {
+func decodeArtists(d decoder.Decoder, w writer.Writer, write bool) (int, error) {
 	num, a, err := d.Artists(Config.Block.Size)
 	if err != nil || num == 0 {
-		return err
+		return num, err
 	}
 
 	if write {
-		return w.WriteArtists(a)
+		return num, w.WriteArtists(a)
 	}
 
-	return nil
+	return num, nil
 }
 
-func decodeLabels(d decoder.Decoder, w writer.Writer, write bool) error {
+func decodeLabels(d decoder.Decoder, w writer.Writer, write bool) (int, error) {
 	num, l, err := d.Labels(Config.Block.Size)
 	if err != nil || num == 0 {
-		return err
+		return num, err
 	}
 
 	if write {
-		return w.WriteLabels(l)
+		return num, w.WriteLabels(l)
 	}
 
-	return nil
+	return num, nil
 }
 
-func decodeMasters(d decoder.Decoder, w writer.Writer, write bool) error {
+func decodeMasters(d decoder.Decoder, w writer.Writer, write bool) (int, error) {
 	num, m, err := d.Masters(Config.Block.Size)
 	if err != nil || num == 0 {
-		return err
+		return num, err
 	}
 
 	if write {
-		return w.WriteMasters(m)
+		return num, w.WriteMasters(m)
 	}
 
-	return nil
+	return num, nil
 }
 
-func decodeReleases(d decoder.Decoder, w writer.Writer, write bool) error {
+func decodeReleases(d decoder.Decoder, w writer.Writer, write bool) (int, error) {
 	num, r, err := d.Releases(Config.Block.Size)
 	if err != nil || num == 0 {
-		return err
+		return num, err
 	}
 
 	if write {
-		return w.WriteReleases(r)
+		return num, w.WriteReleases(r)
 	}
 
-	return nil
+	return num, nil
 }
