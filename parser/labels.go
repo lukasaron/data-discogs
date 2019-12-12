@@ -48,6 +48,8 @@ func ParseLabel(se xml.StartElement, tr xml.TokenReader) (model.Label, error) {
 				label.ContactInfo = parseValue(tr)
 			case "profile":
 				label.Profile = parseValue(tr)
+			case "urls":
+				label.Urls = parseChildValues("urls", "url", tr)
 			case "sublabels":
 				label.SubLabels = parseSubLabels(tr)
 			case "data_quality":

@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/Twyer/discogs/model"
+	"github.com/lib/pq"
 	_ "github.com/lib/pq"
-	"strings"
 )
 
 type Postgres struct {
@@ -216,7 +216,7 @@ func (pg Postgres) writeLabel(tx *sql.Tx, l model.Label) (err error) {
 		l.ContactInfo,
 		l.Profile,
 		l.DataQuality,
-		strings.Join(l.Urls, ","))
+		pq.Array(l.Urls))
 
 	if err != nil {
 		return err
@@ -264,8 +264,8 @@ func (pg Postgres) writeMaster(tx *sql.Tx, m model.Master) (err error) {
 		"INSERT INTO public.masters (master_id, main_release, genres, styles, year, title, data_quality) VALUES ($1, $2, $3, $4, $5, $6, $7)",
 		m.Id,
 		m.MainRelease,
-		strings.Join(m.Genres, ","),
-		strings.Join(m.Styles, ","),
+		pq.Array(m.Genres),
+		pq.Array(m.Styles),
 		m.Year,
 		m.Title,
 		m.DataQuality)
@@ -294,8 +294,8 @@ func (pg Postgres) writeRelease(tx *sql.Tx, r model.Release) (err error) {
 		r.Id,
 		r.Status,
 		r.Title,
-		strings.Join(r.Genres, ","),
-		strings.Join(r.Styles, ","),
+		pq.Array(r.Genres),
+		pq.Array(r.Styles),
 		r.Country,
 		r.Released,
 		r.Notes,
@@ -409,7 +409,7 @@ func (pg Postgres) writeFormat(tx *sql.Tx, f model.Format, releaseId string) err
 		f.Name,
 		f.Quantity,
 		f.Text,
-		strings.Join(f.Descriptions, ","))
+		pq.Array(f.Descriptions))
 }
 
 func (pg Postgres) writeFormats(tx *sql.Tx, fs []model.Format, releaseId string) (err error) {
@@ -566,8 +566,8 @@ func (pg Postgres) writeArtist(tx *sql.Tx, a model.Artist) (err error) {
 		a.RealName,
 		a.Profile,
 		a.DataQuality,
-		strings.Join(a.NameVariations, ","),
-		strings.Join(a.Urls, ","))
+		pq.Array(a.NameVariations),
+		pq.Array(a.Urls))
 
 	if err != nil {
 		return err

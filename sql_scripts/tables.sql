@@ -5,8 +5,8 @@ CREATE TABLE artists (
     real_name VARCHAR(1024),
     profile TEXT,
     data_quality VARCHAR(20),
-    name_variations TEXT,
-    urls TEXT
+    name_variations VARCHAR(1024)[],
+    urls VARCHAR(1024)[]
 );
 
 CREATE TABLE artist_aliases (
@@ -33,7 +33,7 @@ CREATE TABLE labels (
     contact_info TEXT,
     profile TEXT,
     data_quality VARCHAR(20),
-    urls TEXT
+    urls VARCHAR(1024)[]
 );
 
 CREATE TABLE label_labels (
@@ -46,8 +46,8 @@ CREATE TABLE label_labels (
 CREATE TABLE masters (
     master_id VARCHAR(10),
     main_release VARCHAR(10),
-    genres TEXT,
-    styles TEXT,
+    genres VARCHAR(1024)[],
+    styles VARCHAR(1024)[],
     year VARCHAR(4),
     title VARCHAR(1024),
     data_quality VARCHAR(20)
@@ -67,8 +67,8 @@ CREATE TABLE releases (
     release_id VARCHAR(10),
     status VARCHAR(20),
     title VARCHAR(100),
-    genres TEXT,
-    styles TEXT,
+    genres VARCHAR(1024)[],
+    styles VARCHAR(1024)[],
     country VARCHAR(50),
     released VARCHAR(10),
     notes TEXT,
@@ -108,7 +108,7 @@ CREATE TABLE release_formats (
     name VARCHAR(1024),
     quantity VARCHAR(10),
     text TEXT,
-    descriptions TEXT
+    descriptions TEXT[]
 );
 
 CREATE TABLE release_companies (
