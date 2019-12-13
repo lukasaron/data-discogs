@@ -7,13 +7,19 @@ import (
 )
 
 type Json struct {
-	f   *os.File
-	err error
+	option Options
+	f      *os.File
+	err    error
 }
 
-func NewJson(fileName string) Writer {
+func NewJson(fileName string, options ...Options) Writer {
 	j := Json{}
 	j.f, j.err = os.Create(fileName)
+
+	if options != nil && len(options) > 0 {
+		j.option = options[0]
+	}
+
 	return j
 }
 
@@ -30,6 +36,9 @@ func (j Json) WriteArtist(a model.Artist) error {
 		return j.err
 	}
 
+	if j.option.ExcludeImages {
+		a.Images = nil
+	}
 	return j.marshalAndWrite(a)
 }
 
@@ -51,6 +60,10 @@ func (j Json) WriteArtists(as []model.Artist) (err error) {
 func (j Json) WriteLabel(l model.Label) error {
 	if j.err != nil {
 		return j.err
+	}
+
+	if j.option.ExcludeImages {
+		l.Images = nil
 	}
 
 	return j.marshalAndWrite(l)
@@ -76,6 +89,10 @@ func (j Json) WriteMaster(m model.Master) error {
 		return j.err
 	}
 
+	if j.option.ExcludeImages {
+		m.Images = nil
+	}
+
 	return j.marshalAndWrite(m)
 }
 
@@ -98,8 +115,13 @@ func (j Json) WriteRelease(r model.Release) error {
 		return j.err
 	}
 
+	if j.option.ExcludeImages {
+		r.Images = nil
+	}
+
 	return j.marshalAndWrite(r)
 }
+
 func (j Json) WriteReleases(rs []model.Release) (err error) {
 	if j.err != nil {
 		return j.err

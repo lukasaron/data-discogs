@@ -7,14 +7,11 @@ export DB_NAME=discogs
 export DB_SSL_MODE=disable
 export DB_USERNAME=user
 export DB_PASSWORD=password
-export FILE_NAME=./source/releases.xml
-export FILE_TYPE=releases
+export FILE_NAME=./source/labels.xml
+export FILE_TYPE=labels
 export BLOCK_SIZE=1000
 export BLOCK_SKIP=0
 export BLOCK_LIMIT=2147483647
 
 go build
 ./discogs
-
-# TODO
-# Filter by quality

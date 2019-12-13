@@ -3,7 +3,7 @@ package model
 type Label struct {
 	Id          string       `json:"id"`
 	Name        string       `json:"name"`
-	Images      []Image      `json:"images"`
+	Images      []Image      `json:"images,omitempty"`
 	ContactInfo string       `json:"contactInfo"`
 	Profile     string       `json:"profile"`
 	DataQuality string       `json:"dataQuality"`

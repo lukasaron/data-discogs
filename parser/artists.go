@@ -8,7 +8,6 @@ import (
 func ParseArtists(d *xml.Decoder, limit int) (artists []model.Artist, err error) {
 	var t xml.Token
 	cnt := 0
-	artists = make([]model.Artist, 0, 0)
 	for t, err = d.Token(); t != nil && err == nil && cnt != limit; t, err = d.Token() {
 		if IsStartElementName(t, "artist") {
 			artist, err := ParseArtist(t.(xml.StartElement), d)
@@ -23,8 +22,7 @@ func ParseArtists(d *xml.Decoder, limit int) (artists []model.Artist, err error)
 	return artists, err
 }
 
-func ParseArtist(se xml.StartElement, tr xml.TokenReader) (model.Artist, error) {
-	artist := model.Artist{}
+func ParseArtist(se xml.StartElement, tr xml.TokenReader) (artist model.Artist, err error) {
 	if se.Name.Local != "artist" {
 		return artist, notCorrectStarElement
 	}
@@ -66,8 +64,7 @@ func ParseArtist(se xml.StartElement, tr xml.TokenReader) (model.Artist, error) 
 	return artist, nil
 }
 
-func parseAliases(tr xml.TokenReader) []model.Alias {
-	aliases := make([]model.Alias, 0, 0)
+func parseAliases(tr xml.TokenReader) (aliases []model.Alias) {
 	for {
 		t, _ := tr.Token()
 		if IsEndElementName(t, "aliases") {

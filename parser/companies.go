@@ -5,8 +5,7 @@ import (
 	"github.com/Twyer/discogs/model"
 )
 
-func ParseCompanies(tr xml.TokenReader) []model.Company {
-	companies := make([]model.Company, 0, 0)
+func ParseCompanies(tr xml.TokenReader) (companies []model.Company) {
 	company := model.Company{}
 	for {
 		t, _ := tr.Token()

@@ -3,7 +3,7 @@ package model
 type Master struct {
 	Id          string          `json:"id"`
 	MainRelease string          `json:"mainRelease"`
-	Images      []Image         `json:"images"`
+	Images      []Image         `json:"images,omitempty"`
 	Artists     []ReleaseArtist `json:"artists"`
 	Genres      []string        `json:"genres"`
 	Styles      []string        `json:"styles"`

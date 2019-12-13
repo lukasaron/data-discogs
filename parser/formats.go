@@ -5,8 +5,7 @@ import (
 	"github.com/Twyer/discogs/model"
 )
 
-func ParseFormats(tr xml.TokenReader) []model.Format {
-	formats := make([]model.Format, 0, 0)
+func ParseFormats(tr xml.TokenReader) (formats []model.Format) {
 	for {
 		t, _ := tr.Token()
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "formats" {

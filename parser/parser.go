@@ -46,16 +46,15 @@ func parseValue(tr xml.TokenReader) string {
 	return sb.String()
 }
 
-func parseChildValues(parentName, childName string, tr xml.TokenReader) []string {
-	nv := make([]string, 0, 0)
+func parseChildValues(parentName, childName string, tr xml.TokenReader) (children []string) {
 	for {
 		t, _ := tr.Token()
 		if IsStartElementName(t, childName) {
-			nv = append(nv, parseValue(tr))
+			children = append(children, parseValue(tr))
 		}
 		if IsEndElementName(t, parentName) {
 			break
 		}
 	}
-	return nv
+	return children
 }

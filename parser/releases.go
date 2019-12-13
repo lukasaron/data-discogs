@@ -5,10 +5,10 @@ import (
 	"github.com/Twyer/discogs/model"
 )
 
-func ParseReleases(d *xml.Decoder, limit int) ([]model.Release, error) {
+func ParseReleases(d *xml.Decoder, limit int) (releases []model.Release, err error) {
+	var t xml.Token
 	cnt := 0
-	releases := make([]model.Release, 0, 0)
-	for t, err := d.Token(); t != nil && err == nil && cnt != limit; t, err = d.Token() {
+	for t, err = d.Token(); t != nil && err == nil && cnt != limit; t, err = d.Token() {
 		if IsStartElementName(t, "release") {
 			rls, err := ParseRelease(t.(xml.StartElement), d)
 			if err != nil {
@@ -20,12 +20,10 @@ func ParseReleases(d *xml.Decoder, limit int) ([]model.Release, error) {
 		}
 	}
 
-	return releases, nil
+	return releases, err
 }
 
-func ParseRelease(se xml.StartElement, tr xml.TokenReader) (model.Release, error) {
-	release := model.Release{}
-
+func ParseRelease(se xml.StartElement, tr xml.TokenReader) (release model.Release, err error) {
 	if se.Name.Local != "release" {
 		return release, notCorrectStarElement
 	}
@@ -92,8 +90,7 @@ func ParseRelease(se xml.StartElement, tr xml.TokenReader) (model.Release, error
 	return release, nil
 }
 
-func parseArtists(wrapperName string, tr xml.TokenReader) []model.ReleaseArtist {
-	artists := make([]model.ReleaseArtist, 0, 0)
+func parseArtists(wrapperName string, tr xml.TokenReader) (artists []model.ReleaseArtist) {
 	artist := model.ReleaseArtist{}
 	for {
 		t, _ := tr.Token()
@@ -125,8 +122,7 @@ func parseArtists(wrapperName string, tr xml.TokenReader) []model.ReleaseArtist 
 	return artists
 }
 
-func parseLabels(tr xml.TokenReader) []model.ReleaseLabel {
-	labels := make([]model.ReleaseLabel, 0, 0)
+func parseLabels(tr xml.TokenReader) (labels []model.ReleaseLabel) {
 	for {
 		t, _ := tr.Token()
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "labels" {
@@ -152,8 +148,7 @@ func parseLabels(tr xml.TokenReader) []model.ReleaseLabel {
 	return labels
 }
 
-func parseIdentifiers(tr xml.TokenReader) []model.Identifier {
-	identifiers := make([]model.Identifier, 0, 0)
+func parseIdentifiers(tr xml.TokenReader) (identifiers []model.Identifier) {
 	for {
 		t, _ := tr.Token()
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "identifiers" {

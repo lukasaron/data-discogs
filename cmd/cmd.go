@@ -45,16 +45,18 @@ func Run() (err error) {
 		return wrongTypeSpecified
 	}
 
-	d := decoder.NewDecoder(Config.File.Name)
+	d := decoder.NewDecoder(Config.File.Name, decoder.Options{QualityLevel: decoder.Correct})
 	defer d.Close()
 
 	pg := writer.NewPostgres(
 		Config.DB.Host,
+		Config.DB.Port,
 		Config.DB.Name,
 		Config.DB.User,
 		Config.DB.Password,
 		Config.DB.SslMode,
-		Config.DB.Port)
+		writer.Options{ExcludeImages: true},
+	)
 
 	defer pg.Close()
 
@@ -87,13 +89,14 @@ func decodeData(d decoder.Decoder, w writer.Writer, ft decoder.FileType) error {
 	blockCount := 1
 	for ; blockCount <= Config.Block.Limit; blockCount++ {
 		num, err := fn(d, w, blockCount > Config.Block.Skip)
+		fmt.Println(num, err)
 		if err != nil && err != io.EOF {
 			_ = fmt.Errorf("Block %d failed [%d]\n", blockCount, num)
 			return err
 		}
 
-		if num == 0 {
-			break
+		if num == 0 && err != io.EOF {
+			continue
 		}
 
 		if blockCount > Config.Block.Skip {
@@ -127,7 +130,7 @@ func getDecodeFunction(ft decoder.FileType) (func(decoder.Decoder, writer.Writer
 
 func decodeArtists(d decoder.Decoder, w writer.Writer, write bool) (int, error) {
 	num, a, err := d.Artists(Config.Block.Size)
-	if err != nil || num == 0 {
+	if (err != nil && err != io.EOF) || num == 0 {
 		return num, err
 	}
 
@@ -135,12 +138,12 @@ func decodeArtists(d decoder.Decoder, w writer.Writer, write bool) (int, error) 
 		return num, w.WriteArtists(a)
 	}
 
-	return num, nil
+	return num, err
 }
 
 func decodeLabels(d decoder.Decoder, w writer.Writer, write bool) (int, error) {
 	num, l, err := d.Labels(Config.Block.Size)
-	if err != nil || num == 0 {
+	if (err != nil && err != io.EOF) || num == 0 {
 		return num, err
 	}
 
@@ -148,12 +151,12 @@ func decodeLabels(d decoder.Decoder, w writer.Writer, write bool) (int, error) {
 		return num, w.WriteLabels(l)
 	}
 
-	return num, nil
+	return num, err
 }
 
 func decodeMasters(d decoder.Decoder, w writer.Writer, write bool) (int, error) {
 	num, m, err := d.Masters(Config.Block.Size)
-	if err != nil || num == 0 {
+	if (err != nil && err != io.EOF) || num == 0 {
 		return num, err
 	}
 
@@ -161,12 +164,12 @@ func decodeMasters(d decoder.Decoder, w writer.Writer, write bool) (int, error) 
 		return num, w.WriteMasters(m)
 	}
 
-	return num, nil
+	return num, err
 }
 
 func decodeReleases(d decoder.Decoder, w writer.Writer, write bool) (int, error) {
 	num, r, err := d.Releases(Config.Block.Size)
-	if err != nil || num == 0 {
+	if (err != nil && err != io.EOF) || num == 0 {
 		return num, err
 	}
 
@@ -174,5 +177,5 @@ func decodeReleases(d decoder.Decoder, w writer.Writer, write bool) (int, error)
 		return num, w.WriteReleases(r)
 	}
 
-	return num, nil
+	return num, err
 }

@@ -5,8 +5,7 @@ import (
 	"github.com/Twyer/discogs/model"
 )
 
-func ParseTrackList(tr xml.TokenReader) ([]model.Track, error) {
-	trackList := make([]model.Track, 0, 0)
+func ParseTrackList(tr xml.TokenReader) (trackList []model.Track, err error) {
 	track := model.Track{}
 
 	for {

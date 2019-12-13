@@ -15,3 +15,7 @@ type Writer interface {
 	WriteReleases(releases []model.Release) error
 	Close() error
 }
+
+type Options struct {
+	ExcludeImages bool
+}

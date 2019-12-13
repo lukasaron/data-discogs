@@ -5,10 +5,10 @@ import (
 	"github.com/Twyer/discogs/model"
 )
 
-func ParseMasters(d *xml.Decoder, limit int) ([]model.Master, error) {
+func ParseMasters(d *xml.Decoder, limit int) (masters []model.Master, err error) {
+	var t xml.Token
 	cnt := 0
-	masters := make([]model.Master, 0, 0)
-	for t, err := d.Token(); t != nil && err == nil && cnt != limit; t, err = d.Token() {
+	for t, err = d.Token(); t != nil && err == nil && cnt != limit; t, err = d.Token() {
 		if IsStartElementName(t, "master") {
 			m, err := ParseMaster(t.(xml.StartElement), d)
 			if err != nil {
@@ -20,11 +20,10 @@ func ParseMasters(d *xml.Decoder, limit int) ([]model.Master, error) {
 		}
 	}
 
-	return masters, nil
+	return masters, err
 }
 
-func ParseMaster(se xml.StartElement, tr xml.TokenReader) (model.Master, error) {
-	master := model.Master{}
+func ParseMaster(se xml.StartElement, tr xml.TokenReader) (master model.Master, err error) {
 
 	if se.Name.Local != "master" {
 		return master, notCorrectStarElement

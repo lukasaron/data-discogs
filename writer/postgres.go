@@ -10,11 +10,14 @@ import (
 )
 
 type Postgres struct {
-	db  *sql.DB
-	err error
+	options Options
+	db      *sql.DB
+	err     error
 }
 
-func NewPostgres(host, dbName, user, password, sslMode string, port int) Writer {
+func NewPostgres(host string, port int, dbName, user, password, sslMode string, options ...Options) Writer {
+	pg := Postgres{}
+
 	connStr := fmt.Sprintf("host='%s' dbname='%s' user='%s' password='%s' port='%d' sslmode=%s",
 		host,
 		dbName,
@@ -23,8 +26,13 @@ func NewPostgres(host, dbName, user, password, sslMode string, port int) Writer 
 		port,
 		sslMode)
 
-	pg := Postgres{}
 	pg.db, pg.err = sql.Open("postgres", connStr)
+
+	// add options when available (only the first one)
+	if options != nil && len(options) > 0 {
+		pg.options = options[0]
+	}
+
 	return pg
 }
 
@@ -507,18 +515,22 @@ func (pg Postgres) writeAliases(tx *sql.Tx, as []model.Alias, artistId string) (
 }
 
 func (pg Postgres) writeImage(tx *sql.Tx, img model.Image, artistId, labelId, masterId, releaseId string) error {
-	return pg.writeTransaction(
-		tx,
-		"INSERT INTO public.images (artist_id, label_id, master_id, release_id, height, width, type, uri, uri_150) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
-		artistId,
-		labelId,
-		masterId,
-		releaseId,
-		img.Height,
-		img.Width,
-		img.Type,
-		img.Uri,
-		img.Uri150)
+	if !pg.options.ExcludeImages {
+		return pg.writeTransaction(
+			tx,
+			"INSERT INTO public.images (artist_id, label_id, master_id, release_id, height, width, type, uri, uri_150) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+			artistId,
+			labelId,
+			masterId,
+			releaseId,
+			img.Height,
+			img.Width,
+			img.Type,
+			img.Uri,
+			img.Uri150)
+	}
+
+	return nil
 }
 
 func (pg Postgres) writeImages(tx *sql.Tx, imgs []model.Image, artistId, labelId, masterId, releaseId string) (err error) {

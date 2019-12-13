@@ -4,7 +4,7 @@ type Artist struct {
 	Id             string   `json:"id"`
 	Name           string   `json:"name"`
 	RealName       string   `json:"realName"`
-	Images         []Image  `json:"images"`
+	Images         []Image  `json:"images,omitempty"`
 	Profile        string   `json:"profile"`
 	DataQuality    string   `json:"dataQuality"`
 	NameVariations []string `json:"nameVariations"`

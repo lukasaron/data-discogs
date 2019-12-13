@@ -5,10 +5,10 @@ import (
 	"github.com/Twyer/discogs/model"
 )
 
-func ParseLabels(d *xml.Decoder, limit int) ([]model.Label, error) {
+func ParseLabels(d *xml.Decoder, limit int) (labels []model.Label, err error) {
+	var t xml.Token
 	cnt := 0
-	labels := make([]model.Label, 0, 0)
-	for t, err := d.Token(); t != nil && err == nil && cnt != limit; t, err = d.Token() {
+	for t, err = d.Token(); t != nil && err == nil && cnt != limit; t, err = d.Token() {
 		if IsStartElementName(t, "label") {
 			l, err := ParseLabel(t.(xml.StartElement), d)
 			if err != nil {
@@ -20,11 +20,10 @@ func ParseLabels(d *xml.Decoder, limit int) ([]model.Label, error) {
 		}
 	}
 
-	return labels, nil
+	return labels, err
 }
 
-func ParseLabel(se xml.StartElement, tr xml.TokenReader) (model.Label, error) {
-	label := model.Label{}
+func ParseLabel(se xml.StartElement, tr xml.TokenReader) (label model.Label, err error) {
 	if se.Name.Local != "label" {
 		return label, notCorrectStarElement
 	}
@@ -69,8 +68,7 @@ func ParseLabel(se xml.StartElement, tr xml.TokenReader) (model.Label, error) {
 	return label, nil
 }
 
-func parseSubLabels(tr xml.TokenReader) []model.LabelLabel {
-	labels := make([]model.LabelLabel, 0, 0)
+func parseSubLabels(tr xml.TokenReader) (labels []model.LabelLabel) {
 	for {
 		t, _ := tr.Token()
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "sublabels" {

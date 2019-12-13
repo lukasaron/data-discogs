@@ -9,3 +9,7 @@ type Decoder interface {
 	Masters(limit int) (int, []model.Master, error)
 	Releases(limit int) (int, []model.Release, error)
 }
+
+type Options struct {
+	QualityLevel QualityLevel
+}

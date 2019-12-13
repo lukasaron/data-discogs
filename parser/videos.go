@@ -5,8 +5,7 @@ import (
 	"github.com/Twyer/discogs/model"
 )
 
-func ParseVideos(tr xml.TokenReader) ([]model.Video, error) {
-	videos := make([]model.Video, 0, 0)
+func ParseVideos(tr xml.TokenReader) (videos []model.Video, err error) {
 	video := model.Video{}
 
 	for {

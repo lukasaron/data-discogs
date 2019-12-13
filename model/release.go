@@ -3,7 +3,7 @@ package model
 type Release struct {
 	Id           string          `json:"id"`
 	Status       string          `json:"status"`
-	Images       []Image         `json:"images"`
+	Images       []Image         `json:"images,omitempty"`
 	Artists      []ReleaseArtist `json:"artists"`
 	ExtraArtists []ReleaseArtist `json:"extraArtists"`
 	Title        string          `json:"title"`
