@@ -7,6 +7,7 @@ import (
 	"github.com/Twyer/discogs/writer"
 	"github.com/jinzhu/configor"
 	"io"
+	"regexp"
 )
 
 var wrongTypeSpecified = errors.New("wrong file type specified")
