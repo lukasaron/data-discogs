@@ -2,7 +2,7 @@ package writer
 
 import (
 	"encoding/json"
-	"github.com/Twyer/discogs/model"
+	"github.com/Twyer/discogs-parser/model"
 	"os"
 )
 

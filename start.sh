@@ -9,4 +9,4 @@ export DB_USERNAME=user
 export DB_PASSWORD=password
 
 go build
-./discogs -filename ./data_source/labels.xml -writer-type postgres
+./discogs-parser -filename ./data_source/labels.xml -writer-type postgres

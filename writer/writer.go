@@ -1,7 +1,7 @@
 package writer
 
 import (
-	"github.com/Twyer/discogs/model"
+	"github.com/Twyer/discogs-parser/model"
 )
 
 type Writer interface {

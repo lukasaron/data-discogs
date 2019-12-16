@@ -2,7 +2,7 @@ package parser
 
 import (
 	"encoding/xml"
-	"github.com/Twyer/discogs/model"
+	"github.com/Twyer/discogs-parser/model"
 )
 
 func ParseVideos(tr xml.TokenReader) (videos []model.Video, err error) {

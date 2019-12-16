@@ -2,8 +2,8 @@ package decoder
 
 import (
 	"encoding/xml"
-	"github.com/Twyer/discogs/model"
-	"github.com/Twyer/discogs/parser"
+	"github.com/Twyer/discogs-parser/model"
+	"github.com/Twyer/discogs-parser/parser"
 	"io"
 	"os"
 )

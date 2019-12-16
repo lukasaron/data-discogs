@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/Twyer/discogs/model"
+	"github.com/Twyer/discogs-parser/model"
 	"github.com/lib/pq"
 	_ "github.com/lib/pq"
 )

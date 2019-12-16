@@ -2,7 +2,7 @@ package parser
 
 import (
 	"encoding/xml"
-	"github.com/Twyer/discogs/model"
+	"github.com/Twyer/discogs-parser/model"
 )
 
 func ParseMasters(d *xml.Decoder, limit int) (masters []model.Master, err error) {

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/Twyer/discogs/cmd"
+	"github.com/Twyer/discogs-parser/cmd"
 	"log"
 )
 

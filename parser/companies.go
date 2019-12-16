@@ -2,7 +2,7 @@ package parser
 
 import (
 	"encoding/xml"
-	"github.com/Twyer/discogs/model"
+	"github.com/Twyer/discogs-parser/model"
 )
 
 func ParseCompanies(tr xml.TokenReader) (companies []model.Company) {

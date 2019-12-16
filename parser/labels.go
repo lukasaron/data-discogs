@@ -2,7 +2,7 @@ package parser
 
 import (
 	"encoding/xml"
-	"github.com/Twyer/discogs/model"
+	"github.com/Twyer/discogs-parser/model"
 )
 
 func ParseLabels(d *xml.Decoder, limit int) (labels []model.Label, err error) {

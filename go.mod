@@ -1,4 +1,4 @@
-module github.com/Twyer/discogs
+module github.com/Twyer/discogs-parser
 
 go 1.13
 

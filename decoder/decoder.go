@@ -1,6 +1,6 @@
 package decoder
 
-import "github.com/Twyer/discogs/model"
+import "github.com/Twyer/discogs-parser/model"
 
 type Decoder interface {
 	Close() error

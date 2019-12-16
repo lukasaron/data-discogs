@@ -5,7 +5,7 @@
 *.so
 *.dylib
 
-discogs
+discogs-parser
 main
 
 # Test binary, build with `go test -c`
