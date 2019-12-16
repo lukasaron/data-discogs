@@ -6,14 +6,14 @@ import (
 	"os"
 )
 
-type Json struct {
+type JsonWriter struct {
 	option Options
 	f      *os.File
 	err    error
 }
 
 func NewJson(fileName string, options ...Options) Writer {
-	j := Json{}
+	j := JsonWriter{}
 	j.f, j.err = os.Create(fileName)
 
 	if options != nil && len(options) > 0 {
@@ -23,7 +23,7 @@ func NewJson(fileName string, options ...Options) Writer {
 	return j
 }
 
-func (j Json) Close() error {
+func (j JsonWriter) Close() error {
 	if j.err != nil {
 		return j.err
 	}
@@ -31,7 +31,7 @@ func (j Json) Close() error {
 	return j.f.Close()
 }
 
-func (j Json) WriteArtist(a model.Artist) error {
+func (j JsonWriter) WriteArtist(a model.Artist) error {
 	if j.err != nil {
 		return j.err
 	}
@@ -42,7 +42,7 @@ func (j Json) WriteArtist(a model.Artist) error {
 	return j.marshalAndWrite(a)
 }
 
-func (j Json) WriteArtists(as []model.Artist) (err error) {
+func (j JsonWriter) WriteArtists(as []model.Artist) (err error) {
 	if j.err != nil {
 		return j.err
 	}
@@ -57,7 +57,7 @@ func (j Json) WriteArtists(as []model.Artist) (err error) {
 	return nil
 }
 
-func (j Json) WriteLabel(l model.Label) error {
+func (j JsonWriter) WriteLabel(l model.Label) error {
 	if j.err != nil {
 		return j.err
 	}
@@ -69,7 +69,7 @@ func (j Json) WriteLabel(l model.Label) error {
 	return j.marshalAndWrite(l)
 }
 
-func (j Json) WriteLabels(ls []model.Label) (err error) {
+func (j JsonWriter) WriteLabels(ls []model.Label) (err error) {
 	if j.err != nil {
 		return j.err
 	}
@@ -84,7 +84,7 @@ func (j Json) WriteLabels(ls []model.Label) (err error) {
 	return nil
 }
 
-func (j Json) WriteMaster(m model.Master) error {
+func (j JsonWriter) WriteMaster(m model.Master) error {
 	if j.err != nil {
 		return j.err
 	}
@@ -96,7 +96,7 @@ func (j Json) WriteMaster(m model.Master) error {
 	return j.marshalAndWrite(m)
 }
 
-func (j Json) WriteMasters(ms []model.Master) (err error) {
+func (j JsonWriter) WriteMasters(ms []model.Master) (err error) {
 	if j.err != nil {
 		return j.err
 	}
@@ -110,7 +110,7 @@ func (j Json) WriteMasters(ms []model.Master) (err error) {
 
 	return nil
 }
-func (j Json) WriteRelease(r model.Release) error {
+func (j JsonWriter) WriteRelease(r model.Release) error {
 	if j.err != nil {
 		return j.err
 	}
@@ -122,7 +122,7 @@ func (j Json) WriteRelease(r model.Release) error {
 	return j.marshalAndWrite(r)
 }
 
-func (j Json) WriteReleases(rs []model.Release) (err error) {
+func (j JsonWriter) WriteReleases(rs []model.Release) (err error) {
 	if j.err != nil {
 		return j.err
 	}
@@ -137,7 +137,7 @@ func (j Json) WriteReleases(rs []model.Release) (err error) {
 	return nil
 }
 
-func (j Json) marshalAndWrite(d interface{}) error {
+func (j JsonWriter) marshalAndWrite(d interface{}) error {
 	b, err := json.Marshal(d)
 	if err != nil {
 		return err

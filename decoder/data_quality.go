@@ -30,6 +30,8 @@ func StrToQualityLevel(str string) (ql QualityLevel) {
 		ql = Correct
 	case "Complete and Correct":
 		ql = CompleteAndCorrect
+	case "All":
+		fallthrough
 	default:
 		ql = All
 	}

@@ -19,3 +19,22 @@ type Writer interface {
 type Options struct {
 	ExcludeImages bool
 }
+
+type Type int
+
+const (
+	PostgresType Type = iota
+	JsonType
+)
+
+func StrToWriterType(str string) (t Type) {
+	switch str {
+	case "json":
+		t = JsonType
+	case "postgres":
+		t = PostgresType
+	default:
+		t = JsonType
+	}
+	return t
+}

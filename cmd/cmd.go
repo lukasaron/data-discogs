@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	"github.com/Twyer/discogs/decoder"
 	"github.com/Twyer/discogs/writer"
@@ -10,58 +11,103 @@ import (
 	"regexp"
 )
 
-var wrongTypeSpecified = errors.New("wrong file type specified")
+var (
+	ftRegex = regexp.MustCompile(".*(artists|labels|masters|releases).*\\.xml")
 
-var Config struct {
-	DB struct {
-		Host     string `default:"localhost" env:"DB_HOST"`
-		Name     string `default:"discogs" env:"DB_NAME"`
-		User     string `default:"user" env:"DB_USERNAME"`
-		Password string `default:"password" env:"DB_PASSWORD"`
-		Port     int    `default:"5432" env:"DB_PORT"`
-		SslMode  string `default:"disable" env:"DB_SSL_MODE"`
+	wrongTypeSpecified = errors.New("wrong file type specified")
+
+	Config struct {
+		DB struct {
+			Host     string `default:"localhost" env:"DB_HOST"`
+			Name     string `default:"discogs" env:"DB_NAME"`
+			User     string `default:"user" env:"DB_USERNAME"`
+			Password string `default:"password" env:"DB_PASSWORD"`
+			Port     int    `default:"5432" env:"DB_PORT"`
+			SslMode  string `default:"disable" env:"DB_SSL_MODE"`
+		}
+		File struct {
+			Name string `default:"" env:"FILE_NAME"`
+		}
+		Block struct {
+			Size  int `default:"1000" env:"BLOCK_SIZE"`
+			Skip  int `default:"0" env:"BLOCK_SKIP"`
+			Limit int `default:"2147483647" env:"BLOCK_LIMIT"`
+		}
+		Filter struct {
+			Quality string `default:"All" env:"FILTER_QUALITY"`
+		}
+		Writer struct {
+			Type   string `default:"json" env:"WRITER_TYPE"`
+			Output string `default:"" env:"WRITER_OUTPUT"`
+		}
 	}
-	File struct {
-		Name string `env:"FILE_NAME"`
-		Type string `env:"FILE_TYPE"`
-	}
-	Block struct {
-		Size  int `default:"10000" env:"BLOCK_SIZE"`
-		Skip  int `default:"0" env:"BLOCK_SKIP"`
-		Limit int `default:"2147483647" env:"BLOCK_LIMIT"`
-	}
-	Filter struct {
-		Quality string `default:"Unknown" env:"FILTER_QUALITY"`
-	}
-}
+)
 
 func Run() (err error) {
+	flag.StringVar(&Config.File.Name, "filename", "", "input file")
+	flag.StringVar(&Config.Filter.Quality, "quality", "All", "quality filter")
+	flag.StringVar(&Config.Writer.Type, "writer-type", "json", "writer type")
+	flag.StringVar(&Config.Writer.Output, "output", "", "writer output")
+	flag.IntVar(&Config.Block.Size, "block-size", 1000, "block size")
+	flag.IntVar(&Config.Block.Skip, "block-skip", 0, "block skip")
+	flag.IntVar(&Config.Block.Limit, "block-limit", 2147483647, "block limit")
+	flag.Parse()
+
 	err = configor.Load(&Config)
 	if err != nil {
 		return err
 	}
 
-	ft := getDecoderFileType(Config.File.Type)
+	ft := getFileTypeFromFileName(Config.File.Name)
 	if ft == decoder.Unknown {
 		return wrongTypeSpecified
 	}
 
-	d := decoder.NewDecoder(Config.File.Name, decoder.Options{QualityLevel: decoder.Correct})
+	d := decoder.NewDecoder(
+		Config.File.Name,
+		decoder.Options{
+			QualityLevel: decoder.StrToQualityLevel(Config.Filter.Quality),
+		},
+	)
 	defer d.Close()
 
-	pg := writer.NewPostgres(
-		Config.DB.Host,
-		Config.DB.Port,
-		Config.DB.Name,
-		Config.DB.User,
-		Config.DB.Password,
-		Config.DB.SslMode,
-		writer.Options{ExcludeImages: true},
-	)
+	w := getWriter()
+	defer w.Close()
 
-	defer pg.Close()
+	return decodeData(d, w, ft)
+}
 
-	return decodeData(d, pg, ft)
+func getWriter() (w writer.Writer) {
+	wt := writer.StrToWriterType(Config.Writer.Type)
+	switch wt {
+	case writer.PostgresType:
+		w = writer.NewPostgres(
+			Config.DB.Host,
+			Config.DB.Port,
+			Config.DB.Name,
+			Config.DB.User,
+			Config.DB.Password,
+			Config.DB.SslMode,
+			writer.Options{ExcludeImages: true},
+		)
+	case writer.JsonType:
+		w = writer.NewJson(
+			Config.Writer.Output,
+			writer.Options{ExcludeImages: true},
+		)
+	}
+
+	return w
+}
+
+func getFileTypeFromFileName(fileName string) decoder.FileType {
+	ftStr := ""
+	ftSubMatches := ftRegex.FindStringSubmatch(fileName)
+	if len(ftSubMatches) > 1 {
+		ftStr = ftSubMatches[1]
+	}
+
+	return getDecoderFileType(ftStr)
 }
 
 func getDecoderFileType(fileType string) (ft decoder.FileType) {
@@ -90,24 +136,19 @@ func decodeData(d decoder.Decoder, w writer.Writer, ft decoder.FileType) error {
 	blockCount := 1
 	for ; blockCount <= Config.Block.Limit; blockCount++ {
 		num, err := fn(d, w, blockCount > Config.Block.Skip)
-		fmt.Println(num, err)
 		if err != nil && err != io.EOF {
 			_ = fmt.Errorf("Block %d failed [%d]\n", blockCount, num)
 			return err
 		}
 
-		if num == 0 && err != io.EOF {
-			continue
+		if num == 0 && err == io.EOF {
+			break
 		}
 
 		if blockCount > Config.Block.Skip {
 			fmt.Printf("Block %d written [%d]\n", blockCount, num)
 		} else {
 			fmt.Printf("Block %d skipped [%d]\n", blockCount, num)
-		}
-
-		if err == io.EOF {
-			break
 		}
 	}
 
