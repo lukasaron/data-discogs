@@ -9,4 +9,4 @@ export DB_USERNAME=user
 export DB_PASSWORD=password
 
 go build
-./discogs -filename ./source/labels.xml -block-size 1000 -block-skip 0 -block-limit 2147483647 -writer-type postgres
+./discogs -filename ./data_source/labels.xml -writer-type postgres
