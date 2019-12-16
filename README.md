@@ -15,7 +15,7 @@ This writer has ability to write results into PostgreSQL database. In order to d
 - DB_PASSWORD (default: `password`)
 - DB_SSL_MODE (default: `disable`), possible values defined in the PG driver's documentation [https://godoc.org/github.com/lib/pq]
 
-Before processing make sure you have created all necessary database tables. For this I would recommend to run the `tables.sql` script from the sql_scripts folder. For the speed 
+Before processing make sure you have created all necessary database tables. For this I would recommend to run the `tables.sql` script from the sql_scripts folder. For the performance purposes index creation is recommended to perform after the processing of a data. Therefore the creation of indexes for all tables is separated into `indexes.sql`.  
 
 ## Common command line arguments
 - `filename` name of the file as input (usually discogs_[date of dump]_[artists | labels | masters | releases].xml)
