@@ -29,7 +29,10 @@ Before processing make sure you have created all necessary database tables. For 
 - `block-skip` the amount of blocks from the beginning that will  be skipped, default: `0`
 - `block-limit` limit the amount of blocks to be processed. Default: `2147483647`
 
+## Example
+ - Have a look into the `start.sh` script for inspiration how to run a discogs-parser  
 
 # TODO
+- Bugs removal
 - Comments
 - Tests
