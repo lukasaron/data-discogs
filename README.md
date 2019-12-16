@@ -1,6 +1,6 @@
 # Discogs Parser
 
-Discogs Parser introduces the way how to categorize data dumps from Discogs [https://data.discogs.com/]
+Discogs Parser introduces the way to categorize data dumps from Discogs [https://data.discogs.com/]
 
 ## JSON Writer
 It's a default writer which needs to know what is a name of the output file, therefore argument `output` needs to be specified.
@@ -31,4 +31,5 @@ Before processing make sure you have created all necessary database tables. For 
 
 
 # TODO
+- Comments
 - Tests
