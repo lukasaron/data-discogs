@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	ftRegex = regexp.MustCompile(".*(artists|labels|masters|releases).*\\.xml")
+	ftRegex = regexp.MustCompile("artists|labels|masters|releases")
 
 	wrongTypeSpecified = errors.New("wrong file type specified")
 
@@ -101,13 +101,7 @@ func getWriter() (w writer.Writer) {
 }
 
 func getFileTypeFromFileName(fileName string) decoder.FileType {
-	ftStr := ""
-	ftSubMatches := ftRegex.FindStringSubmatch(fileName)
-	if len(ftSubMatches) > 1 {
-		ftStr = ftSubMatches[1]
-	}
-
-	return getDecoderFileType(ftStr)
+	return getDecoderFileType(ftRegex.FindString(fileName))
 }
 
 func getDecoderFileType(fileType string) (ft decoder.FileType) {
