@@ -4,7 +4,7 @@ Discogs Parser introduces the way to categorize data dumps from Discogs [https:/
 
 ## JSON Writer
 It's a default writer which needs to know what is a name of the output file, therefore argument `output` needs to be specified.
-- `output` file name that will be created with the JSON output.
+- `output` file name that will be created with the JSON output. When this flag is not specified the new file with is created in the same folder as the input file name is saved. The extension of the file name is JSON instead of XML.
 
 ## Postgres Writer
 This writer can write results in a PostgreSQL database. To do this the specified environmental variables need to be defined:
@@ -18,7 +18,7 @@ This writer can write results in a PostgreSQL database. To do this the specified
 Before processing,  make sure you have created all necessary database tables. For this, I would recommend running the `tables.sql` script from the sql_scripts folder. For the performance purposes index creation is recommended to perform after the processing of a data. Therefore the creation of indexes for all tables is separated into `indexes.sql`.  
 
 ## Common command line arguments
-- `filename` name of a file as input (usually `discogs_`[`date of dump`]`_`[`artists `|` labels `|` masters `|` releases`]`.xml`)
+- `filename` this is the only one mandatory argument! It's a file name as input (usually `discogs_`[`date of dump`]`_`[`artists `|` labels `|` masters `|` releases`]`.xml`)
 - `writer-type` type of a output writer (default: `json`), possible values [`json` | `postgres`]
 
 ### Quality Filter
@@ -33,6 +33,5 @@ Before processing,  make sure you have created all necessary database tables. Fo
  - Have a look into the `start.sh` script for inspiration how to run the Discogs-parser  
 
 # TODO
-- Bugs removal
 - Comments
 - Tests

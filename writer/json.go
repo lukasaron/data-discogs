@@ -7,31 +7,40 @@ import (
 )
 
 type JsonWriter struct {
-	option Options
-	f      *os.File
-	err    error
+	option  Options
+	f       *os.File
+	started bool
+	err     error
 }
 
 func NewJson(fileName string, options ...Options) Writer {
-	j := JsonWriter{}
+	j := &JsonWriter{
+		started: false,
+	}
+
 	j.f, j.err = os.Create(fileName)
 
 	if options != nil && len(options) > 0 {
 		j.option = options[0]
 	}
 
+	if j.err == nil {
+		j.err = j.writeInitial()
+	}
+
 	return j
 }
 
-func (j JsonWriter) Close() error {
+func (j *JsonWriter) Close() error {
 	if j.err != nil {
 		return j.err
 	}
 
+	_ = j.writeClosing()
 	return j.f.Close()
 }
 
-func (j JsonWriter) WriteArtist(a model.Artist) error {
+func (j *JsonWriter) WriteArtist(a model.Artist) error {
 	if j.err != nil {
 		return j.err
 	}
@@ -39,10 +48,12 @@ func (j JsonWriter) WriteArtist(a model.Artist) error {
 	if j.option.ExcludeImages {
 		a.Images = nil
 	}
+
+	j.err = j.delimiterLogic()
 	return j.marshalAndWrite(a)
 }
 
-func (j JsonWriter) WriteArtists(as []model.Artist) (err error) {
+func (j *JsonWriter) WriteArtists(as []model.Artist) (err error) {
 	if j.err != nil {
 		return j.err
 	}
@@ -57,7 +68,7 @@ func (j JsonWriter) WriteArtists(as []model.Artist) (err error) {
 	return nil
 }
 
-func (j JsonWriter) WriteLabel(l model.Label) error {
+func (j *JsonWriter) WriteLabel(l model.Label) error {
 	if j.err != nil {
 		return j.err
 	}
@@ -66,10 +77,11 @@ func (j JsonWriter) WriteLabel(l model.Label) error {
 		l.Images = nil
 	}
 
+	j.err = j.delimiterLogic()
 	return j.marshalAndWrite(l)
 }
 
-func (j JsonWriter) WriteLabels(ls []model.Label) (err error) {
+func (j *JsonWriter) WriteLabels(ls []model.Label) (err error) {
 	if j.err != nil {
 		return j.err
 	}
@@ -84,7 +96,7 @@ func (j JsonWriter) WriteLabels(ls []model.Label) (err error) {
 	return nil
 }
 
-func (j JsonWriter) WriteMaster(m model.Master) error {
+func (j *JsonWriter) WriteMaster(m model.Master) error {
 	if j.err != nil {
 		return j.err
 	}
@@ -93,10 +105,11 @@ func (j JsonWriter) WriteMaster(m model.Master) error {
 		m.Images = nil
 	}
 
+	j.err = j.delimiterLogic()
 	return j.marshalAndWrite(m)
 }
 
-func (j JsonWriter) WriteMasters(ms []model.Master) (err error) {
+func (j *JsonWriter) WriteMasters(ms []model.Master) (err error) {
 	if j.err != nil {
 		return j.err
 	}
@@ -110,7 +123,7 @@ func (j JsonWriter) WriteMasters(ms []model.Master) (err error) {
 
 	return nil
 }
-func (j JsonWriter) WriteRelease(r model.Release) error {
+func (j *JsonWriter) WriteRelease(r model.Release) error {
 	if j.err != nil {
 		return j.err
 	}
@@ -119,10 +132,11 @@ func (j JsonWriter) WriteRelease(r model.Release) error {
 		r.Images = nil
 	}
 
+	j.err = j.delimiterLogic()
 	return j.marshalAndWrite(r)
 }
 
-func (j JsonWriter) WriteReleases(rs []model.Release) (err error) {
+func (j *JsonWriter) WriteReleases(rs []model.Release) (err error) {
 	if j.err != nil {
 		return j.err
 	}
@@ -137,12 +151,40 @@ func (j JsonWriter) WriteReleases(rs []model.Release) (err error) {
 	return nil
 }
 
-func (j JsonWriter) marshalAndWrite(d interface{}) error {
+func (j *JsonWriter) marshalAndWrite(d interface{}) error {
+	if j.err != nil {
+		return j.err
+	}
+
 	b, err := json.Marshal(d)
 	if err != nil {
 		return err
 	}
 
 	_, err = j.f.Write(b)
+	return err
+}
+
+func (j *JsonWriter) writeDelimiter() (err error) {
+	_, err = j.f.WriteString(",")
+	return err
+}
+
+func (j *JsonWriter) delimiterLogic() error {
+	if j.started {
+		return j.writeDelimiter()
+	}
+
+	j.started = true
+	return nil
+}
+
+func (j *JsonWriter) writeInitial() (err error) {
+	_, err = j.f.WriteString("[")
+	return err
+}
+
+func (j *JsonWriter) writeClosing() (err error) {
+	_, err = j.f.WriteString("]")
 	return err
 }

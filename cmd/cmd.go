@@ -9,6 +9,7 @@ import (
 	"github.com/jinzhu/configor"
 	"io"
 	"regexp"
+	"strings"
 )
 
 var (
@@ -91,6 +92,10 @@ func getWriter() (w writer.Writer) {
 			writer.Options{ExcludeImages: true},
 		)
 	case writer.JsonType:
+		if len(Config.Writer.Output) == 0 {
+			Config.Writer.Output = getOutputFileFromInput(Config.File.Name)
+		}
+
 		w = writer.NewJson(
 			Config.Writer.Output,
 			writer.Options{ExcludeImages: true},
@@ -102,6 +107,10 @@ func getWriter() (w writer.Writer) {
 
 func getFileTypeFromFileName(fileName string) decoder.FileType {
 	return getDecoderFileType(ftRegex.FindString(fileName))
+}
+
+func getOutputFileFromInput(fileName string) string {
+	return strings.Replace(fileName, ".xml", ".json", -1)
 }
 
 func getDecoderFileType(fileType string) (ft decoder.FileType) {
