@@ -13,7 +13,7 @@ type JsonWriter struct {
 	err     error
 }
 
-func NewJson(fileName string, options ...Options) Writer {
+func NewJsonWriter(fileName string, options ...Options) Writer {
 	j := &JsonWriter{
 		started: false,
 	}

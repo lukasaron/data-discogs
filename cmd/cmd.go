@@ -82,7 +82,7 @@ func getWriter() (w writer.Writer) {
 	wt := writer.StrToWriterType(Config.Writer.Type)
 	switch wt {
 	case writer.PostgresType:
-		w = writer.NewPostgres(
+		w = writer.NewPostgresWriter(
 			Config.DB.Host,
 			Config.DB.Port,
 			Config.DB.Name,
@@ -96,7 +96,7 @@ func getWriter() (w writer.Writer) {
 			Config.Writer.Output = getOutputFileFromInput(Config.File.Name)
 		}
 
-		w = writer.NewJson(
+		w = writer.NewJsonWriter(
 			Config.Writer.Output,
 			writer.Options{ExcludeImages: true},
 		)

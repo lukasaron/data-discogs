@@ -15,7 +15,7 @@ type PostgresWriter struct {
 	err     error
 }
 
-func NewPostgres(host string, port int, dbName, user, password, sslMode string, options ...Options) Writer {
+func NewPostgresWriter(host string, port int, dbName, user, password, sslMode string, options ...Options) Writer {
 	pg := PostgresWriter{}
 
 	connStr := fmt.Sprintf("host='%s' dbname='%s' user='%s' password='%s' port='%d' sslmode=%s",
