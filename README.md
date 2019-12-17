@@ -22,7 +22,7 @@ Before processing,  make sure you have created all necessary database tables. Fo
 - `writer-type` type of a output writer (default: `json`), possible values [`json` | `postgres`]
 
 ### Quality Filter
--`quality` filter output based on the input data quality field defined by Discogs (default: `All`), all possible values: [`All` | `EntirelyIncorrect` | `NeedsVote` | `NeedsMajorChanges` | `NeedsMinorChanges` | `Correct` | `CompleteAndCorrect`]
+- `quality` filter output based on the input data quality field defined by Discogs (default: `All`), all possible values: [`All` | `EntirelyIncorrect` | `NeedsVote` | `NeedsMajorChanges` | `NeedsMinorChanges` | `Correct` | `CompleteAndCorrect`]
 
 ### Processing blocks
 - `block-size` specifies the processing block size (the number of items processed at once). Default value: `1000`
