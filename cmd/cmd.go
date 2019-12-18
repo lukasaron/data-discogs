@@ -93,13 +93,21 @@ func getWriter() (w writer.Writer) {
 		)
 	case writer.JsonType:
 		if len(Config.Writer.Output) == 0 {
-			Config.Writer.Output = getOutputFileFromInput(Config.File.Name)
+			Config.Writer.Output = getOutputFileFromInput(Config.File.Name, ".json")
 		}
 
 		w = writer.NewJsonWriter(
 			Config.Writer.Output,
 			writer.Options{ExcludeImages: true},
 		)
+	case writer.SqlType:
+		if len(Config.Writer.Output) == 0 {
+			Config.Writer.Output = getOutputFileFromInput(Config.File.Name, ".sql")
+		}
+
+		w = writer.NewSqlWriter(
+			Config.Writer.Output,
+			writer.Options{ExcludeImages: true})
 	}
 
 	return w
@@ -109,8 +117,8 @@ func getFileTypeFromFileName(fileName string) decoder.FileType {
 	return getDecoderFileType(ftRegex.FindString(fileName))
 }
 
-func getOutputFileFromInput(fileName string) string {
-	return strings.Replace(fileName, ".xml", ".json", -1)
+func getOutputFileFromInput(fileName, extension string) string {
+	return strings.Replace(fileName, ".xml", extension, -1)
 }
 
 func getDecoderFileType(fileType string) (ft decoder.FileType) {

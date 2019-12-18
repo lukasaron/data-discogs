@@ -25,6 +25,7 @@ type Type int
 const (
 	PostgresType Type = iota
 	JsonType
+	SqlType
 )
 
 func StrToWriterType(str string) (t Type) {
@@ -33,6 +34,8 @@ func StrToWriterType(str string) (t Type) {
 		t = JsonType
 	case "postgres":
 		t = PostgresType
+	case "sql":
+		t = SqlType
 	default:
 		t = JsonType
 	}

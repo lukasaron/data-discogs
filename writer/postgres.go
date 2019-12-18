@@ -231,21 +231,21 @@ func (pg PostgresWriter) writeLabel(tx *sql.Tx, l model.Label) (err error) {
 	}
 
 	if l.ParentLabel != nil {
-		err = pg.writeLabelLabel(tx, *l.ParentLabel, l.Id, "true")
+		err = pg.writeLabelLabel(tx, l.Id, "true", *l.ParentLabel)
 		if err != nil {
 			return err
 		}
 	}
 
-	err = pg.writeLabelLabels(tx, l.SubLabels, l.Id, "false")
+	err = pg.writeLabelLabels(tx, l.Id, "false", l.SubLabels)
 	if err != nil {
 		return err
 	}
 
-	return pg.writeImages(tx, l.Images, "", l.Id, "", "")
+	return pg.writeImages(tx, "", l.Id, "", "", l.Images)
 }
 
-func (pg PostgresWriter) writeLabelLabel(tx *sql.Tx, ll model.LabelLabel, labelId, parent string) error {
+func (pg PostgresWriter) writeLabelLabel(tx *sql.Tx, labelId, parent string, ll model.LabelLabel) error {
 	return pg.writeTransaction(
 		tx,
 		"INSERT INTO public.label_labels (label_id, sub_label_id, name, parent) VALUES ($1, $2, $3, $4)",
@@ -255,9 +255,9 @@ func (pg PostgresWriter) writeLabelLabel(tx *sql.Tx, ll model.LabelLabel, labelI
 		parent)
 }
 
-func (pg PostgresWriter) writeLabelLabels(tx *sql.Tx, lls []model.LabelLabel, labelId, parent string) (err error) {
+func (pg PostgresWriter) writeLabelLabels(tx *sql.Tx, labelId, parent string, lls []model.LabelLabel) (err error) {
 	for _, ll := range lls {
-		err = pg.writeLabelLabel(tx, ll, labelId, parent)
+		err = pg.writeLabelLabel(tx, labelId, parent, ll)
 		if err != nil {
 			return err
 		}
@@ -282,17 +282,17 @@ func (pg PostgresWriter) writeMaster(tx *sql.Tx, m model.Master) (err error) {
 		return err
 	}
 
-	err = pg.writeImages(tx, m.Images, "", "", m.Id, "")
+	err = pg.writeImages(tx, "", "", m.Id, "", m.Images)
 	if err != nil {
 		return err
 	}
 
-	err = pg.writeReleaseArtists(tx, m.Artists, m.Id, "", "false")
+	err = pg.writeReleaseArtists(tx, m.Id, "", "false", m.Artists)
 	if err != nil {
 		return err
 	}
 
-	return pg.writeVideos(tx, m.Videos, m.Id, "")
+	return pg.writeVideos(tx, m.Id, "", m.Videos)
 }
 
 func (pg PostgresWriter) writeRelease(tx *sql.Tx, r model.Release) (err error) {
@@ -315,50 +315,50 @@ func (pg PostgresWriter) writeRelease(tx *sql.Tx, r model.Release) (err error) {
 		return err
 	}
 
-	err = pg.writeImages(tx, r.Images, "", "", "", r.Id)
+	err = pg.writeImages(tx, "", "", "", r.Id, r.Images)
 	if err != nil {
 		return err
 	}
 
-	err = pg.writeReleaseArtists(tx, r.Artists, "", r.Id, "false")
+	err = pg.writeReleaseArtists(tx, "", r.Id, "false", r.Artists)
 	if err != nil {
 		return err
 	}
 
-	err = pg.writeReleaseArtists(tx, r.ExtraArtists, "", r.Id, "true")
+	err = pg.writeReleaseArtists(tx, "", r.Id, "true", r.ExtraArtists)
 	if err != nil {
 		return err
 	}
 
-	err = pg.writeFormats(tx, r.Formats, r.Id)
+	err = pg.writeFormats(tx, r.Id, r.Formats)
 	if err != nil {
 		return err
 	}
 
-	err = pg.writeTrackList(tx, r.TrackList, r.Id)
+	err = pg.writeTrackList(tx, r.Id, r.TrackList)
 	if err != nil {
 		return err
 	}
 
-	err = pg.writeIdentifiers(tx, r.Identifiers, r.Id)
+	err = pg.writeIdentifiers(tx, r.Id, r.Identifiers)
 	if err != nil {
 		return err
 	}
 
-	err = pg.writeVideos(tx, r.Videos, "", r.Id)
+	err = pg.writeVideos(tx, "", r.Id, r.Videos)
 	if err != nil {
 		return err
 	}
 
-	err = pg.writeReleaseLabels(tx, r.Labels, r.Id)
+	err = pg.writeReleaseLabels(tx, r.Id, r.Labels)
 	if err != nil {
 		return err
 	}
 
-	return pg.writeCompanies(tx, r.Companies, r.Id)
+	return pg.writeCompanies(tx, r.Id, r.Companies)
 }
 
-func (pg PostgresWriter) writeCompany(tx *sql.Tx, c model.Company, releaseId string) error {
+func (pg PostgresWriter) writeCompany(tx *sql.Tx, releaseId string, c model.Company) error {
 	return pg.writeTransaction(
 		tx,
 		"INSERT INTO public.release_companies (release_id, release_company_id, name, category, entity_type, entity_type_name, resource_url) VALUES ($1, $2, $3, $4, $5, $6, $7)",
@@ -371,9 +371,9 @@ func (pg PostgresWriter) writeCompany(tx *sql.Tx, c model.Company, releaseId str
 		c.ResourceUrl)
 }
 
-func (pg PostgresWriter) writeCompanies(tx *sql.Tx, cs []model.Company, releaseId string) (err error) {
+func (pg PostgresWriter) writeCompanies(tx *sql.Tx, releaseId string, cs []model.Company) (err error) {
 	for _, c := range cs {
-		err = pg.writeCompany(tx, c, releaseId)
+		err = pg.writeCompany(tx, releaseId, c)
 		if err != nil {
 			return err
 		}
@@ -382,7 +382,7 @@ func (pg PostgresWriter) writeCompanies(tx *sql.Tx, cs []model.Company, releaseI
 	return nil
 }
 
-func (pg PostgresWriter) writeReleaseArtist(tx *sql.Tx, ra model.ReleaseArtist, masterId, releaseId, extra string) error {
+func (pg PostgresWriter) writeReleaseArtist(tx *sql.Tx, masterId, releaseId, extra string, ra model.ReleaseArtist) error {
 
 	return pg.writeTransaction(
 		tx,
@@ -398,9 +398,9 @@ func (pg PostgresWriter) writeReleaseArtist(tx *sql.Tx, ra model.ReleaseArtist, 
 		ra.Tracks)
 }
 
-func (pg PostgresWriter) writeReleaseArtists(tx *sql.Tx, ras []model.ReleaseArtist, masterId, releaseId, extra string) (err error) {
+func (pg PostgresWriter) writeReleaseArtists(tx *sql.Tx, masterId, releaseId, extra string, ras []model.ReleaseArtist) (err error) {
 	for _, ra := range ras {
-		err = pg.writeReleaseArtist(tx, ra, masterId, releaseId, extra)
+		err = pg.writeReleaseArtist(tx, masterId, releaseId, extra, ra)
 		if err != nil {
 			return err
 		}
@@ -409,7 +409,7 @@ func (pg PostgresWriter) writeReleaseArtists(tx *sql.Tx, ras []model.ReleaseArti
 	return nil
 }
 
-func (pg PostgresWriter) writeFormat(tx *sql.Tx, f model.Format, releaseId string) error {
+func (pg PostgresWriter) writeFormat(tx *sql.Tx, releaseId string, f model.Format) error {
 	return pg.writeTransaction(
 		tx,
 		"INSERT INTO public.release_formats (release_id, name, quantity, text, descriptions) VALUES ($1, $2, $3, $4, $5)",
@@ -420,9 +420,9 @@ func (pg PostgresWriter) writeFormat(tx *sql.Tx, f model.Format, releaseId strin
 		pq.Array(f.Descriptions))
 }
 
-func (pg PostgresWriter) writeFormats(tx *sql.Tx, fs []model.Format, releaseId string) (err error) {
+func (pg PostgresWriter) writeFormats(tx *sql.Tx, releaseId string, fs []model.Format) (err error) {
 	for _, f := range fs {
-		err = pg.writeFormat(tx, f, releaseId)
+		err = pg.writeFormat(tx, releaseId, f)
 		if err != nil {
 			return err
 		}
@@ -431,7 +431,7 @@ func (pg PostgresWriter) writeFormats(tx *sql.Tx, fs []model.Format, releaseId s
 	return nil
 }
 
-func (pg PostgresWriter) writeTrack(tx *sql.Tx, t model.Track, releaseId string) error {
+func (pg PostgresWriter) writeTrack(tx *sql.Tx, releaseId string, t model.Track) error {
 	return pg.writeTransaction(
 		tx,
 		"INSERT INTO public.release_tracks (release_id, position, title, duration) VALUES ($1, $2, $3, $4)",
@@ -441,9 +441,9 @@ func (pg PostgresWriter) writeTrack(tx *sql.Tx, t model.Track, releaseId string)
 		t.Duration)
 }
 
-func (pg PostgresWriter) writeTrackList(tx *sql.Tx, tl []model.Track, releaseId string) (err error) {
+func (pg PostgresWriter) writeTrackList(tx *sql.Tx, releaseId string, tl []model.Track) (err error) {
 	for _, t := range tl {
-		err = pg.writeTrack(tx, t, releaseId)
+		err = pg.writeTrack(tx, releaseId, t)
 		if err != nil {
 			return err
 		}
@@ -452,7 +452,7 @@ func (pg PostgresWriter) writeTrackList(tx *sql.Tx, tl []model.Track, releaseId 
 	return nil
 }
 
-func (pg PostgresWriter) writeIdentifier(tx *sql.Tx, i model.Identifier, releaseId string) error {
+func (pg PostgresWriter) writeIdentifier(tx *sql.Tx, releaseId string, i model.Identifier) error {
 	return pg.writeTransaction(
 		tx,
 		"INSERT INTO public.release_identifiers (release_id, description, type, value) VALUES ($1, $2, $3, $4)",
@@ -462,9 +462,9 @@ func (pg PostgresWriter) writeIdentifier(tx *sql.Tx, i model.Identifier, release
 		i.Value)
 }
 
-func (pg PostgresWriter) writeIdentifiers(tx *sql.Tx, is []model.Identifier, releaseId string) (err error) {
+func (pg PostgresWriter) writeIdentifiers(tx *sql.Tx, releaseId string, is []model.Identifier) (err error) {
 	for _, i := range is {
-		err = pg.writeIdentifier(tx, i, releaseId)
+		err = pg.writeIdentifier(tx, releaseId, i)
 		if err != nil {
 			return err
 		}
@@ -473,7 +473,7 @@ func (pg PostgresWriter) writeIdentifiers(tx *sql.Tx, is []model.Identifier, rel
 	return nil
 }
 
-func (pg PostgresWriter) writeReleaseLabel(tx *sql.Tx, rl model.ReleaseLabel, releaseId string) error {
+func (pg PostgresWriter) writeReleaseLabel(tx *sql.Tx, releaseId string, rl model.ReleaseLabel) error {
 	return pg.writeTransaction(
 		tx,
 		"INSERT INTO public.release_labels (release_id, release_label_id, name, category) VALUES ($1, $2, $3, $4)",
@@ -483,9 +483,9 @@ func (pg PostgresWriter) writeReleaseLabel(tx *sql.Tx, rl model.ReleaseLabel, re
 		rl.Category)
 }
 
-func (pg PostgresWriter) writeReleaseLabels(tx *sql.Tx, rls []model.ReleaseLabel, releaseId string) (err error) {
+func (pg PostgresWriter) writeReleaseLabels(tx *sql.Tx, releaseId string, rls []model.ReleaseLabel) (err error) {
 	for _, rl := range rls {
-		err = pg.writeReleaseLabel(tx, rl, releaseId)
+		err = pg.writeReleaseLabel(tx, releaseId, rl)
 		if err != nil {
 			return err
 		}
@@ -494,7 +494,7 @@ func (pg PostgresWriter) writeReleaseLabels(tx *sql.Tx, rls []model.ReleaseLabel
 	return nil
 }
 
-func (pg PostgresWriter) writeAlias(tx *sql.Tx, a model.Alias, artistId string) error {
+func (pg PostgresWriter) writeAlias(tx *sql.Tx, artistId string, a model.Alias) error {
 	return pg.writeTransaction(
 		tx,
 		"INSERT INTO public.artist_aliases (artist_id, alias_id, name) VALUES ($1, $2, $3)",
@@ -503,9 +503,9 @@ func (pg PostgresWriter) writeAlias(tx *sql.Tx, a model.Alias, artistId string) 
 		a.Name)
 }
 
-func (pg PostgresWriter) writeAliases(tx *sql.Tx, as []model.Alias, artistId string) (err error) {
+func (pg PostgresWriter) writeAliases(tx *sql.Tx, artistId string, as []model.Alias) (err error) {
 	for _, a := range as {
-		err = pg.writeAlias(tx, a, artistId)
+		err = pg.writeAlias(tx, artistId, a)
 		if err != nil {
 			return err
 		}
@@ -514,7 +514,7 @@ func (pg PostgresWriter) writeAliases(tx *sql.Tx, as []model.Alias, artistId str
 	return nil
 }
 
-func (pg PostgresWriter) writeImage(tx *sql.Tx, img model.Image, artistId, labelId, masterId, releaseId string) error {
+func (pg PostgresWriter) writeImage(tx *sql.Tx, artistId, labelId, masterId, releaseId string, img model.Image) error {
 	if !pg.options.ExcludeImages {
 		return pg.writeTransaction(
 			tx,
@@ -533,19 +533,20 @@ func (pg PostgresWriter) writeImage(tx *sql.Tx, img model.Image, artistId, label
 	return nil
 }
 
-func (pg PostgresWriter) writeImages(tx *sql.Tx, imgs []model.Image, artistId, labelId, masterId, releaseId string) (err error) {
-
-	for _, img := range imgs {
-		err = pg.writeImage(tx, img, artistId, labelId, masterId, releaseId)
-		if err != nil {
-			return err
+func (pg PostgresWriter) writeImages(tx *sql.Tx, artistId, labelId, masterId, releaseId string, imgs []model.Image) (err error) {
+	if !pg.options.ExcludeImages {
+		for _, img := range imgs {
+			err = pg.writeImage(tx, artistId, labelId, masterId, releaseId, img)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
 	return nil
 }
 
-func (pg PostgresWriter) writeVideo(tx *sql.Tx, v model.Video, masterId, releaseId string) (err error) {
+func (pg PostgresWriter) writeVideo(tx *sql.Tx, masterId, releaseId string, v model.Video) (err error) {
 	return pg.writeTransaction(
 		tx,
 		"INSERT INTO public.videos (master_id, release_id, duration, embed, src, title, description) VALUES ($1, $2, $3, $4, $5, $6, $7)",
@@ -558,9 +559,9 @@ func (pg PostgresWriter) writeVideo(tx *sql.Tx, v model.Video, masterId, release
 		v.Description)
 }
 
-func (pg PostgresWriter) writeVideos(tx *sql.Tx, vs []model.Video, masterId, releaseId string) (err error) {
+func (pg PostgresWriter) writeVideos(tx *sql.Tx, masterId, releaseId string, vs []model.Video) (err error) {
 	for _, v := range vs {
-		err = pg.writeVideo(tx, v, masterId, releaseId)
+		err = pg.writeVideo(tx, masterId, releaseId, v)
 		if err != nil {
 			return err
 		}
@@ -585,10 +586,10 @@ func (pg PostgresWriter) writeArtist(tx *sql.Tx, a model.Artist) (err error) {
 		return err
 	}
 
-	err = pg.writeAliases(tx, a.Aliases, a.Id)
+	err = pg.writeAliases(tx, a.Id, a.Aliases)
 	if err != nil {
 		return err
 	}
 
-	return pg.writeImages(tx, a.Images, a.Id, "", "", "")
+	return pg.writeImages(tx, a.Id, "", "", "", a.Images)
 }
