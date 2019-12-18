@@ -37,7 +37,7 @@ func StrToWriterType(str string) (t Type) {
 	case "sql":
 		t = SqlType
 	default:
-		t = JsonType
+		t = SqlType
 	}
 	return t
 }
