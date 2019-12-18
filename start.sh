@@ -12,4 +12,7 @@ go build
 ./discogs-parser -filename ./data_source/labels.xml -writer-type postgres
 
 # Or for JSON output file saved into ./data_source/labels.json
+./discogs-parser -filename ./data_source/labels.xml -writer-type json
+
+# OR for SQL output file saved into ./data_source/labels.sql
 ./discogs-parser -filename ./data_source/labels.xml

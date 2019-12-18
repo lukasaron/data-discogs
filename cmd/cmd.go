@@ -38,7 +38,7 @@ var (
 			Quality string `default:"All" env:"FILTER_QUALITY"`
 		}
 		Writer struct {
-			Type   string `default:"json" env:"WRITER_TYPE"`
+			Type   string `default:"sql" env:"WRITER_TYPE"`
 			Output string `default:"" env:"WRITER_OUTPUT"`
 		}
 	}

@@ -2,8 +2,12 @@
 
 Discogs Parser introduces the way to categorize data dumps from Discogs [https://data.discogs.com/]
 
-## JSON Writer
+## SQL Writer
 It's a default writer which needs to know what is a name of the output file, therefore argument `output` needs to be specified.
+- `output` file name that will be created with the SQL output. When this flag is not specified the new file with is created in the same folder as the input file name is saved. The extension of the file name is SQL instead of XML.
+
+## JSON Writer
+It's a writer which needs to know what is a name of the output file, therefore argument `output` needs to be specified.
 - `output` file name that will be created with the JSON output. When this flag is not specified the new file with is created in the same folder as the input file name is saved. The extension of the file name is JSON instead of XML.
 
 ## Postgres Writer
