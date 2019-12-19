@@ -5,7 +5,7 @@ import (
 	"github.com/Twyer/discogs-parser/model"
 )
 
-func (x XMLDecoder) parseLabels(limit int) (labels []model.Label) {
+func (x *XMLDecoder) parseLabels(limit int) (labels []model.Label) {
 	if x.err != nil {
 		return labels
 	}
@@ -27,7 +27,7 @@ func (x XMLDecoder) parseLabels(limit int) (labels []model.Label) {
 	return labels
 }
 
-func (x XMLDecoder) parseLabel(se xml.StartElement) (label model.Label) {
+func (x *XMLDecoder) parseLabel(se xml.StartElement) (label model.Label) {
 	if x.err != nil {
 		return label
 	}
@@ -37,8 +37,8 @@ func (x XMLDecoder) parseLabel(se xml.StartElement) (label model.Label) {
 		return label
 	}
 
-	for {
-		t, _ := x.d.Token()
+	var t xml.Token
+	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
 		if se, ok := t.(xml.StartElement); ok {
 			switch se.Name.Local {
 			case "images":
@@ -77,13 +77,13 @@ func (x XMLDecoder) parseLabel(se xml.StartElement) (label model.Label) {
 	return label
 }
 
-func (x XMLDecoder) parseSubLabels() (labels []model.LabelLabel) {
+func (x *XMLDecoder) parseSubLabels() (labels []model.LabelLabel) {
 	if x.err != nil {
 		return labels
 	}
 
-	for {
-		t, _ := x.d.Token()
+	var t xml.Token
+	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "sublabels" {
 			break
 		}
@@ -94,5 +94,6 @@ func (x XMLDecoder) parseSubLabels() (labels []model.LabelLabel) {
 			labels = append(labels, label)
 		}
 	}
+
 	return labels
 }

@@ -10,9 +10,15 @@ type Artist struct {
 	NameVariations []string `json:"nameVariations"`
 	Urls           []string `json:"urls"`
 	Aliases        []Alias  `json:"aliases"`
+	Members        []Member `json:"members"`
 }
 
 type Alias struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type Member struct {
 	Id   string `json:"id"`
 	Name string `json:"name"`
 }

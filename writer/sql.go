@@ -11,12 +11,12 @@ import (
 type SqlWriter struct {
 	option Options
 	f      *os.File
-	buffer bytes.Buffer
+	buffer *bytes.Buffer
 	err    error
 }
 
 func NewSqlWriter(fileName string, options ...Options) Writer {
-	s := SqlWriter{buffer: bytes.Buffer{}}
+	s := SqlWriter{buffer: &bytes.Buffer{}}
 
 	s.f, s.err = os.Create(fileName)
 

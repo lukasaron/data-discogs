@@ -47,7 +47,7 @@ var (
 func Run() (err error) {
 	flag.StringVar(&Config.File.Name, "filename", "", "input file")
 	flag.StringVar(&Config.Filter.Quality, "quality", "All", "quality filter")
-	flag.StringVar(&Config.Writer.Type, "writer-type", "json", "writer type")
+	flag.StringVar(&Config.Writer.Type, "writer-type", "sql", "writer type")
 	flag.StringVar(&Config.Writer.Output, "output", "", "writer output")
 	flag.IntVar(&Config.Block.Size, "block-size", 1000, "block size")
 	flag.IntVar(&Config.Block.Skip, "block-skip", 0, "block skip")

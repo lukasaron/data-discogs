@@ -5,7 +5,7 @@ import (
 	"github.com/Twyer/discogs-parser/model"
 )
 
-func (x XMLDecoder) parseMasters(limit int) (masters []model.Master) {
+func (x *XMLDecoder) parseMasters(limit int) (masters []model.Master) {
 	if x.err != nil {
 		return masters
 	}
@@ -27,7 +27,7 @@ func (x XMLDecoder) parseMasters(limit int) (masters []model.Master) {
 	return masters
 }
 
-func (x XMLDecoder) parseMaster(se xml.StartElement) (master model.Master) {
+func (x *XMLDecoder) parseMaster(se xml.StartElement) (master model.Master) {
 	if x.err != nil {
 		return master
 	}
@@ -38,8 +38,8 @@ func (x XMLDecoder) parseMaster(se xml.StartElement) (master model.Master) {
 	}
 
 	master.Id = se.Attr[0].Value
-	for {
-		t, _ := x.d.Token()
+	var t xml.Token
+	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
 		if se, ok := t.(xml.StartElement); ok {
 			switch se.Name.Local {
 			case "images":

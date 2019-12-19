@@ -5,7 +5,7 @@ import (
 	"github.com/Twyer/discogs-parser/model"
 )
 
-func (x XMLDecoder) parseReleases(limit int) (releases []model.Release) {
+func (x *XMLDecoder) parseReleases(limit int) (releases []model.Release) {
 	if x.err != nil {
 		return releases
 	}
@@ -27,7 +27,7 @@ func (x XMLDecoder) parseReleases(limit int) (releases []model.Release) {
 	return releases
 }
 
-func (x XMLDecoder) parseRelease(se xml.StartElement) (release model.Release) {
+func (x *XMLDecoder) parseRelease(se xml.StartElement) (release model.Release) {
 	if x.err != nil {
 		return release
 	}
@@ -46,8 +46,8 @@ func (x XMLDecoder) parseRelease(se xml.StartElement) (release model.Release) {
 		}
 	}
 
-	for {
-		t, _ := x.d.Token()
+	var t xml.Token
+	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
 		if se, ok := t.(xml.StartElement); ok {
 			switch se.Name.Local {
 			case "images":
@@ -99,14 +99,14 @@ func (x XMLDecoder) parseRelease(se xml.StartElement) (release model.Release) {
 	return release
 }
 
-func (x XMLDecoder) parseReleaseArtists(wrapperName string) (artists []model.ReleaseArtist) {
+func (x *XMLDecoder) parseReleaseArtists(wrapperName string) (artists []model.ReleaseArtist) {
 	if x.err != nil {
 		return artists
 	}
 
 	artist := model.ReleaseArtist{}
-	for {
-		t, _ := x.d.Token()
+	var t xml.Token
+	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == wrapperName {
 			break
 		}
@@ -135,13 +135,13 @@ func (x XMLDecoder) parseReleaseArtists(wrapperName string) (artists []model.Rel
 	return artists
 }
 
-func (x XMLDecoder) parseReleaseLabels() (labels []model.ReleaseLabel) {
+func (x *XMLDecoder) parseReleaseLabels() (labels []model.ReleaseLabel) {
 	if x.err != nil {
 		return labels
 	}
 
-	for {
-		t, _ := x.d.Token()
+	var t xml.Token
+	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "labels" {
 			break
 		}
@@ -165,13 +165,13 @@ func (x XMLDecoder) parseReleaseLabels() (labels []model.ReleaseLabel) {
 	return labels
 }
 
-func (x XMLDecoder) parseIdentifiers() (identifiers []model.Identifier) {
+func (x *XMLDecoder) parseIdentifiers() (identifiers []model.Identifier) {
 	if x.err != nil {
 		return identifiers
 	}
 
-	for {
-		t, _ := x.d.Token()
+	var t xml.Token
+	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "identifiers" {
 			break
 		}

@@ -5,15 +5,15 @@ import (
 	"github.com/Twyer/discogs-parser/model"
 )
 
-func (x XMLDecoder) parseTrackList() (trackList []model.Track) {
+func (x *XMLDecoder) parseTrackList() (trackList []model.Track) {
 	if x.err != nil {
 		return trackList
 	}
 
 	track := model.Track{}
 
-	for {
-		t, _ := x.d.Token()
+	var t xml.Token
+	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "tracklist" {
 			break
 		}
@@ -33,5 +33,6 @@ func (x XMLDecoder) parseTrackList() (trackList []model.Track) {
 			track = model.Track{}
 		}
 	}
+
 	return trackList
 }

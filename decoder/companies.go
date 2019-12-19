@@ -5,17 +5,18 @@ import (
 	"github.com/Twyer/discogs-parser/model"
 )
 
-func (x XMLDecoder) parseCompanies() (companies []model.Company) {
+func (x *XMLDecoder) parseCompanies() (companies []model.Company) {
 	if x.err != nil {
 		return companies
 	}
 
 	company := model.Company{}
-	for {
-		t, _ := x.d.Token()
+	var t xml.Token
+	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "companies" {
 			break
 		}
+
 		if se, ok := t.(xml.StartElement); ok {
 			switch se.Name.Local {
 			case "id":
