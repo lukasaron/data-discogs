@@ -3,7 +3,6 @@ package decoder
 import (
 	"encoding/xml"
 	"github.com/Twyer/discogs-parser/model"
-	"github.com/Twyer/discogs-parser/parser"
 	"io"
 	"os"
 )
@@ -22,7 +21,7 @@ type XMLDecoder struct {
 	file    *os.File
 	decoder *xml.Decoder
 	options Options
-	error   error
+	err     error
 }
 
 func NewDecoder(fileName string, options ...Options) Decoder {
@@ -32,8 +31,8 @@ func NewDecoder(fileName string, options ...Options) Decoder {
 		d.options = options[0]
 	}
 
-	d.file, d.error = os.Open(fileName)
-	if d.error != nil {
+	d.file, d.err = os.Open(fileName)
+	if d.err != nil {
 		return d
 	}
 
@@ -46,11 +45,11 @@ func (d XMLDecoder) Close() error {
 }
 
 func (d XMLDecoder) Artists(limit int) (int, []model.Artist, error) {
-	if d.error != nil {
-		return 0, nil, d.error
+	if d.err != nil {
+		return 0, nil, d.err
 	}
 
-	artists, err := parser.ParseArtists(d.decoder, limit)
+	artists, err := ParseArtists(d.decoder, limit)
 	if err == nil || err == io.EOF {
 		artists = d.filterArtists(artists)
 	}
@@ -69,11 +68,11 @@ func (d XMLDecoder) filterArtists(as []model.Artist) []model.Artist {
 }
 
 func (d XMLDecoder) Labels(limit int) (int, []model.Label, error) {
-	if d.error != nil {
-		return 0, nil, d.error
+	if d.err != nil {
+		return 0, nil, d.err
 	}
 
-	labels, err := parser.ParseLabels(d.decoder, limit)
+	labels, err := ParseLabels(d.decoder, limit)
 	if err == nil || err == io.EOF {
 		labels = d.filterLabels(labels)
 	}
@@ -92,11 +91,11 @@ func (d XMLDecoder) filterLabels(ls []model.Label) []model.Label {
 }
 
 func (d XMLDecoder) Masters(limit int) (int, []model.Master, error) {
-	if d.error != nil {
-		return 0, nil, d.error
+	if d.err != nil {
+		return 0, nil, d.err
 	}
 
-	masters, err := parser.ParseMasters(d.decoder, limit)
+	masters, err := ParseMasters(d.decoder, limit)
 	if err == nil || err == io.EOF {
 		masters = d.filterMasters(masters)
 	}
@@ -116,11 +115,11 @@ func (d XMLDecoder) filterMasters(ms []model.Master) []model.Master {
 }
 
 func (d XMLDecoder) Releases(limit int) (int, []model.Release, error) {
-	if d.error != nil {
-		return 0, nil, d.error
+	if d.err != nil {
+		return 0, nil, d.err
 	}
 
-	releases, err := parser.ParseReleases(d.decoder, limit)
+	releases, err := ParseReleases(d.decoder, limit)
 	if err == nil || err == io.EOF {
 		releases = d.filterReleases(releases)
 	}
