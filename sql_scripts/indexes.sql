@@ -7,6 +7,9 @@ CREATE INDEX artists_data_quality ON artists(data_quality);
 CREATE INDEX artist_aliases_artist_id ON artist_aliases(artist_id);
 CREATE INDEX artist_aliases_alias_id ON artist_aliases(alias_id);
 
+CREATE INDEX artist_members_artist_id ON artist_members(artist_id);
+CREATE INDEX artist_members_member_id ON artist_members(member_id);
+
 CREATE INDEX images_artist_id ON images(artist_id);
 CREATE INDEX images_label_id ON images(label_id);
 CREATE INDEX images_master_id ON images(master_id);

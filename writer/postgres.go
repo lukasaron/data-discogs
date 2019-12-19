@@ -54,6 +54,7 @@ func (pg PostgresWriter) WriteArtist(artist model.Artist) error {
 	pg.writeArtist(tx, artist)
 	pg.writeAliases(tx, artist.Id, artist.Aliases)
 	pg.writeImages(tx, artist.Id, "", "", "", artist.Images)
+	pg.writeArtistMembers(tx, artist.Id, artist.Members)
 
 	if pg.err != nil {
 		_ = tx.Rollback()
@@ -73,6 +74,7 @@ func (pg PostgresWriter) WriteArtists(artists []model.Artist) error {
 		pg.writeArtist(tx, a)
 		pg.writeAliases(tx, a.Id, a.Aliases)
 		pg.writeImages(tx, a.Id, "", "", "", a.Images)
+		pg.writeArtistMembers(tx, a.Id, a.Members)
 
 		if pg.err != nil {
 			_ = tx.Rollback()
@@ -585,4 +587,30 @@ func (pg PostgresWriter) writeArtist(tx *sql.Tx, a model.Artist) {
 		a.DataQuality,
 		pq.Array(a.NameVariations),
 		pq.Array(a.Urls))
+}
+
+func (pg PostgresWriter) writeArtistMember(tx *sql.Tx, artistId string, m model.Member) {
+	if pg.err != nil {
+		return
+	}
+
+	pg.writeTransaction(
+		tx,
+		"INSERT INTO public.artist_members (artist_id, member_id, name) VALUES ($1, $2, $3)",
+		artistId,
+		m.Id,
+		m.Name)
+}
+
+func (pg PostgresWriter) writeArtistMembers(tx *sql.Tx, artistId string, ms []model.Member) {
+	if pg.err != nil {
+		return
+	}
+
+	for _, m := range ms {
+		pg.writeArtistMember(tx, artistId, m)
+		if pg.err != nil {
+			return
+		}
+	}
 }

@@ -10,7 +10,7 @@ type Artist struct {
 	NameVariations []string `json:"nameVariations"`
 	Urls           []string `json:"urls"`
 	Aliases        []Alias  `json:"aliases"`
-	Members        []Member `json:"members"`
+	Members        []Member `json:"members,omitempty"`
 }
 
 type Alias struct {

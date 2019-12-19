@@ -15,6 +15,12 @@ CREATE TABLE artist_aliases (
     name VARCHAR(1024)
 );
 
+CREATE TABLE artist_members (
+    artist_id VARCHAR(10),
+    member_id VARCHAR(10),
+    name VARCHAR(1024)
+);
+
 CREATE TABLE images (
   artist_id VARCHAR(10),
   label_id VARCHAR(10),

@@ -33,6 +33,7 @@ func (s SqlWriter) WriteArtist(artist model.Artist) error {
 	s.writeArtist(artist)
 	s.writeImages(artist.Id, "", "", "", artist.Images)
 	s.writeAliases(artist.Id, artist.Aliases)
+	s.writeMembers(artist.Id, artist.Members)
 
 	s.commitTransaction()
 	s.flush()
@@ -48,6 +49,8 @@ func (s SqlWriter) WriteArtists(artists []model.Artist) error {
 		s.writeArtist(a)
 		s.writeImages(a.Id, "", "", "", a.Images)
 		s.writeAliases(a.Id, a.Aliases)
+		s.writeMembers(a.Id, a.Members)
+
 		if s.err != nil {
 			return s.err
 		}
@@ -273,6 +276,31 @@ func (s SqlWriter) writeAliases(artistId string, as []model.Alias) {
 
 	for _, a := range as {
 		s.writeAlias(artistId, a)
+		if s.err != nil {
+			return
+		}
+	}
+}
+
+func (s SqlWriter) writeMember(artistId string, m model.Member) {
+	if s.err != nil {
+		return
+	}
+
+	_, s.err = s.buffer.WriteString(fmt.Sprintf("INSERT INTO artist_members (artist_id, member_id, name) VALUES ('%s', '%s', '%s');\n",
+		artistId,
+		m.Id,
+		s.cleanText(m.Name)),
+	)
+}
+
+func (s SqlWriter) writeMembers(artistId string, ms []model.Member) {
+	if s.err != nil {
+		return
+	}
+
+	for _, m := range ms {
+		s.writeMember(artistId, m)
 		if s.err != nil {
 			return
 		}
