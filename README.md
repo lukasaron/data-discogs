@@ -21,12 +21,9 @@ This writer can write results in a PostgreSQL database. To do this the specified
 
 Before processing,  make sure you have created all necessary database tables. For this, I would recommend running the `tables.sql` script from the sql_scripts folder. For the performance purposes index creation is recommended to perform after the processing of a data. Therefore the creation of indexes for all tables is separated into `indexes.sql`.  
 
-## SQL Writer
-WIP
-
 ## Common command line arguments
 - `filename` this is the only one mandatory argument! It's a file name as input (usually `discogs_`[`date of dump`]`_`[`artists `|` labels `|` masters `|` releases`]`.xml`)
-- `writer-type` type of a output writer (default: `json`), possible values [`json` | `postgres`]
+- `writer-type` type of a output writer (default: `sql`), possible values [`sql` | `json` | `postgres`]
 
 ### Quality Filter
 - `quality` filter output based on the input data quality field defined by Discogs (default: `All`), all possible values: [`All` | `EntirelyIncorrect` | `NeedsVote` | `NeedsMajorChanges` | `NeedsMinorChanges` | `Correct` | `CompleteAndCorrect`]
