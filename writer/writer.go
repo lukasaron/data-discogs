@@ -13,6 +13,7 @@ type Writer interface {
 	WriteMasters(masters []model.Master) error
 	WriteRelease(release model.Release) error
 	WriteReleases(releases []model.Release) error
+	Reset() error
 	Close() error
 }
 

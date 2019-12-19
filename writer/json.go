@@ -1,21 +1,22 @@
 package writer
 
 import (
+	"bytes"
 	"encoding/json"
 	"github.com/Twyer/discogs-parser/model"
 	"os"
 )
 
 type JsonWriter struct {
-	option  Options
-	f       *os.File
-	started bool
-	err     error
+	option Options
+	f      *os.File
+	buffer bytes.Buffer
+	err    error
 }
 
 func NewJsonWriter(fileName string, options ...Options) Writer {
 	j := &JsonWriter{
-		started: false,
+		buffer: bytes.Buffer{},
 	}
 
 	j.f, j.err = os.Create(fileName)
@@ -24,167 +25,198 @@ func NewJsonWriter(fileName string, options ...Options) Writer {
 		j.option = options[0]
 	}
 
-	if j.err == nil {
-		j.err = j.writeInitial()
-	}
-
 	return j
 }
 
-func (j *JsonWriter) Close() error {
-	if j.err != nil {
-		return j.err
-	}
+func (j *JsonWriter) Reset() error {
+	j.buffer.Reset()
+	return nil
+}
 
-	_ = j.writeClosing()
+func (j *JsonWriter) Close() error {
 	return j.f.Close()
 }
 
 func (j *JsonWriter) WriteArtist(a model.Artist) error {
-	if j.err != nil {
-		return j.err
-	}
-
 	if j.option.ExcludeImages {
 		a.Images = nil
 	}
 
-	j.err = j.delimiterLogic()
-	return j.marshalAndWrite(a)
+	j.marshalAndWrite(a)
+	j.flush()
+	j.clean()
+
+	return j.err
 }
 
-func (j *JsonWriter) WriteArtists(as []model.Artist) (err error) {
-	if j.err != nil {
-		return j.err
-	}
+func (j *JsonWriter) WriteArtists(artists []model.Artist) error {
+	j.writeInitial()
 
-	for _, a := range as {
-		err = j.WriteArtist(a)
-		if err != nil {
-			return err
+	for _, a := range artists {
+		j.writeDelimiter()
+
+		if j.option.ExcludeImages {
+			a.Images = nil
+		}
+
+		j.marshalAndWrite(a)
+		if j.err != nil {
+			return j.err
 		}
 	}
 
-	return nil
+	j.writeClosing()
+	j.flush()
+	j.clean()
+
+	return j.err
 }
 
-func (j *JsonWriter) WriteLabel(l model.Label) error {
-	if j.err != nil {
-		return j.err
-	}
-
+func (j *JsonWriter) WriteLabel(label model.Label) error {
 	if j.option.ExcludeImages {
-		l.Images = nil
+		label.Images = nil
 	}
 
-	j.err = j.delimiterLogic()
-	return j.marshalAndWrite(l)
+	j.marshalAndWrite(label)
+	j.flush()
+	j.clean()
+
+	return j.err
 }
 
-func (j *JsonWriter) WriteLabels(ls []model.Label) (err error) {
-	if j.err != nil {
-		return j.err
-	}
+func (j *JsonWriter) WriteLabels(labels []model.Label) error {
+	j.writeInitial()
 
-	for _, l := range ls {
-		err = j.WriteLabel(l)
-		if err != nil {
-			return err
+	for _, l := range labels {
+		j.writeDelimiter()
+
+		if j.option.ExcludeImages {
+			l.Images = nil
+		}
+
+		j.marshalAndWrite(l)
+		if j.err != nil {
+			return j.err
 		}
 	}
 
-	return nil
+	j.writeClosing()
+	j.flush()
+	j.clean()
+
+	return j.err
 }
 
-func (j *JsonWriter) WriteMaster(m model.Master) error {
-	if j.err != nil {
-		return j.err
-	}
-
+func (j *JsonWriter) WriteMaster(master model.Master) error {
 	if j.option.ExcludeImages {
-		m.Images = nil
+		master.Images = nil
 	}
 
-	j.err = j.delimiterLogic()
-	return j.marshalAndWrite(m)
+	j.marshalAndWrite(master)
+	j.flush()
+	j.clean()
+
+	return j.err
 }
 
-func (j *JsonWriter) WriteMasters(ms []model.Master) (err error) {
-	if j.err != nil {
-		return j.err
-	}
+func (j *JsonWriter) WriteMasters(masters []model.Master) error {
+	j.writeInitial()
+	for _, m := range masters {
+		j.writeDelimiter()
 
-	for _, m := range ms {
-		err = j.WriteMaster(m)
-		if err != nil {
-			return err
+		if j.option.ExcludeImages {
+			m.Images = nil
+		}
+
+		j.marshalAndWrite(m)
+		if j.err != nil {
+			return j.err
 		}
 	}
 
-	return nil
-}
-func (j *JsonWriter) WriteRelease(r model.Release) error {
-	if j.err != nil {
-		return j.err
-	}
+	j.writeClosing()
+	j.flush()
+	j.clean()
 
+	return j.err
+}
+func (j *JsonWriter) WriteRelease(release model.Release) error {
 	if j.option.ExcludeImages {
-		r.Images = nil
+		release.Images = nil
 	}
 
-	j.err = j.delimiterLogic()
-	return j.marshalAndWrite(r)
+	j.marshalAndWrite(release)
+	j.flush()
+	j.clean()
+	return j.err
 }
 
-func (j *JsonWriter) WriteReleases(rs []model.Release) (err error) {
-	if j.err != nil {
-		return j.err
-	}
+func (j *JsonWriter) WriteReleases(releases []model.Release) error {
+	j.writeInitial()
 
-	for _, r := range rs {
-		err = j.WriteRelease(r)
-		if err != nil {
-			return err
+	for _, r := range releases {
+		j.writeDelimiter()
+
+		if j.option.ExcludeImages {
+			r.Images = nil
+		}
+
+		j.marshalAndWrite(r)
+		if j.err != nil {
+			return j.err
 		}
 	}
 
-	return nil
+	j.writeClosing()
+	j.flush()
+	j.clean()
+
+	return j.err
 }
 
-func (j *JsonWriter) marshalAndWrite(d interface{}) error {
+func (j *JsonWriter) marshalAndWrite(d interface{}) {
 	if j.err != nil {
-		return j.err
+		return
 	}
 
 	b, err := json.Marshal(d)
 	if err != nil {
-		return err
+		j.err = err
+		return
 	}
 
-	_, err = j.f.Write(b)
-	return err
+	_, j.err = j.f.Write(b)
 }
 
-func (j *JsonWriter) writeDelimiter() (err error) {
-	_, err = j.f.WriteString(",")
-	return err
+func (j *JsonWriter) writeDelimiter() {
+	if j.err == nil && j.buffer.Len() > 0 {
+		_, j.err = j.buffer.WriteString(",")
+	}
 }
 
-func (j *JsonWriter) delimiterLogic() error {
-	if j.started {
-		return j.writeDelimiter()
+func (j *JsonWriter) writeInitial() {
+	if j.err != nil {
+		return
+	}
+	_, j.err = j.buffer.WriteString("[")
+}
+
+func (j *JsonWriter) writeClosing() {
+	if j.err != nil {
+		return
 	}
 
-	j.started = true
-	return nil
+	_, j.err = j.buffer.WriteString("]")
 }
 
-func (j *JsonWriter) writeInitial() (err error) {
-	_, err = j.f.WriteString("[")
-	return err
+func (j *JsonWriter) flush() {
+	if j.err != nil {
+		return
+	}
+
+	_, j.err = j.f.Write(j.buffer.Bytes())
 }
 
-func (j *JsonWriter) writeClosing() (err error) {
-	_, err = j.f.WriteString("]")
-	return err
+func (j *JsonWriter) clean() {
+	j.buffer.Reset()
 }
