@@ -5,75 +5,88 @@ import (
 	"github.com/Twyer/discogs-parser/model"
 )
 
-func ParseArtists(d *xml.Decoder, limit int) (artists []model.Artist, err error) {
+func (x XMLDecoder) parseArtists(limit int) (artists []model.Artist) {
+	if x.err != nil {
+		return artists
+	}
+
 	var t xml.Token
 	cnt := 0
-	for t, err = d.Token(); t != nil && err == nil && cnt != limit; t, err = d.Token() {
-		if IsStartElementName(t, "artist") {
-			artist, err := ParseArtist(t.(xml.StartElement), d)
-			if err != nil {
-				return artists, err
+	for t, x.err = x.d.Token(); t != nil && x.err == nil && cnt != limit; t, x.err = x.d.Token() {
+		if x.isStartElementName(t, "artist") {
+			artist := x.parseArtist(t.(xml.StartElement))
+			if x.err != nil {
+				return artists
 			}
 			artists = append(artists, artist)
 			cnt++
 		}
 	}
 
-	return artists, err
+	return artists
 }
 
-func ParseArtist(se xml.StartElement, tr xml.TokenReader) (artist model.Artist, err error) {
+func (x XMLDecoder) parseArtist(se xml.StartElement) (artist model.Artist) {
+	if x.err != nil {
+		return artist
+	}
+
 	if se.Name.Local != "artist" {
-		return artist, notCorrectStarElement
+		x.err = notCorrectStarElement
+		return artist
 	}
 
 	for {
-		t, _ := tr.Token()
+		t, _ := x.d.Token()
 		if se, ok := t.(xml.StartElement); ok {
 			switch se.Name.Local {
 			case "images":
-				imgs, err := ParseImages(se, tr)
-				if err != nil {
-					return artist, err
+				imgs := x.parseImages(se)
+				if x.err != nil {
+					return artist
 				}
 
 				artist.Images = imgs
 			case "id":
-				artist.Id = parseValue(tr)
+				artist.Id = x.parseValue()
 			case "name":
-				artist.Name = parseValue(tr)
+				artist.Name = x.parseValue()
 			case "realname":
-				artist.RealName = parseValue(tr)
+				artist.RealName = x.parseValue()
 			case "namevariations":
-				artist.NameVariations = parseChildValues("namevariations", "name", tr)
+				artist.NameVariations = x.parseChildValues("namevariations", "name")
 			case "aliases":
-				artist.Aliases = parseAliases(tr)
+				artist.Aliases = x.parseAliases()
 			case "profile":
-				artist.Profile = parseValue(tr)
+				artist.Profile = x.parseValue()
 			case "data_quality":
-				artist.DataQuality = parseValue(tr)
+				artist.DataQuality = x.parseValue()
 			case "urls":
-				artist.Urls = parseChildValues("urls", "url", tr)
+				artist.Urls = x.parseChildValues("urls", "url")
 			}
 		}
-		if IsEndElementName(t, "artist") {
+		if x.isEndElementName(t, "artist") {
 			break
 		}
 	}
 
-	return artist, nil
+	return artist
 }
 
-func parseAliases(tr xml.TokenReader) (aliases []model.Alias) {
+func (x XMLDecoder) parseAliases() (aliases []model.Alias) {
+	if x.err != nil {
+		return
+	}
+
 	for {
-		t, _ := tr.Token()
-		if IsEndElementName(t, "aliases") {
+		t, _ := x.d.Token()
+		if x.isEndElementName(t, "aliases") {
 			break
 		}
 		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "name" {
 			alias := model.Alias{
 				Id:   se.Attr[0].Value,
-				Name: parseValue(tr),
+				Name: x.parseValue(),
 			}
 			aliases = append(aliases, alias)
 		}

@@ -2,9 +2,11 @@ package decoder
 
 import (
 	"encoding/xml"
+	"errors"
 	"github.com/Twyer/discogs-parser/model"
 	"io"
 	"os"
+	"strings"
 )
 
 type FileType int
@@ -17,49 +19,53 @@ const (
 	Releases
 )
 
+var (
+	notCorrectStarElement error = errors.New("token is not a correct start element")
+)
+
 type XMLDecoder struct {
-	file    *os.File
-	decoder *xml.Decoder
-	options Options
-	err     error
+	f   *os.File
+	d   *xml.Decoder
+	o   Options
+	err error
 }
 
 func NewDecoder(fileName string, options ...Options) Decoder {
 	d := XMLDecoder{}
 
 	if options != nil && len(options) > 0 {
-		d.options = options[0]
+		d.o = options[0]
 	}
 
-	d.file, d.err = os.Open(fileName)
+	d.f, d.err = os.Open(fileName)
 	if d.err != nil {
 		return d
 	}
 
-	d.decoder = xml.NewDecoder(d.file)
+	d.d = xml.NewDecoder(d.f)
 	return d
 }
 
-func (d XMLDecoder) Close() error {
-	return d.file.Close()
+func (x XMLDecoder) Close() error {
+	return x.f.Close()
 }
 
-func (d XMLDecoder) Artists(limit int) (int, []model.Artist, error) {
-	if d.err != nil {
-		return 0, nil, d.err
+func (x XMLDecoder) Artists(limit int) (int, []model.Artist, error) {
+	if x.err != nil {
+		return 0, nil, x.err
 	}
 
-	artists, err := ParseArtists(d.decoder, limit)
-	if err == nil || err == io.EOF {
-		artists = d.filterArtists(artists)
+	artists := x.parseArtists(limit)
+	if x.err == nil || x.err == io.EOF {
+		artists = x.filterArtists(artists)
 	}
-	return len(artists), artists, err
+	return len(artists), artists, x.err
 }
 
-func (d XMLDecoder) filterArtists(as []model.Artist) []model.Artist {
+func (x XMLDecoder) filterArtists(as []model.Artist) []model.Artist {
 	fa := make([]model.Artist, 0, len(as))
 	for _, a := range as {
-		if d.options.QualityLevel.Includes(StrToQualityLevel(a.DataQuality)) {
+		if x.o.QualityLevel.Includes(StrToQualityLevel(a.DataQuality)) {
 			fa = append(fa, a)
 		}
 	}
@@ -67,22 +73,22 @@ func (d XMLDecoder) filterArtists(as []model.Artist) []model.Artist {
 	return fa
 }
 
-func (d XMLDecoder) Labels(limit int) (int, []model.Label, error) {
-	if d.err != nil {
-		return 0, nil, d.err
+func (x XMLDecoder) Labels(limit int) (int, []model.Label, error) {
+	if x.err != nil {
+		return 0, nil, x.err
 	}
 
-	labels, err := ParseLabels(d.decoder, limit)
-	if err == nil || err == io.EOF {
-		labels = d.filterLabels(labels)
+	labels := x.parseLabels(limit)
+	if x.err == nil || x.err == io.EOF {
+		labels = x.filterLabels(labels)
 	}
-	return len(labels), labels, err
+	return len(labels), labels, x.err
 }
 
-func (d XMLDecoder) filterLabels(ls []model.Label) []model.Label {
+func (x XMLDecoder) filterLabels(ls []model.Label) []model.Label {
 	fl := make([]model.Label, 0, len(ls))
 	for _, l := range ls {
-		if d.options.QualityLevel.Includes(StrToQualityLevel(l.DataQuality)) {
+		if x.o.QualityLevel.Includes(StrToQualityLevel(l.DataQuality)) {
 			fl = append(fl, l)
 		}
 	}
@@ -90,23 +96,23 @@ func (d XMLDecoder) filterLabels(ls []model.Label) []model.Label {
 	return fl
 }
 
-func (d XMLDecoder) Masters(limit int) (int, []model.Master, error) {
-	if d.err != nil {
-		return 0, nil, d.err
+func (x XMLDecoder) Masters(limit int) (int, []model.Master, error) {
+	if x.err != nil {
+		return 0, nil, x.err
 	}
 
-	masters, err := ParseMasters(d.decoder, limit)
-	if err == nil || err == io.EOF {
-		masters = d.filterMasters(masters)
+	masters := x.parseMasters(limit)
+	if x.err == nil || x.err == io.EOF {
+		masters = x.filterMasters(masters)
 	}
 
-	return len(masters), masters, err
+	return len(masters), masters, x.err
 }
 
-func (d XMLDecoder) filterMasters(ms []model.Master) []model.Master {
+func (x XMLDecoder) filterMasters(ms []model.Master) []model.Master {
 	fm := make([]model.Master, 0, len(ms))
 	for _, m := range ms {
-		if d.options.QualityLevel.Includes(StrToQualityLevel(m.DataQuality)) {
+		if x.o.QualityLevel.Includes(StrToQualityLevel(m.DataQuality)) {
 			fm = append(fm, m)
 		}
 	}
@@ -114,25 +120,73 @@ func (d XMLDecoder) filterMasters(ms []model.Master) []model.Master {
 	return fm
 }
 
-func (d XMLDecoder) Releases(limit int) (int, []model.Release, error) {
-	if d.err != nil {
-		return 0, nil, d.err
+func (x XMLDecoder) Releases(limit int) (int, []model.Release, error) {
+	if x.err != nil {
+		return 0, nil, x.err
 	}
 
-	releases, err := ParseReleases(d.decoder, limit)
-	if err == nil || err == io.EOF {
-		releases = d.filterReleases(releases)
+	releases := x.parseReleases(limit)
+	if x.err == nil || x.err == io.EOF {
+		releases = x.filterReleases(releases)
 	}
-	return len(releases), releases, err
+	return len(releases), releases, x.err
 }
 
-func (d XMLDecoder) filterReleases(rs []model.Release) []model.Release {
+func (x XMLDecoder) filterReleases(rs []model.Release) []model.Release {
 	fr := make([]model.Release, 0, len(rs))
 	for _, r := range rs {
-		if d.options.QualityLevel.Includes(StrToQualityLevel(r.DataQuality)) {
+		if x.o.QualityLevel.Includes(StrToQualityLevel(r.DataQuality)) {
 			fr = append(fr, r)
 		}
 	}
 
 	return fr
+}
+
+func (x XMLDecoder) isStartElement(token xml.Token) bool {
+	_, ok := token.(xml.StartElement)
+	return ok
+}
+
+func (x XMLDecoder) isEndElement(token xml.Token) bool {
+	_, ok := token.(xml.EndElement)
+	return ok
+}
+
+func (x XMLDecoder) isStartElementName(token xml.Token, name string) bool {
+	se, ok := token.(xml.StartElement)
+	return ok && se.Name.Local == name
+}
+
+func (x XMLDecoder) isEndElementName(token xml.Token, name string) bool {
+	ee, ok := token.(xml.EndElement)
+	return ok && ee.Name.Local == name
+}
+
+func (x XMLDecoder) parseValue() string {
+	sb := strings.Builder{}
+	for {
+		t, _ := x.d.Token()
+		if x.isEndElement(t) {
+			break
+		}
+
+		if cr, ok := t.(xml.CharData); ok {
+			sb.Write(cr)
+		}
+	}
+	return sb.String()
+}
+
+func (x XMLDecoder) parseChildValues(parentName, childName string) (children []string) {
+	for {
+		t, _ := x.d.Token()
+		if x.isStartElementName(t, childName) {
+			children = append(children, x.parseValue())
+		}
+		if x.isEndElementName(t, parentName) {
+			break
+		}
+	}
+	return children
 }

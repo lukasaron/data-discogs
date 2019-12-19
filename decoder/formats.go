@@ -5,9 +5,13 @@ import (
 	"github.com/Twyer/discogs-parser/model"
 )
 
-func ParseFormats(tr xml.TokenReader) (formats []model.Format) {
+func (x XMLDecoder) parseFormats() (formats []model.Format) {
+	if x.err != nil {
+		return formats
+	}
+
 	for {
-		t, _ := tr.Token()
+		t, _ := x.d.Token()
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "formats" {
 			break
 		}
@@ -24,7 +28,7 @@ func ParseFormats(tr xml.TokenReader) (formats []model.Format) {
 				}
 			}
 
-			format.Descriptions = parseChildValues("descriptions", "description", tr)
+			format.Descriptions = x.parseChildValues("descriptions", "description")
 			formats = append(formats, format)
 		}
 	}

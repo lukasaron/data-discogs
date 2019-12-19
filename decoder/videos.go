@@ -5,11 +5,15 @@ import (
 	"github.com/Twyer/discogs-parser/model"
 )
 
-func ParseVideos(tr xml.TokenReader) (videos []model.Video, err error) {
+func (x XMLDecoder) parseVideos() (videos []model.Video) {
+	if x.err != nil {
+		return videos
+	}
+
 	video := model.Video{}
 
 	for {
-		t, _ := tr.Token()
+		t, _ := x.d.Token()
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "videos" {
 			break
 		}
@@ -27,9 +31,9 @@ func ParseVideos(tr xml.TokenReader) (videos []model.Video, err error) {
 					}
 				}
 			case "title":
-				video.Title = parseValue(tr)
+				video.Title = x.parseValue()
 			case "description":
-				video.Description = parseValue(tr)
+				video.Description = x.parseValue()
 			}
 		}
 
@@ -39,5 +43,5 @@ func ParseVideos(tr xml.TokenReader) (videos []model.Video, err error) {
 		}
 	}
 
-	return videos, nil
+	return videos
 }

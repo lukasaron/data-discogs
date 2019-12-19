@@ -5,17 +5,22 @@ import (
 	"github.com/Twyer/discogs-parser/model"
 )
 
-func ParseImages(se xml.StartElement, tr xml.TokenReader) (images []model.Image, err error) {
+func (x XMLDecoder) parseImages(se xml.StartElement) (images []model.Image) {
+	if x.err != nil {
+		return images
+	}
+
 	if se.Name.Local != "images" {
-		return nil, notCorrectStarElement
+		x.err = notCorrectStarElement
+		return images
 	}
 
 	for {
-		t, _ := tr.Token()
+		t, _ := x.d.Token()
 		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "image" {
-			img, err := ParseImage(se)
-			if err != nil {
-				return images, err
+			img := x.parseImage(se)
+			if x.err != nil {
+				return images
 			}
 
 			images = append(images, img)
@@ -26,12 +31,17 @@ func ParseImages(se xml.StartElement, tr xml.TokenReader) (images []model.Image,
 		}
 	}
 
-	return images, nil
+	return images
 }
 
-func ParseImage(se xml.StartElement) (img model.Image, err error) {
+func (x XMLDecoder) parseImage(se xml.StartElement) (img model.Image) {
+	if x.err != nil {
+		return img
+	}
+
 	if se.Name.Local != "image" {
-		return img, notCorrectStarElement
+		x.err = notCorrectStarElement
+		return img
 	}
 
 	for _, attr := range se.Attr {
@@ -49,5 +59,5 @@ func ParseImage(se xml.StartElement) (img model.Image, err error) {
 		}
 	}
 
-	return img, nil
+	return img
 }

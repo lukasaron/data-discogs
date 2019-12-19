@@ -5,14 +5,18 @@ import (
 	"github.com/Twyer/discogs-parser/model"
 )
 
-func ParseLabels(d *xml.Decoder, limit int) (labels []model.Label, err error) {
+func (x XMLDecoder) parseLabels(limit int) (labels []model.Label) {
+	if x.err != nil {
+		return labels
+	}
+
 	var t xml.Token
 	cnt := 0
-	for t, err = d.Token(); t != nil && err == nil && cnt != limit; t, err = d.Token() {
-		if IsStartElementName(t, "label") {
-			l, err := ParseLabel(t.(xml.StartElement), d)
-			if err != nil {
-				return labels, err
+	for t, x.err = x.d.Token(); t != nil && x.err == nil && cnt != limit; t, x.err = x.d.Token() {
+		if x.isStartElementName(t, "label") {
+			l := x.parseLabel(t.(xml.StartElement))
+			if x.err != nil {
+				return labels
 			}
 
 			labels = append(labels, l)
@@ -20,43 +24,48 @@ func ParseLabels(d *xml.Decoder, limit int) (labels []model.Label, err error) {
 		}
 	}
 
-	return labels, err
+	return labels
 }
 
-func ParseLabel(se xml.StartElement, tr xml.TokenReader) (label model.Label, err error) {
+func (x XMLDecoder) parseLabel(se xml.StartElement) (label model.Label) {
+	if x.err != nil {
+		return label
+	}
+
 	if se.Name.Local != "label" {
-		return label, notCorrectStarElement
+		x.err = notCorrectStarElement
+		return label
 	}
 
 	for {
-		t, _ := tr.Token()
+		t, _ := x.d.Token()
 		if se, ok := t.(xml.StartElement); ok {
 			switch se.Name.Local {
 			case "images":
-				imgs, err := ParseImages(se, tr)
-				if err != nil {
-					return label, err
+				imgs := x.parseImages(se)
+				if x.err != nil {
+					return label
 				}
 
 				label.Images = imgs
 			case "id":
-				label.Id = parseValue(tr)
+				label.Id = x.parseValue()
 			case "name":
-				label.Name = parseValue(tr)
+				label.Name = x.parseValue()
 			case "contactinfo":
-				label.ContactInfo = parseValue(tr)
+				label.ContactInfo = x.parseValue()
 			case "profile":
-				label.Profile = parseValue(tr)
+				label.Profile = x.parseValue()
 			case "urls":
-				label.Urls = parseChildValues("urls", "url", tr)
+				label.Urls = x.parseChildValues("urls", "url")
 			case "sublabels":
-				label.SubLabels = parseSubLabels(tr)
+				label.SubLabels = x.parseSubLabels()
 			case "data_quality":
-				label.DataQuality = parseValue(tr)
+				label.DataQuality = x.parseValue()
 			case "parentLabel":
 				label.ParentLabel = &model.LabelLabel{
 					Id:   se.Attr[0].Value,
-					Name: parseValue(tr),
+					Name: x.parseValue(),
 				}
 			}
 		}
@@ -65,19 +74,23 @@ func ParseLabel(se xml.StartElement, tr xml.TokenReader) (label model.Label, err
 		}
 	}
 
-	return label, nil
+	return label
 }
 
-func parseSubLabels(tr xml.TokenReader) (labels []model.LabelLabel) {
+func (x XMLDecoder) parseSubLabels() (labels []model.LabelLabel) {
+	if x.err != nil {
+		return labels
+	}
+
 	for {
-		t, _ := tr.Token()
+		t, _ := x.d.Token()
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "sublabels" {
 			break
 		}
 		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "label" {
 			label := model.LabelLabel{}
 			label.Id = se.Attr[0].Value
-			label.Name = parseValue(tr)
+			label.Name = x.parseValue()
 			labels = append(labels, label)
 		}
 	}

@@ -5,14 +5,18 @@ import (
 	"github.com/Twyer/discogs-parser/model"
 )
 
-func ParseReleases(d *xml.Decoder, limit int) (releases []model.Release, err error) {
+func (x XMLDecoder) parseReleases(limit int) (releases []model.Release) {
+	if x.err != nil {
+		return releases
+	}
+
 	var t xml.Token
 	cnt := 0
-	for t, err = d.Token(); t != nil && err == nil && cnt != limit; t, err = d.Token() {
-		if IsStartElementName(t, "release") {
-			rls, err := ParseRelease(t.(xml.StartElement), d)
-			if err != nil {
-				return releases, err
+	for t, x.err = x.d.Token(); t != nil && x.err == nil && cnt != limit; t, x.err = x.d.Token() {
+		if x.isStartElementName(t, "release") {
+			rls := x.parseRelease(t.(xml.StartElement))
+			if x.err != nil {
+				return releases
 			}
 
 			releases = append(releases, rls)
@@ -20,12 +24,17 @@ func ParseReleases(d *xml.Decoder, limit int) (releases []model.Release, err err
 		}
 	}
 
-	return releases, err
+	return releases
 }
 
-func ParseRelease(se xml.StartElement, tr xml.TokenReader) (release model.Release, err error) {
+func (x XMLDecoder) parseRelease(se xml.StartElement) (release model.Release) {
+	if x.err != nil {
+		return release
+	}
+
 	if se.Name.Local != "release" {
-		return release, notCorrectStarElement
+		x.err = notCorrectStarElement
+		return release
 	}
 
 	for _, attr := range se.Attr {
@@ -38,48 +47,48 @@ func ParseRelease(se xml.StartElement, tr xml.TokenReader) (release model.Releas
 	}
 
 	for {
-		t, _ := tr.Token()
+		t, _ := x.d.Token()
 		if se, ok := t.(xml.StartElement); ok {
 			switch se.Name.Local {
 			case "images":
-				imgs, err := ParseImages(se, tr)
-				if err != nil {
-					return release, err
+				imgs := x.parseImages(se)
+				if x.err != nil {
+					return release
 				}
 				release.Images = imgs
 			case "artists":
-				release.Artists = parseArtists("artists", tr)
+				release.Artists = x.parseReleaseArtists("artists")
 			case "extraartists":
-				release.ExtraArtists = parseArtists("extraartists", tr)
+				release.ExtraArtists = x.parseReleaseArtists("extraartists")
 			case "title":
-				release.Title = parseValue(tr)
+				release.Title = x.parseValue()
 			case "labels":
-				release.Labels = parseLabels(tr)
+				release.Labels = x.parseReleaseLabels()
 			case "formats":
-				release.Formats = ParseFormats(tr)
+				release.Formats = x.parseFormats()
 			case "genres":
-				release.Genres = parseChildValues("genres", "genre", tr)
+				release.Genres = x.parseChildValues("genres", "genre")
 			case "styles":
-				release.Styles = parseChildValues("styles", "style", tr)
+				release.Styles = x.parseChildValues("styles", "style")
 			case "country":
-				release.Country = parseValue(tr)
+				release.Country = x.parseValue()
 			case "released":
-				release.Released = parseValue(tr)
+				release.Released = x.parseValue()
 			case "notes":
-				release.Notes = parseValue(tr)
+				release.Notes = x.parseValue()
 			case "data_quality":
-				release.DataQuality = parseValue(tr)
+				release.DataQuality = x.parseValue()
 			case "master_id":
 				release.MainRelease = se.Attr[0].Value
-				release.MasterId = parseValue(tr)
+				release.MasterId = x.parseValue()
 			case "tracklist":
-				release.TrackList, _ = ParseTrackList(tr)
+				release.TrackList = x.parseTrackList()
 			case "identifiers":
-				release.Identifiers = parseIdentifiers(tr)
+				release.Identifiers = x.parseIdentifiers()
 			case "videos":
-				release.Videos, _ = ParseVideos(tr)
+				release.Videos = x.parseVideos()
 			case "companies":
-				release.Companies = ParseCompanies(tr)
+				release.Companies = x.parseCompanies()
 			}
 		}
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "release" {
@@ -87,30 +96,34 @@ func ParseRelease(se xml.StartElement, tr xml.TokenReader) (release model.Releas
 		}
 	}
 
-	return release, nil
+	return release
 }
 
-func parseArtists(wrapperName string, tr xml.TokenReader) (artists []model.ReleaseArtist) {
+func (x XMLDecoder) parseReleaseArtists(wrapperName string) (artists []model.ReleaseArtist) {
+	if x.err != nil {
+		return artists
+	}
+
 	artist := model.ReleaseArtist{}
 	for {
-		t, _ := tr.Token()
+		t, _ := x.d.Token()
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == wrapperName {
 			break
 		}
 		if se, ok := t.(xml.StartElement); ok {
 			switch se.Name.Local {
 			case "id":
-				artist.Id = parseValue(tr)
+				artist.Id = x.parseValue()
 			case "name":
-				artist.Name = parseValue(tr)
+				artist.Name = x.parseValue()
 			case "anv":
-				artist.Anv = parseValue(tr)
+				artist.Anv = x.parseValue()
 			case "join":
-				artist.Join = parseValue(tr)
+				artist.Join = x.parseValue()
 			case "role":
-				artist.Role = parseValue(tr)
+				artist.Role = x.parseValue()
 			case "tracks":
-				artist.Tracks = parseValue(tr)
+				artist.Tracks = x.parseValue()
 			}
 		}
 
@@ -122,9 +135,13 @@ func parseArtists(wrapperName string, tr xml.TokenReader) (artists []model.Relea
 	return artists
 }
 
-func parseLabels(tr xml.TokenReader) (labels []model.ReleaseLabel) {
+func (x XMLDecoder) parseReleaseLabels() (labels []model.ReleaseLabel) {
+	if x.err != nil {
+		return labels
+	}
+
 	for {
-		t, _ := tr.Token()
+		t, _ := x.d.Token()
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "labels" {
 			break
 		}
@@ -148,9 +165,13 @@ func parseLabels(tr xml.TokenReader) (labels []model.ReleaseLabel) {
 	return labels
 }
 
-func parseIdentifiers(tr xml.TokenReader) (identifiers []model.Identifier) {
+func (x XMLDecoder) parseIdentifiers() (identifiers []model.Identifier) {
+	if x.err != nil {
+		return identifiers
+	}
+
 	for {
-		t, _ := tr.Token()
+		t, _ := x.d.Token()
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "identifiers" {
 			break
 		}

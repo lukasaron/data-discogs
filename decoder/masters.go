@@ -5,14 +5,18 @@ import (
 	"github.com/Twyer/discogs-parser/model"
 )
 
-func ParseMasters(d *xml.Decoder, limit int) (masters []model.Master, err error) {
+func (x XMLDecoder) parseMasters(limit int) (masters []model.Master) {
+	if x.err != nil {
+		return masters
+	}
+
 	var t xml.Token
 	cnt := 0
-	for t, err = d.Token(); t != nil && err == nil && cnt != limit; t, err = d.Token() {
-		if IsStartElementName(t, "master") {
-			m, err := ParseMaster(t.(xml.StartElement), d)
-			if err != nil {
-				return masters, err
+	for t, x.err = x.d.Token(); t != nil && x.err == nil && cnt != limit; t, x.err = x.d.Token() {
+		if x.isStartElementName(t, "master") {
+			m := x.parseMaster(t.(xml.StartElement))
+			if x.err != nil {
+				return masters
 			}
 
 			masters = append(masters, m)
@@ -20,42 +24,46 @@ func ParseMasters(d *xml.Decoder, limit int) (masters []model.Master, err error)
 		}
 	}
 
-	return masters, err
+	return masters
 }
 
-func ParseMaster(se xml.StartElement, tr xml.TokenReader) (master model.Master, err error) {
+func (x XMLDecoder) parseMaster(se xml.StartElement) (master model.Master) {
+	if x.err != nil {
+		return master
+	}
 
 	if se.Name.Local != "master" {
-		return master, notCorrectStarElement
+		x.err = notCorrectStarElement
+		return master
 	}
 
 	master.Id = se.Attr[0].Value
 	for {
-		t, _ := tr.Token()
+		t, _ := x.d.Token()
 		if se, ok := t.(xml.StartElement); ok {
 			switch se.Name.Local {
 			case "images":
-				imgs, err := ParseImages(se, tr)
-				if err != nil {
-					return master, err
+				imgs := x.parseImages(se)
+				if x.err != nil {
+					return master
 				}
 				master.Images = imgs
 			case "main_release":
-				master.MainRelease = parseValue(tr)
+				master.MainRelease = x.parseValue()
 			case "artists":
-				master.Artists = parseArtists("artists", tr)
+				master.Artists = x.parseReleaseArtists("artists")
 			case "genres":
-				master.Genres = parseChildValues("genres", "genre", tr)
+				master.Genres = x.parseChildValues("genres", "genre")
 			case "styles":
-				master.Styles = parseChildValues("styles", "style", tr)
+				master.Styles = x.parseChildValues("styles", "style")
 			case "year":
-				master.Year = parseValue(tr)
+				master.Year = x.parseValue()
 			case "title":
-				master.Title = parseValue(tr)
+				master.Title = x.parseValue()
 			case "data_quality":
-				master.DataQuality = parseValue(tr)
+				master.DataQuality = x.parseValue()
 			case "videos":
-				master.Videos, _ = ParseVideos(tr)
+				master.Videos = x.parseVideos()
 			}
 		}
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "master" {
@@ -63,5 +71,5 @@ func ParseMaster(se xml.StartElement, tr xml.TokenReader) (master model.Master, 
 		}
 	}
 
-	return master, nil
+	return master
 }
