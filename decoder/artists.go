@@ -13,7 +13,7 @@ func (x *XMLDecoder) parseArtists(limit int) (artists []model.Artist) {
 	var t xml.Token
 	cnt := 0
 	for t, x.err = x.d.Token(); t != nil && x.err == nil && cnt != limit; t, x.err = x.d.Token() {
-		if x.isStartElementName(t, "artist") {
+		if x.startElementName(t, "artist") {
 			artist := x.parseArtist(t.(xml.StartElement))
 			if x.err != nil {
 				return artists
@@ -37,7 +37,7 @@ func (x *XMLDecoder) parseArtist(se xml.StartElement) (artist model.Artist) {
 	}
 
 	var t xml.Token
-	for t, x.err = x.d.Token(); x.err == nil && !x.isEndElementName(t, "artist"); t, x.err = x.d.Token() {
+	for t, x.err = x.d.Token(); x.err == nil && !x.endElementName(t, "artist"); t, x.err = x.d.Token() {
 		if se, ok := t.(xml.StartElement); ok {
 			switch se.Name.Local {
 			case "images":
@@ -78,7 +78,7 @@ func (x *XMLDecoder) parseAliases() (aliases []model.Alias) {
 	}
 	var t xml.Token
 
-	for t, x.err = x.d.Token(); x.err == nil && !x.isEndElementName(t, "aliases"); t, x.err = x.d.Token() {
+	for t, x.err = x.d.Token(); x.err == nil && !x.endElementName(t, "aliases"); t, x.err = x.d.Token() {
 		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "name" {
 			alias := model.Alias{
 				Id:   se.Attr[0].Value,
@@ -96,7 +96,7 @@ func (x *XMLDecoder) parseMembers() (members []model.Member) {
 		return
 	}
 	var t xml.Token
-	for t, x.err = x.d.Token(); x.err == nil && !x.isEndElementName(t, "members"); t, x.err = x.d.Token() {
+	for t, x.err = x.d.Token(); x.err == nil && !x.endElementName(t, "members"); t, x.err = x.d.Token() {
 		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "name" {
 			member := model.Member{
 				Id:   se.Attr[0].Value,

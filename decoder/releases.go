@@ -13,7 +13,7 @@ func (x *XMLDecoder) parseReleases(limit int) (releases []model.Release) {
 	var t xml.Token
 	cnt := 0
 	for t, x.err = x.d.Token(); t != nil && x.err == nil && cnt != limit; t, x.err = x.d.Token() {
-		if x.isStartElementName(t, "release") {
+		if x.startElementName(t, "release") {
 			rls := x.parseRelease(t.(xml.StartElement))
 			if x.err != nil {
 				return releases

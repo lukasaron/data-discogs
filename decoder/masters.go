@@ -13,7 +13,7 @@ func (x *XMLDecoder) parseMasters(limit int) (masters []model.Master) {
 	var t xml.Token
 	cnt := 0
 	for t, x.err = x.d.Token(); t != nil && x.err == nil && cnt != limit; t, x.err = x.d.Token() {
-		if x.isStartElementName(t, "master") {
+		if x.startElementName(t, "master") {
 			m := x.parseMaster(t.(xml.StartElement))
 			if x.err != nil {
 				return masters

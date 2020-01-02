@@ -9,19 +9,12 @@ import (
 	"strings"
 )
 
-type FileType int
-
-const (
-	Artists FileType = iota
-	Labels
-	Masters
-	Releases
-)
-
 var (
 	notCorrectStarElement = errors.New("token is not a correct start element")
 )
 
+// XML Decoder type is behaviour structure that implements Decoder interface and supports
+// the Discogs XML dump data decoding.
 type XMLDecoder struct {
 	f   *os.File
 	d   *xml.Decoder
@@ -46,6 +39,14 @@ func (x *XMLDecoder) Close() error {
 	return x.f.Close()
 }
 
+func (x *XMLDecoder) Options() Options {
+	return x.o
+}
+
+func (x *XMLDecoder) SetOptions(opt Options) {
+	x.o = opt
+}
+
 func (x *XMLDecoder) Artists(limit int) (int, []model.Artist, error) {
 	if x.err != nil {
 		return 0, nil, x.err
@@ -58,17 +59,6 @@ func (x *XMLDecoder) Artists(limit int) (int, []model.Artist, error) {
 	return len(artists), artists, x.err
 }
 
-func (x *XMLDecoder) filterArtists(as []model.Artist) []model.Artist {
-	fa := make([]model.Artist, 0, len(as))
-	for _, a := range as {
-		if x.o.QualityLevel.Includes(StrToQualityLevel(a.DataQuality)) {
-			fa = append(fa, a)
-		}
-	}
-
-	return fa
-}
-
 func (x *XMLDecoder) Labels(limit int) (int, []model.Label, error) {
 	if x.err != nil {
 		return 0, nil, x.err
@@ -79,17 +69,6 @@ func (x *XMLDecoder) Labels(limit int) (int, []model.Label, error) {
 		labels = x.filterLabels(labels)
 	}
 	return len(labels), labels, x.err
-}
-
-func (x *XMLDecoder) filterLabels(ls []model.Label) []model.Label {
-	fl := make([]model.Label, 0, len(ls))
-	for _, l := range ls {
-		if x.o.QualityLevel.Includes(StrToQualityLevel(l.DataQuality)) {
-			fl = append(fl, l)
-		}
-	}
-
-	return fl
 }
 
 func (x *XMLDecoder) Masters(limit int) (int, []model.Master, error) {
@@ -105,17 +84,6 @@ func (x *XMLDecoder) Masters(limit int) (int, []model.Master, error) {
 	return len(masters), masters, x.err
 }
 
-func (x *XMLDecoder) filterMasters(ms []model.Master) []model.Master {
-	fm := make([]model.Master, 0, len(ms))
-	for _, m := range ms {
-		if x.o.QualityLevel.Includes(StrToQualityLevel(m.DataQuality)) {
-			fm = append(fm, m)
-		}
-	}
-
-	return fm
-}
-
 func (x *XMLDecoder) Releases(limit int) (int, []model.Release, error) {
 	if x.err != nil {
 		return 0, nil, x.err
@@ -128,10 +96,45 @@ func (x *XMLDecoder) Releases(limit int) (int, []model.Release, error) {
 	return len(releases), releases, x.err
 }
 
+//--------------------------------------------------- FILTERS ---------------------------------------------------
+
+func (x *XMLDecoder) filterArtists(as []model.Artist) []model.Artist {
+	fa := make([]model.Artist, 0, len(as))
+	for _, a := range as {
+		if x.o.QualityLevel.Includes(ToQualityLevel(a.DataQuality)) {
+			fa = append(fa, a)
+		}
+	}
+
+	return fa
+}
+
+func (x *XMLDecoder) filterLabels(ls []model.Label) []model.Label {
+	fl := make([]model.Label, 0, len(ls))
+	for _, l := range ls {
+		if x.o.QualityLevel.Includes(ToQualityLevel(l.DataQuality)) {
+			fl = append(fl, l)
+		}
+	}
+
+	return fl
+}
+
+func (x *XMLDecoder) filterMasters(ms []model.Master) []model.Master {
+	fm := make([]model.Master, 0, len(ms))
+	for _, m := range ms {
+		if x.o.QualityLevel.Includes(ToQualityLevel(m.DataQuality)) {
+			fm = append(fm, m)
+		}
+	}
+
+	return fm
+}
+
 func (x *XMLDecoder) filterReleases(rs []model.Release) []model.Release {
 	fr := make([]model.Release, 0, len(rs))
 	for _, r := range rs {
-		if x.o.QualityLevel.Includes(StrToQualityLevel(r.DataQuality)) {
+		if x.o.QualityLevel.Includes(ToQualityLevel(r.DataQuality)) {
 			fr = append(fr, r)
 		}
 	}
@@ -139,22 +142,24 @@ func (x *XMLDecoder) filterReleases(rs []model.Release) []model.Release {
 	return fr
 }
 
-func (x *XMLDecoder) isStartElement(token xml.Token) bool {
+//--------------------------------------------------- HELPERS ---------------------------------------------------
+
+func (x *XMLDecoder) startElement(token xml.Token) bool {
 	_, ok := token.(xml.StartElement)
 	return ok
 }
 
-func (x *XMLDecoder) isEndElement(token xml.Token) bool {
+func (x *XMLDecoder) endElement(token xml.Token) bool {
 	_, ok := token.(xml.EndElement)
 	return ok
 }
 
-func (x *XMLDecoder) isStartElementName(token xml.Token, name string) bool {
+func (x *XMLDecoder) startElementName(token xml.Token, name string) bool {
 	se, ok := token.(xml.StartElement)
 	return ok && se.Name.Local == name
 }
 
-func (x *XMLDecoder) isEndElementName(token xml.Token, name string) bool {
+func (x *XMLDecoder) endElementName(token xml.Token, name string) bool {
 	ee, ok := token.(xml.EndElement)
 	return ok && ee.Name.Local == name
 }
@@ -163,7 +168,7 @@ func (x *XMLDecoder) parseValue() string {
 	sb := strings.Builder{}
 	for {
 		t, _ := x.d.Token()
-		if x.isEndElement(t) {
+		if x.endElement(t) {
 			break
 		}
 
@@ -177,10 +182,10 @@ func (x *XMLDecoder) parseValue() string {
 func (x *XMLDecoder) parseChildValues(parentName, childName string) (children []string) {
 	for {
 		t, _ := x.d.Token()
-		if x.isStartElementName(t, childName) {
+		if x.startElementName(t, childName) {
 			children = append(children, x.parseValue())
 		}
-		if x.isEndElementName(t, parentName) {
+		if x.endElementName(t, parentName) {
 			break
 		}
 	}
