@@ -117,7 +117,7 @@ func DecodeData(decoder Decoder, writer writer.Writer) error {
 		// call appropriate decoder function
 		num, err := fn(decoder, writer, opts.Block.Size, blockCount > opts.Block.Skip)
 		if err != nil && err != io.EOF {
-			log.Printf("Block %d failed [%d]", blockCount, num)
+			log.Printf("Block %d failed [%d]\n", blockCount, num)
 			return err
 		}
 
@@ -126,9 +126,9 @@ func DecodeData(decoder Decoder, writer writer.Writer) error {
 		}
 
 		if blockCount > opts.Block.Skip {
-			log.Printf("Block %d written [%d]", blockCount, num)
+			log.Printf("Block %d written [%d]\n", blockCount, num)
 		} else {
-			log.Printf("Block %d skipped [%d]", blockCount, num)
+			log.Printf("Block %d skipped [%d]\n", blockCount, num)
 		}
 	}
 
