@@ -2,7 +2,7 @@ package decoder
 
 import (
 	"encoding/xml"
-	"github.com/Twyer/discogs-parser/model"
+	"github.com/lukasaron/discogs-parser/model"
 )
 
 func (x *XMLDecoder) parseCompanies() (companies []model.Company) {

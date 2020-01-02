@@ -3,7 +3,7 @@ package writer
 import (
 	"bytes"
 	"fmt"
-	"github.com/Twyer/discogs-parser/model"
+	"github.com/lukasaron/discogs-parser/model"
 	"os"
 	"strings"
 )
@@ -218,12 +218,12 @@ func (s SqlWriter) writeArtist(a model.Artist) {
 	_, s.err = s.buffer.WriteString(
 		fmt.Sprintf("INSERT INTO artists (artist_id, name, real_name, profile, data_quality, name_variations, urls) VALUES ('%s', '%s', '%s', '%s', '%s', ARRAY[%s], ARRAY[%s]);\n",
 			a.Id,
-			s.cleanText(a.Name),
-			s.cleanText(a.RealName),
-			s.cleanText(a.Profile),
+			cleanText(a.Name),
+			cleanText(a.RealName),
+			cleanText(a.Profile),
 			a.DataQuality,
-			s.array(a.NameVariations),
-			s.array(a.Urls)),
+			array(a.NameVariations),
+			array(a.Urls)),
 	)
 }
 
@@ -265,7 +265,7 @@ func (s SqlWriter) writeAlias(artistId string, a model.Alias) {
 		fmt.Sprintf("INSERT INTO artist_aliases (artist_id, alias_id, name) VALUES ('%s', '%s', '%s');\n",
 			artistId,
 			a.Id,
-			s.cleanText(a.Name)),
+			cleanText(a.Name)),
 	)
 }
 
@@ -290,7 +290,7 @@ func (s SqlWriter) writeMember(artistId string, m model.Member) {
 	_, s.err = s.buffer.WriteString(fmt.Sprintf("INSERT INTO artist_members (artist_id, member_id, name) VALUES ('%s', '%s', '%s');\n",
 		artistId,
 		m.Id,
-		s.cleanText(m.Name)),
+		cleanText(m.Name)),
 	)
 }
 
@@ -315,11 +315,11 @@ func (s SqlWriter) writeLabel(l model.Label) {
 	_, s.err = s.buffer.WriteString(
 		fmt.Sprintf("INSERT INTO labels (label_id, name, contact_info, profile, data_quality, urls) VALUES ('%s', '%s', '%s', '%s', '%s', ARRAY[%s]);\n",
 			l.Id,
-			s.cleanText(l.Name),
-			s.cleanText(l.ContactInfo),
-			s.cleanText(l.Profile),
+			cleanText(l.Name),
+			cleanText(l.ContactInfo),
+			cleanText(l.Profile),
 			l.DataQuality,
-			s.array(l.Urls),
+			array(l.Urls),
 		),
 	)
 }
@@ -333,7 +333,7 @@ func (s SqlWriter) writeLabelLabel(labelId, parent string, l model.LabelLabel) {
 		fmt.Sprintf("INSERT INTO label_labels (label_id, sub_label_id, name, parent) VALUES ('%s', '%s', '%s', '%s');\n",
 			labelId,
 			l.Id,
-			s.cleanText(l.Name),
+			cleanText(l.Name),
 			parent,
 		),
 	)
@@ -360,10 +360,10 @@ func (s SqlWriter) writeMaster(m model.Master) {
 	_, s.err = s.buffer.WriteString(fmt.Sprintf("INSERT INTO masters (master_id, main_release, genres, styles, year, title, data_quality) VALUES ('%s', '%s', ARRAY[%s], ARRAY[%s], '%s', '%s', '%s');\n",
 		m.Id,
 		m.MainRelease,
-		s.array(m.Genres),
-		s.array(m.Styles),
+		array(m.Genres),
+		array(m.Styles),
 		m.Year,
-		s.cleanText(m.Title),
+		cleanText(m.Title),
 		m.DataQuality),
 	)
 }
@@ -375,13 +375,13 @@ func (s SqlWriter) writeRelease(r model.Release) {
 
 	_, s.err = s.buffer.WriteString(fmt.Sprintf("INSERT INTO releases (release_id, status, title, genres, styles, country, released, notes, data_quality, master_id, main_release) VALUES ('%s', '%s', '%s', ARRAY[%s], ARRAY[%s], '%s', '%s', '%s', '%s', '%s', '%s');\n",
 		r.Id,
-		s.cleanText(r.Status),
-		s.cleanText(r.Title),
-		s.array(r.Genres),
-		s.array(r.Styles),
-		s.cleanText(r.Country),
+		cleanText(r.Status),
+		cleanText(r.Title),
+		array(r.Genres),
+		array(r.Styles),
+		cleanText(r.Country),
 		r.Released,
-		s.cleanText(r.Notes),
+		cleanText(r.Notes),
 		r.DataQuality,
 		r.MasterId,
 		r.MainRelease),
@@ -396,11 +396,11 @@ func (s SqlWriter) writeCompany(releaseId string, c model.Company) {
 	_, s.err = s.buffer.WriteString(fmt.Sprintf("INSERT INTO release_companies (release_id, release_company_id, name, category, entity_type, entity_type_name, resource_url) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s');\n",
 		releaseId,
 		c.Id,
-		s.cleanText(c.Name),
-		s.cleanText(c.Category),
-		s.cleanText(c.EntityType),
-		s.cleanText(c.EntityTypeName),
-		s.cleanText(c.ResourceUrl)),
+		cleanText(c.Name),
+		cleanText(c.Category),
+		cleanText(c.EntityType),
+		cleanText(c.EntityTypeName),
+		cleanText(c.ResourceUrl)),
 	)
 }
 
@@ -425,8 +425,8 @@ func (s SqlWriter) writeReleaseLabel(releaseId string, rl model.ReleaseLabel) {
 	_, s.err = s.buffer.WriteString(fmt.Sprintf("INSERT INTO release_labels (release_id, release_label_id, name, category) VALUES ('%s', '%s', '%s', '%s');\n",
 		releaseId,
 		rl.Id,
-		s.cleanText(rl.Name),
-		s.cleanText(rl.Category)),
+		cleanText(rl.Name),
+		cleanText(rl.Category)),
 	)
 }
 
@@ -450,9 +450,9 @@ func (s SqlWriter) writeIdentifier(releaseId string, i model.Identifier) {
 
 	_, s.err = s.buffer.WriteString(fmt.Sprintf("INSERT INTO release_identifiers (release_id, description, type, value) VALUES ('%s', '%s', '%s', '%s');\n",
 		releaseId,
-		s.cleanText(i.Description),
-		s.cleanText(i.Type),
-		s.cleanText(i.Value)),
+		cleanText(i.Description),
+		cleanText(i.Type),
+		cleanText(i.Value)),
 	)
 }
 
@@ -476,9 +476,9 @@ func (s SqlWriter) writeTrack(releaseId string, t model.Track) {
 
 	_, s.err = s.buffer.WriteString(fmt.Sprintf("INSERT INTO release_tracks (release_id, position, title, duration) VALUES ('%s', '%s', '%s', '%s');\n",
 		releaseId,
-		s.cleanText(t.Position),
-		s.cleanText(t.Title),
-		s.cleanText(t.Duration)),
+		cleanText(t.Position),
+		cleanText(t.Title),
+		cleanText(t.Duration)),
 	)
 }
 
@@ -502,10 +502,10 @@ func (s SqlWriter) writeFormat(releaseId string, f model.Format) {
 
 	_, s.err = s.buffer.WriteString(fmt.Sprintf("INSERT INTO release_formats (release_id, name, quantity, text, descriptions) VALUES ('%s', '%s', '%s', '%s', ARRAY[%s]);\n",
 		releaseId,
-		s.cleanText(f.Name),
+		cleanText(f.Name),
 		f.Quantity,
-		s.cleanText(f.Text),
-		s.array(f.Descriptions)),
+		cleanText(f.Text),
+		array(f.Descriptions)),
 	)
 }
 
@@ -531,12 +531,12 @@ func (s SqlWriter) writeReleaseArtist(masterId, releaseId, extra string, ra mode
 		masterId,
 		releaseId,
 		ra.Id,
-		s.cleanText(ra.Name),
+		cleanText(ra.Name),
 		extra,
-		s.cleanText(ra.Join),
-		s.cleanText(ra.Anv),
-		s.cleanText(ra.Role),
-		s.cleanText(ra.Tracks)),
+		cleanText(ra.Join),
+		cleanText(ra.Anv),
+		cleanText(ra.Role),
+		cleanText(ra.Tracks)),
 	)
 }
 
@@ -561,11 +561,11 @@ func (s SqlWriter) writeVideo(masterId, releaseId string, v model.Video) {
 	_, s.err = s.buffer.WriteString(fmt.Sprintf("INSERT INTO videos (master_id, release_id, duration, embed, src, title, description) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s');\n",
 		masterId,
 		releaseId,
-		s.cleanText(v.Duration),
+		cleanText(v.Duration),
 		v.Embed,
-		s.cleanText(v.Src),
-		s.cleanText(v.Title),
-		s.cleanText(v.Description)),
+		cleanText(v.Src),
+		cleanText(v.Title),
+		cleanText(v.Description)),
 	)
 }
 
@@ -596,14 +596,14 @@ func (s SqlWriter) clean() {
 
 //----------------------------------------------- HELPER FUNCTIONS -----------------------------------------------
 
-func (s SqlWriter) cleanText(str string) string {
+func cleanText(str string) string {
 	return strings.ReplaceAll(str, "'", "''")
 }
 
-func (s SqlWriter) array(str []string) string {
+func array(str []string) string {
 	sb := strings.Builder{}
 	sb.WriteString("'")
-	sb.WriteString(strings.ReplaceAll(s.cleanText(strings.Join(str, ",")), ",", "','"))
+	sb.WriteString(strings.ReplaceAll(cleanText(strings.Join(str, ",")), ",", "','"))
 	sb.WriteString("'")
 	return sb.String()
 }

@@ -3,7 +3,7 @@ package writer
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/Twyer/discogs-parser/model"
+	"github.com/lukasaron/discogs-parser/model"
 	"os"
 )
 

@@ -3,7 +3,7 @@ package decoder
 import (
 	"encoding/xml"
 	"errors"
-	"github.com/Twyer/discogs-parser/model"
+	"github.com/lukasaron/discogs-parser/model"
 	"io"
 	"os"
 	"strings"
@@ -12,15 +12,14 @@ import (
 type FileType int
 
 const (
-	Unknown FileType = iota
-	Artists
+	Artists FileType = iota
 	Labels
 	Masters
 	Releases
 )
 
 var (
-	notCorrectStarElement error = errors.New("token is not a correct start element")
+	notCorrectStarElement = errors.New("token is not a correct start element")
 )
 
 type XMLDecoder struct {
@@ -30,19 +29,16 @@ type XMLDecoder struct {
 	err error
 }
 
-func NewDecoder(fileName string, options ...Options) Decoder {
+func NewXmlDecoder(fileName string, options ...Options) Decoder {
 	d := &XMLDecoder{}
+
+	d.f, d.err = os.Open(fileName)
+	d.d = xml.NewDecoder(d.f)
 
 	if options != nil && len(options) > 0 {
 		d.o = options[0]
 	}
 
-	d.f, d.err = os.Open(fileName)
-	if d.err != nil {
-		return d
-	}
-
-	d.d = xml.NewDecoder(d.f)
 	return d
 }
 
