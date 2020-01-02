@@ -1,9 +1,8 @@
 # Discogs Parser
 
-
 Discogs Parser introduces a way to categorize XML data dumps from Discogs [https://data.discogs.com/].
 
-The intention of using this parser is a library, which means there is not an executable part provided. 
+The intention of using this parser is a library, which means there is not an executable part provided. The project has no other dependencies than the Golang language itself. 
 
 There are three existing writers supported by default: `JSON`, `SQL` and `DB`.
 

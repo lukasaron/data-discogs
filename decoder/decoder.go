@@ -7,8 +7,8 @@ import (
 	"errors"
 	"github.com/lukasaron/discogs-parser/model"
 	"github.com/lukasaron/discogs-parser/writer"
-	"github.com/sirupsen/logrus"
 	"io"
+	"log"
 )
 
 // Decoder is the interface that wraps the basic decoding method.
@@ -117,7 +117,7 @@ func DecodeData(decoder Decoder, writer writer.Writer) error {
 		// call appropriate decoder function
 		num, err := fn(decoder, writer, opts.Block.Size, blockCount > opts.Block.Skip)
 		if err != nil && err != io.EOF {
-			logrus.Errorf("Block %d failed [%d]", blockCount, num)
+			log.Printf("Block %d failed [%d]", blockCount, num)
 			return err
 		}
 
@@ -126,9 +126,9 @@ func DecodeData(decoder Decoder, writer writer.Writer) error {
 		}
 
 		if blockCount > opts.Block.Skip {
-			logrus.Infof("Block %d written [%d]", blockCount, num)
+			log.Printf("Block %d written [%d]", blockCount, num)
 		} else {
-			logrus.Infof("Block %d skipped [%d]", blockCount, num)
+			log.Printf("Block %d skipped [%d]", blockCount, num)
 		}
 	}
 
