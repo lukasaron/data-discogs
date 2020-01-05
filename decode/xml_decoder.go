@@ -714,3 +714,676 @@ type Video struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 }
+
+//=================================================== Parsers ===================================================
+
+//--------------------------------------------------- Artist ---------------------------------------------------
+
+func (x *XMLDecoder) parseArtists(limit int) (artists []Artist) {
+	if x.err != nil {
+		return artists
+	}
+
+	var t xml.Token
+	cnt := 0
+	for t, x.err = x.d.Token(); t != nil && x.err == nil && cnt != limit; t, x.err = x.d.Token() {
+		if x.startElementName(t, "artist") {
+			artist := x.parseArtist(t.(xml.StartElement))
+			if x.err != nil {
+				return artists
+			}
+			artists = append(artists, artist)
+			cnt++
+		}
+	}
+
+	return artists
+}
+
+func (x *XMLDecoder) parseArtist(se xml.StartElement) (artist Artist) {
+	if x.err != nil {
+		return artist
+	}
+
+	if se.Name.Local != "artist" {
+		x.err = notCorrectStarElement
+		return artist
+	}
+
+	var t xml.Token
+	for t, x.err = x.d.Token(); x.err == nil && !x.endElementName(t, "artist"); t, x.err = x.d.Token() {
+		if se, ok := t.(xml.StartElement); ok {
+			switch se.Name.Local {
+			case "images":
+				imgs := x.parseImages(se)
+				if x.err != nil {
+					return artist
+				}
+
+				artist.Images = imgs
+			case "id":
+				artist.Id = x.parseValue()
+			case "name":
+				artist.Name = x.parseValue()
+			case "realname":
+				artist.RealName = x.parseValue()
+			case "namevariations":
+				artist.NameVariations = x.parseChildValues("namevariations", "name")
+			case "members":
+				artist.Members = x.parseMembers()
+			case "aliases":
+				artist.Aliases = x.parseAliases()
+			case "profile":
+				artist.Profile = x.parseValue()
+			case "data_quality":
+				artist.DataQuality = x.parseValue()
+			case "urls":
+				artist.Urls = x.parseChildValues("urls", "url")
+			}
+		}
+	}
+
+	return artist
+}
+
+func (x *XMLDecoder) parseAliases() (aliases []Alias) {
+	if x.err != nil {
+		return
+	}
+	var t xml.Token
+
+	for t, x.err = x.d.Token(); x.err == nil && !x.endElementName(t, "aliases"); t, x.err = x.d.Token() {
+		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "name" {
+			alias := Alias{
+				Id:   se.Attr[0].Value,
+				Name: x.parseValue(),
+			}
+			aliases = append(aliases, alias)
+		}
+	}
+
+	return aliases
+}
+
+func (x *XMLDecoder) parseMembers() (members []Member) {
+	if x.err != nil {
+		return
+	}
+	var t xml.Token
+	for t, x.err = x.d.Token(); x.err == nil && !x.endElementName(t, "members"); t, x.err = x.d.Token() {
+		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "name" {
+			member := Member{
+				Id:   se.Attr[0].Value,
+				Name: x.parseValue(),
+			}
+			members = append(members, member)
+		}
+	}
+
+	return members
+
+}
+
+//--------------------------------------------------- Company ---------------------------------------------------
+
+func (x *XMLDecoder) parseCompanies() (companies []Company) {
+	if x.err != nil {
+		return companies
+	}
+
+	company := Company{}
+	var t xml.Token
+	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
+		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "companies" {
+			break
+		}
+
+		if se, ok := t.(xml.StartElement); ok {
+			switch se.Name.Local {
+			case "id":
+				company.Id = x.parseValue()
+			case "name":
+				company.Name = x.parseValue()
+			case "catno":
+				company.Category = x.parseValue()
+			case "entity_type":
+				company.EntityType = x.parseValue()
+			case "entity_type_name":
+				company.EntityTypeName = x.parseValue()
+			case "resource_url":
+				company.ResourceUrl = x.parseValue()
+			}
+		}
+
+		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "company" {
+			companies = append(companies, company)
+			company = Company{}
+		}
+	}
+	return companies
+}
+
+//--------------------------------------------------- Format ---------------------------------------------------
+
+func (x *XMLDecoder) parseFormats() (formats []Format) {
+	if x.err != nil {
+		return formats
+	}
+	var t xml.Token
+	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
+
+		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "formats" {
+			break
+		}
+		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "format" {
+			format := Format{}
+			for _, attr := range se.Attr {
+				switch attr.Name.Local {
+				case "qty":
+					format.Quantity = attr.Value
+				case "name":
+					format.Name = attr.Value
+				case "text":
+					format.Text = attr.Value
+				}
+			}
+
+			format.Descriptions = x.parseChildValues("descriptions", "description")
+			formats = append(formats, format)
+		}
+	}
+	return formats
+}
+
+//--------------------------------------------------- Image ---------------------------------------------------
+
+func (x *XMLDecoder) parseImages(se xml.StartElement) (images []Image) {
+	if x.err != nil {
+		return images
+	}
+
+	if se.Name.Local != "images" {
+		x.err = notCorrectStarElement
+		return images
+	}
+
+	var t xml.Token
+	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
+		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "image" {
+			img := x.parseImage(se)
+			if x.err != nil {
+				return images
+			}
+
+			images = append(images, img)
+		}
+
+		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "images" {
+			break
+		}
+	}
+
+	return images
+}
+
+func (x *XMLDecoder) parseImage(se xml.StartElement) (img Image) {
+	if x.err != nil {
+		return img
+	}
+
+	if se.Name.Local != "image" {
+		x.err = notCorrectStarElement
+		return img
+	}
+
+	for _, attr := range se.Attr {
+		switch attr.Name.Local {
+		case "height":
+			img.Height = attr.Value
+		case "width":
+			img.Width = attr.Value
+		case "type":
+			img.Type = attr.Value
+		case "uri":
+			img.Uri = attr.Value
+		case "uri150":
+			img.Uri150 = attr.Value
+		}
+	}
+
+	return img
+}
+
+//--------------------------------------------------- Label ---------------------------------------------------
+
+func (x *XMLDecoder) parseLabels(limit int) (labels []Label) {
+	if x.err != nil {
+		return labels
+	}
+
+	var t xml.Token
+	cnt := 0
+	for t, x.err = x.d.Token(); t != nil && x.err == nil && cnt != limit; t, x.err = x.d.Token() {
+		if x.startElementName(t, "label") {
+			l := x.parseLabel(t.(xml.StartElement))
+			if x.err != nil {
+				return labels
+			}
+
+			labels = append(labels, l)
+			cnt++
+		}
+	}
+
+	return labels
+}
+
+func (x *XMLDecoder) parseLabel(se xml.StartElement) (label Label) {
+	if x.err != nil {
+		return label
+	}
+
+	if se.Name.Local != "label" {
+		x.err = notCorrectStarElement
+		return label
+	}
+
+	var t xml.Token
+	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
+		if se, ok := t.(xml.StartElement); ok {
+			switch se.Name.Local {
+			case "images":
+				imgs := x.parseImages(se)
+				if x.err != nil {
+					return label
+				}
+
+				label.Images = imgs
+			case "id":
+				label.Id = x.parseValue()
+			case "name":
+				label.Name = x.parseValue()
+			case "contactinfo":
+				label.ContactInfo = x.parseValue()
+			case "profile":
+				label.Profile = x.parseValue()
+			case "urls":
+				label.Urls = x.parseChildValues("urls", "url")
+			case "sublabels":
+				label.SubLabels = x.parseSubLabels()
+			case "data_quality":
+				label.DataQuality = x.parseValue()
+			case "parentLabel":
+				label.ParentLabel = &LabelLabel{
+					Id:   se.Attr[0].Value,
+					Name: x.parseValue(),
+				}
+			}
+		}
+		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "label" {
+			break
+		}
+	}
+
+	return label
+}
+
+func (x *XMLDecoder) parseSubLabels() (labels []LabelLabel) {
+	if x.err != nil {
+		return labels
+	}
+
+	var t xml.Token
+	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
+		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "sublabels" {
+			break
+		}
+		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "label" {
+			label := LabelLabel{}
+			label.Id = se.Attr[0].Value
+			label.Name = x.parseValue()
+			labels = append(labels, label)
+		}
+	}
+
+	return labels
+}
+
+//--------------------------------------------------- Master ---------------------------------------------------
+
+func (x *XMLDecoder) parseMasters(limit int) (masters []Master) {
+	if x.err != nil {
+		return masters
+	}
+
+	var t xml.Token
+	cnt := 0
+	for t, x.err = x.d.Token(); t != nil && x.err == nil && cnt != limit; t, x.err = x.d.Token() {
+		if x.startElementName(t, "master") {
+			m := x.parseMaster(t.(xml.StartElement))
+			if x.err != nil {
+				return masters
+			}
+
+			masters = append(masters, m)
+			cnt++
+		}
+	}
+
+	return masters
+}
+
+func (x *XMLDecoder) parseMaster(se xml.StartElement) (master Master) {
+	if x.err != nil {
+		return master
+	}
+
+	if se.Name.Local != "master" {
+		x.err = notCorrectStarElement
+		return master
+	}
+
+	master.Id = se.Attr[0].Value
+	var t xml.Token
+	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
+		if se, ok := t.(xml.StartElement); ok {
+			switch se.Name.Local {
+			case "images":
+				imgs := x.parseImages(se)
+				if x.err != nil {
+					return master
+				}
+				master.Images = imgs
+			case "main_release":
+				master.MainRelease = x.parseValue()
+			case "artists":
+				master.Artists = x.parseReleaseArtists("artists")
+			case "genres":
+				master.Genres = x.parseChildValues("genres", "genre")
+			case "styles":
+				master.Styles = x.parseChildValues("styles", "style")
+			case "year":
+				master.Year = x.parseValue()
+			case "title":
+				master.Title = x.parseValue()
+			case "data_quality":
+				master.DataQuality = x.parseValue()
+			case "videos":
+				master.Videos = x.parseVideos()
+			}
+		}
+		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "master" {
+			break
+		}
+	}
+
+	return master
+}
+
+//--------------------------------------------------- Release ---------------------------------------------------
+
+func (x *XMLDecoder) parseReleases(limit int) (releases []Release) {
+	if x.err != nil {
+		return releases
+	}
+
+	var t xml.Token
+	cnt := 0
+	for t, x.err = x.d.Token(); t != nil && x.err == nil && cnt != limit; t, x.err = x.d.Token() {
+		if x.startElementName(t, "release") {
+			rls := x.parseRelease(t.(xml.StartElement))
+			if x.err != nil {
+				return releases
+			}
+
+			releases = append(releases, rls)
+			cnt++
+		}
+	}
+
+	return releases
+}
+
+func (x *XMLDecoder) parseRelease(se xml.StartElement) (release Release) {
+	if x.err != nil {
+		return release
+	}
+
+	if se.Name.Local != "release" {
+		x.err = notCorrectStarElement
+		return release
+	}
+
+	for _, attr := range se.Attr {
+		switch attr.Name.Local {
+		case "id":
+			release.Id = attr.Value
+		case "status":
+			release.Status = attr.Value
+		}
+	}
+
+	var t xml.Token
+	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
+		if se, ok := t.(xml.StartElement); ok {
+			switch se.Name.Local {
+			case "images":
+				imgs := x.parseImages(se)
+				if x.err != nil {
+					return release
+				}
+				release.Images = imgs
+			case "artists":
+				release.Artists = x.parseReleaseArtists("artists")
+			case "extraartists":
+				release.ExtraArtists = x.parseReleaseArtists("extraartists")
+			case "title":
+				release.Title = x.parseValue()
+			case "labels":
+				release.Labels = x.parseReleaseLabels()
+			case "formats":
+				release.Formats = x.parseFormats()
+			case "genres":
+				release.Genres = x.parseChildValues("genres", "genre")
+			case "styles":
+				release.Styles = x.parseChildValues("styles", "style")
+			case "country":
+				release.Country = x.parseValue()
+			case "released":
+				release.Released = x.parseValue()
+			case "notes":
+				release.Notes = x.parseValue()
+			case "data_quality":
+				release.DataQuality = x.parseValue()
+			case "master_id":
+				release.MainRelease = se.Attr[0].Value
+				release.MasterId = x.parseValue()
+			case "tracklist":
+				release.TrackList = x.parseTrackList()
+			case "identifiers":
+				release.Identifiers = x.parseIdentifiers()
+			case "videos":
+				release.Videos = x.parseVideos()
+			case "companies":
+				release.Companies = x.parseCompanies()
+			}
+		}
+		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "release" {
+			break
+		}
+	}
+
+	return release
+}
+
+func (x *XMLDecoder) parseReleaseArtists(wrapperName string) (artists []ReleaseArtist) {
+	if x.err != nil {
+		return artists
+	}
+
+	artist := ReleaseArtist{}
+	var t xml.Token
+	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
+		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == wrapperName {
+			break
+		}
+		if se, ok := t.(xml.StartElement); ok {
+			switch se.Name.Local {
+			case "id":
+				artist.Id = x.parseValue()
+			case "name":
+				artist.Name = x.parseValue()
+			case "anv":
+				artist.Anv = x.parseValue()
+			case "join":
+				artist.Join = x.parseValue()
+			case "role":
+				artist.Role = x.parseValue()
+			case "tracks":
+				artist.Tracks = x.parseValue()
+			}
+		}
+
+		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "artist" {
+			artists = append(artists, artist)
+			artist = ReleaseArtist{}
+		}
+	}
+	return artists
+}
+
+func (x *XMLDecoder) parseReleaseLabels() (labels []ReleaseLabel) {
+	if x.err != nil {
+		return labels
+	}
+
+	var t xml.Token
+	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
+		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "labels" {
+			break
+		}
+		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "label" {
+			label := ReleaseLabel{}
+
+			for _, attr := range se.Attr {
+				switch attr.Name.Local {
+				case "id":
+					label.Id = attr.Value
+				case "name":
+					label.Name = attr.Value
+				case "catno":
+					label.Category = attr.Value
+				}
+			}
+
+			labels = append(labels, label)
+		}
+	}
+	return labels
+}
+
+func (x *XMLDecoder) parseIdentifiers() (identifiers []Identifier) {
+	if x.err != nil {
+		return identifiers
+	}
+
+	var t xml.Token
+	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
+		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "identifiers" {
+			break
+		}
+		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "identifier" {
+			identifier := Identifier{}
+			for _, attr := range se.Attr {
+				switch attr.Name.Local {
+				case "description":
+					identifier.Description = attr.Value
+				case "type":
+					identifier.Type = attr.Value
+				case "value":
+					identifier.Value = attr.Value
+				}
+			}
+
+			identifiers = append(identifiers, identifier)
+		}
+	}
+	return identifiers
+}
+
+//--------------------------------------------------- TrackList ---------------------------------------------------
+
+func (x *XMLDecoder) parseTrackList() (trackList []Track) {
+	if x.err != nil {
+		return trackList
+	}
+
+	track := Track{}
+
+	var t xml.Token
+	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
+		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "tracklist" {
+			break
+		}
+		if se, ok := t.(xml.StartElement); ok {
+			switch se.Name.Local {
+			case "position":
+				track.Position = x.parseValue()
+			case "title":
+				track.Title = x.parseValue()
+			case "duration":
+				track.Duration = x.parseValue()
+			}
+		}
+
+		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "track" {
+			trackList = append(trackList, track)
+			track = Track{}
+		}
+	}
+
+	return trackList
+}
+
+//--------------------------------------------------- Video ---------------------------------------------------
+
+func (x *XMLDecoder) parseVideos() (videos []Video) {
+	if x.err != nil {
+		return videos
+	}
+
+	video := Video{}
+
+	var t xml.Token
+	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
+		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "videos" {
+			break
+		}
+		if se, ok := t.(xml.StartElement); ok {
+			switch se.Name.Local {
+			case "video":
+				for _, attr := range se.Attr {
+					switch attr.Name.Local {
+					case "duration":
+						video.Duration = attr.Value
+					case "embed":
+						video.Embed = attr.Value
+					case "src":
+						video.Src = attr.Value
+					}
+				}
+			case "title":
+				video.Title = x.parseValue()
+			case "description":
+				video.Description = x.parseValue()
+			}
+		}
+
+		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "video" {
+			videos = append(videos, video)
+			video = Video{}
+		}
+	}
+
+	return videos
+}
