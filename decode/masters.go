@@ -1,11 +1,10 @@
-package decoder
+package decode
 
 import (
 	"encoding/xml"
-	"github.com/lukasaron/discogs-parser/model"
 )
 
-func (x *XMLDecoder) parseMasters(limit int) (masters []model.Master) {
+func (x *XMLDecoder) parseMasters(limit int) (masters []Master) {
 	if x.err != nil {
 		return masters
 	}
@@ -27,7 +26,7 @@ func (x *XMLDecoder) parseMasters(limit int) (masters []model.Master) {
 	return masters
 }
 
-func (x *XMLDecoder) parseMaster(se xml.StartElement) (master model.Master) {
+func (x *XMLDecoder) parseMaster(se xml.StartElement) (master Master) {
 	if x.err != nil {
 		return master
 	}

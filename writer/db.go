@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/lukasaron/discogs-parser/model"
+	"github.com/lukasaron/discogs-parser/decode"
 )
 
 type DbWriter struct {
@@ -33,7 +33,7 @@ func (db DbWriter) Close() error {
 	return db.db.Close()
 }
 
-func (db DbWriter) WriteArtist(artist model.Artist) error {
+func (db DbWriter) WriteArtist(artist decode.Artist) error {
 	tx, err := db.db.BeginTx(context.Background(), nil)
 	if err != nil {
 		return err
@@ -52,7 +52,7 @@ func (db DbWriter) WriteArtist(artist model.Artist) error {
 	return tx.Commit()
 }
 
-func (db DbWriter) WriteArtists(artists []model.Artist) error {
+func (db DbWriter) WriteArtists(artists []decode.Artist) error {
 	tx, err := db.db.BeginTx(context.Background(), nil)
 	if err != nil {
 		return err
@@ -73,7 +73,7 @@ func (db DbWriter) WriteArtists(artists []model.Artist) error {
 	return tx.Commit()
 }
 
-func (db DbWriter) WriteLabel(label model.Label) error {
+func (db DbWriter) WriteLabel(label decode.Label) error {
 	tx, err := db.db.BeginTx(context.Background(), nil)
 	if err != nil {
 		return err
@@ -95,7 +95,7 @@ func (db DbWriter) WriteLabel(label model.Label) error {
 	return tx.Commit()
 }
 
-func (db DbWriter) WriteLabels(labels []model.Label) error {
+func (db DbWriter) WriteLabels(labels []decode.Label) error {
 	tx, err := db.db.BeginTx(context.Background(), nil)
 	if err != nil {
 		return err
@@ -119,7 +119,7 @@ func (db DbWriter) WriteLabels(labels []model.Label) error {
 	return tx.Commit()
 }
 
-func (db DbWriter) WriteMaster(master model.Master) error {
+func (db DbWriter) WriteMaster(master decode.Master) error {
 	tx, err := db.db.BeginTx(context.Background(), nil)
 	if err != nil {
 		return err
@@ -138,7 +138,7 @@ func (db DbWriter) WriteMaster(master model.Master) error {
 	return tx.Commit()
 }
 
-func (db DbWriter) WriteMasters(masters []model.Master) error {
+func (db DbWriter) WriteMasters(masters []decode.Master) error {
 	tx, err := db.db.BeginTx(context.Background(), nil)
 	if err != nil {
 		return err
@@ -159,7 +159,7 @@ func (db DbWriter) WriteMasters(masters []model.Master) error {
 	return tx.Commit()
 }
 
-func (db DbWriter) WriteRelease(release model.Release) error {
+func (db DbWriter) WriteRelease(release decode.Release) error {
 	tx, err := db.db.BeginTx(context.Background(), nil)
 	if err != nil {
 		return err
@@ -183,7 +183,7 @@ func (db DbWriter) WriteRelease(release model.Release) error {
 	return tx.Commit()
 }
 
-func (db DbWriter) WriteReleases(releases []model.Release) error {
+func (db DbWriter) WriteReleases(releases []decode.Release) error {
 	tx, err := db.db.BeginTx(context.Background(), nil)
 	if err != nil {
 		return err
@@ -210,7 +210,7 @@ func (db DbWriter) WriteReleases(releases []model.Release) error {
 	return tx.Commit()
 }
 
-func (db DbWriter) writeLabel(tx *sql.Tx, l model.Label) {
+func (db DbWriter) writeLabel(tx *sql.Tx, l decode.Label) {
 	if db.err != nil {
 		return
 	}
@@ -226,7 +226,7 @@ func (db DbWriter) writeLabel(tx *sql.Tx, l model.Label) {
 		array(l.Urls))
 }
 
-func (db DbWriter) writeLabelLabel(tx *sql.Tx, labelId, parent string, ll model.LabelLabel) {
+func (db DbWriter) writeLabelLabel(tx *sql.Tx, labelId, parent string, ll decode.LabelLabel) {
 	if db.err != nil {
 		return
 	}
@@ -240,7 +240,7 @@ func (db DbWriter) writeLabelLabel(tx *sql.Tx, labelId, parent string, ll model.
 		parent)
 }
 
-func (db DbWriter) writeLabelLabels(tx *sql.Tx, labelId, parent string, lls []model.LabelLabel) {
+func (db DbWriter) writeLabelLabels(tx *sql.Tx, labelId, parent string, lls []decode.LabelLabel) {
 	if db.err != nil {
 		return
 	}
@@ -253,7 +253,7 @@ func (db DbWriter) writeLabelLabels(tx *sql.Tx, labelId, parent string, lls []mo
 	}
 }
 
-func (db DbWriter) writeMaster(tx *sql.Tx, m model.Master) {
+func (db DbWriter) writeMaster(tx *sql.Tx, m decode.Master) {
 	if db.err != nil {
 		return
 	}
@@ -270,7 +270,7 @@ func (db DbWriter) writeMaster(tx *sql.Tx, m model.Master) {
 		m.DataQuality)
 }
 
-func (db DbWriter) writeRelease(tx *sql.Tx, r model.Release) {
+func (db DbWriter) writeRelease(tx *sql.Tx, r decode.Release) {
 	if db.err != nil {
 		return
 	}
@@ -291,7 +291,7 @@ func (db DbWriter) writeRelease(tx *sql.Tx, r model.Release) {
 		r.MainRelease)
 }
 
-func (db DbWriter) writeCompany(tx *sql.Tx, releaseId string, c model.Company) {
+func (db DbWriter) writeCompany(tx *sql.Tx, releaseId string, c decode.Company) {
 	if db.err != nil {
 		return
 	}
@@ -308,7 +308,7 @@ func (db DbWriter) writeCompany(tx *sql.Tx, releaseId string, c model.Company) {
 		cleanText(c.ResourceUrl))
 }
 
-func (db DbWriter) writeCompanies(tx *sql.Tx, releaseId string, cs []model.Company) {
+func (db DbWriter) writeCompanies(tx *sql.Tx, releaseId string, cs []decode.Company) {
 	if db.err != nil {
 		return
 	}
@@ -321,7 +321,7 @@ func (db DbWriter) writeCompanies(tx *sql.Tx, releaseId string, cs []model.Compa
 	}
 }
 
-func (db DbWriter) writeReleaseArtist(tx *sql.Tx, masterId, releaseId, extra string, ra model.ReleaseArtist) {
+func (db DbWriter) writeReleaseArtist(tx *sql.Tx, masterId, releaseId, extra string, ra decode.ReleaseArtist) {
 	if db.err != nil {
 		return
 	}
@@ -340,7 +340,7 @@ func (db DbWriter) writeReleaseArtist(tx *sql.Tx, masterId, releaseId, extra str
 		cleanText(ra.Tracks))
 }
 
-func (db DbWriter) writeReleaseArtists(tx *sql.Tx, masterId, releaseId, extra string, ras []model.ReleaseArtist) {
+func (db DbWriter) writeReleaseArtists(tx *sql.Tx, masterId, releaseId, extra string, ras []decode.ReleaseArtist) {
 	if db.err != nil {
 		return
 	}
@@ -353,7 +353,7 @@ func (db DbWriter) writeReleaseArtists(tx *sql.Tx, masterId, releaseId, extra st
 	}
 }
 
-func (db DbWriter) writeFormat(tx *sql.Tx, releaseId string, f model.Format) {
+func (db DbWriter) writeFormat(tx *sql.Tx, releaseId string, f decode.Format) {
 	if db.err != nil {
 		return
 	}
@@ -368,7 +368,7 @@ func (db DbWriter) writeFormat(tx *sql.Tx, releaseId string, f model.Format) {
 		array(f.Descriptions))
 }
 
-func (db DbWriter) writeFormats(tx *sql.Tx, releaseId string, fs []model.Format) {
+func (db DbWriter) writeFormats(tx *sql.Tx, releaseId string, fs []decode.Format) {
 	if db.err != nil {
 		return
 	}
@@ -381,7 +381,7 @@ func (db DbWriter) writeFormats(tx *sql.Tx, releaseId string, fs []model.Format)
 	}
 }
 
-func (db DbWriter) writeTrack(tx *sql.Tx, releaseId string, t model.Track) {
+func (db DbWriter) writeTrack(tx *sql.Tx, releaseId string, t decode.Track) {
 	if db.err != nil {
 		return
 	}
@@ -395,7 +395,7 @@ func (db DbWriter) writeTrack(tx *sql.Tx, releaseId string, t model.Track) {
 		cleanText(t.Duration))
 }
 
-func (db DbWriter) writeTrackList(tx *sql.Tx, releaseId string, tl []model.Track) {
+func (db DbWriter) writeTrackList(tx *sql.Tx, releaseId string, tl []decode.Track) {
 	if db.err != nil {
 		return
 	}
@@ -408,7 +408,7 @@ func (db DbWriter) writeTrackList(tx *sql.Tx, releaseId string, tl []model.Track
 	}
 }
 
-func (db DbWriter) writeIdentifier(tx *sql.Tx, releaseId string, i model.Identifier) {
+func (db DbWriter) writeIdentifier(tx *sql.Tx, releaseId string, i decode.Identifier) {
 	if db.err != nil {
 		return
 	}
@@ -422,7 +422,7 @@ func (db DbWriter) writeIdentifier(tx *sql.Tx, releaseId string, i model.Identif
 		cleanText(i.Value))
 }
 
-func (db DbWriter) writeIdentifiers(tx *sql.Tx, releaseId string, is []model.Identifier) {
+func (db DbWriter) writeIdentifiers(tx *sql.Tx, releaseId string, is []decode.Identifier) {
 	if db.err != nil {
 		return
 	}
@@ -435,7 +435,7 @@ func (db DbWriter) writeIdentifiers(tx *sql.Tx, releaseId string, is []model.Ide
 	}
 }
 
-func (db DbWriter) writeReleaseLabel(tx *sql.Tx, releaseId string, rl model.ReleaseLabel) {
+func (db DbWriter) writeReleaseLabel(tx *sql.Tx, releaseId string, rl decode.ReleaseLabel) {
 	if db.err != nil {
 		return
 	}
@@ -449,7 +449,7 @@ func (db DbWriter) writeReleaseLabel(tx *sql.Tx, releaseId string, rl model.Rele
 		cleanText(rl.Category))
 }
 
-func (db DbWriter) writeReleaseLabels(tx *sql.Tx, releaseId string, rls []model.ReleaseLabel) {
+func (db DbWriter) writeReleaseLabels(tx *sql.Tx, releaseId string, rls []decode.ReleaseLabel) {
 	if db.err != nil {
 		return
 	}
@@ -462,7 +462,7 @@ func (db DbWriter) writeReleaseLabels(tx *sql.Tx, releaseId string, rls []model.
 	}
 }
 
-func (db DbWriter) writeAlias(tx *sql.Tx, artistId string, a model.Alias) {
+func (db DbWriter) writeAlias(tx *sql.Tx, artistId string, a decode.Alias) {
 	if db.err != nil {
 		return
 	}
@@ -475,7 +475,7 @@ func (db DbWriter) writeAlias(tx *sql.Tx, artistId string, a model.Alias) {
 		cleanText(a.Name))
 }
 
-func (db DbWriter) writeAliases(tx *sql.Tx, artistId string, as []model.Alias) {
+func (db DbWriter) writeAliases(tx *sql.Tx, artistId string, as []decode.Alias) {
 	if db.err != nil {
 		return
 	}
@@ -488,7 +488,7 @@ func (db DbWriter) writeAliases(tx *sql.Tx, artistId string, as []model.Alias) {
 	}
 }
 
-func (db DbWriter) writeImage(tx *sql.Tx, artistId, labelId, masterId, releaseId string, img model.Image) {
+func (db DbWriter) writeImage(tx *sql.Tx, artistId, labelId, masterId, releaseId string, img decode.Image) {
 	if db.err == nil && !db.options.ExcludeImages {
 		db.writeTransaction(
 			tx,
@@ -505,7 +505,7 @@ func (db DbWriter) writeImage(tx *sql.Tx, artistId, labelId, masterId, releaseId
 	}
 }
 
-func (db DbWriter) writeImages(tx *sql.Tx, artistId, labelId, masterId, releaseId string, imgs []model.Image) {
+func (db DbWriter) writeImages(tx *sql.Tx, artistId, labelId, masterId, releaseId string, imgs []decode.Image) {
 	if db.err == nil && !db.options.ExcludeImages {
 		for _, img := range imgs {
 			db.writeImage(tx, artistId, labelId, masterId, releaseId, img)
@@ -516,7 +516,7 @@ func (db DbWriter) writeImages(tx *sql.Tx, artistId, labelId, masterId, releaseI
 	}
 }
 
-func (db DbWriter) writeVideo(tx *sql.Tx, masterId, releaseId string, v model.Video) {
+func (db DbWriter) writeVideo(tx *sql.Tx, masterId, releaseId string, v decode.Video) {
 	if db.err != nil {
 		return
 	}
@@ -533,7 +533,7 @@ func (db DbWriter) writeVideo(tx *sql.Tx, masterId, releaseId string, v model.Vi
 		cleanText(v.Description))
 }
 
-func (db DbWriter) writeVideos(tx *sql.Tx, masterId, releaseId string, vs []model.Video) {
+func (db DbWriter) writeVideos(tx *sql.Tx, masterId, releaseId string, vs []decode.Video) {
 	if db.err != nil {
 		return
 	}
@@ -546,7 +546,7 @@ func (db DbWriter) writeVideos(tx *sql.Tx, masterId, releaseId string, vs []mode
 	}
 }
 
-func (db DbWriter) writeArtist(tx *sql.Tx, a model.Artist) {
+func (db DbWriter) writeArtist(tx *sql.Tx, a decode.Artist) {
 	if db.err != nil {
 		return
 	}
@@ -563,7 +563,7 @@ func (db DbWriter) writeArtist(tx *sql.Tx, a model.Artist) {
 		array(a.Urls))
 }
 
-func (db DbWriter) writeArtistMember(tx *sql.Tx, artistId string, m model.Member) {
+func (db DbWriter) writeArtistMember(tx *sql.Tx, artistId string, m decode.Member) {
 	if db.err != nil {
 		return
 	}
@@ -576,7 +576,7 @@ func (db DbWriter) writeArtistMember(tx *sql.Tx, artistId string, m model.Member
 		cleanText(m.Name))
 }
 
-func (db DbWriter) writeArtistMembers(tx *sql.Tx, artistId string, ms []model.Member) {
+func (db DbWriter) writeArtistMembers(tx *sql.Tx, artistId string, ms []decode.Member) {
 	if db.err != nil {
 		return
 	}

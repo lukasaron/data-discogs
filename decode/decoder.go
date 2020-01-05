@@ -1,10 +1,9 @@
 /*
-Package decoder implements a simple library for parsing Discogs dump files.
+Package decode implements a simple library for parsing Discogs dump files.
 */
-package decoder
+package decode
 
 import (
-	"github.com/lukasaron/discogs-parser/model"
 	"github.com/lukasaron/discogs-parser/writer"
 )
 
@@ -21,10 +20,10 @@ type Decoder interface {
 
 	Decode(writer.Writer) error
 
-	Artists(limit int) (int, []model.Artist, error)
-	Labels(limit int) (int, []model.Label, error)
-	Masters(limit int) (int, []model.Master, error)
-	Releases(limit int) (int, []model.Release, error)
+	Artists(limit int) (int, []Artist, error)
+	Labels(limit int) (int, []Label, error)
+	Masters(limit int) (int, []Master, error)
+	Releases(limit int) (int, []Release, error)
 }
 
 // Quality Level specifies the required data to be parsed based on the Discogs marking.

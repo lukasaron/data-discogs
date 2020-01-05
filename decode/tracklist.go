@@ -1,16 +1,15 @@
-package decoder
+package decode
 
 import (
 	"encoding/xml"
-	"github.com/lukasaron/discogs-parser/model"
 )
 
-func (x *XMLDecoder) parseTrackList() (trackList []model.Track) {
+func (x *XMLDecoder) parseTrackList() (trackList []Track) {
 	if x.err != nil {
 		return trackList
 	}
 
-	track := model.Track{}
+	track := Track{}
 
 	var t xml.Token
 	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
@@ -30,7 +29,7 @@ func (x *XMLDecoder) parseTrackList() (trackList []model.Track) {
 
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "track" {
 			trackList = append(trackList, track)
-			track = model.Track{}
+			track = Track{}
 		}
 	}
 

@@ -1,11 +1,10 @@
-package decoder
+package decode
 
 import (
 	"encoding/xml"
-	"github.com/lukasaron/discogs-parser/model"
 )
 
-func (x *XMLDecoder) parseImages(se xml.StartElement) (images []model.Image) {
+func (x *XMLDecoder) parseImages(se xml.StartElement) (images []Image) {
 	if x.err != nil {
 		return images
 	}
@@ -34,7 +33,7 @@ func (x *XMLDecoder) parseImages(se xml.StartElement) (images []model.Image) {
 	return images
 }
 
-func (x *XMLDecoder) parseImage(se xml.StartElement) (img model.Image) {
+func (x *XMLDecoder) parseImage(se xml.StartElement) (img Image) {
 	if x.err != nil {
 		return img
 	}

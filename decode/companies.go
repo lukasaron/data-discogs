@@ -1,16 +1,15 @@
-package decoder
+package decode
 
 import (
 	"encoding/xml"
-	"github.com/lukasaron/discogs-parser/model"
 )
 
-func (x *XMLDecoder) parseCompanies() (companies []model.Company) {
+func (x *XMLDecoder) parseCompanies() (companies []Company) {
 	if x.err != nil {
 		return companies
 	}
 
-	company := model.Company{}
+	company := Company{}
 	var t xml.Token
 	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "companies" {
@@ -36,7 +35,7 @@ func (x *XMLDecoder) parseCompanies() (companies []model.Company) {
 
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "company" {
 			companies = append(companies, company)
-			company = model.Company{}
+			company = Company{}
 		}
 	}
 	return companies

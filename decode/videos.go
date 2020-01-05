@@ -1,16 +1,15 @@
-package decoder
+package decode
 
 import (
 	"encoding/xml"
-	"github.com/lukasaron/discogs-parser/model"
 )
 
-func (x *XMLDecoder) parseVideos() (videos []model.Video) {
+func (x *XMLDecoder) parseVideos() (videos []Video) {
 	if x.err != nil {
 		return videos
 	}
 
-	video := model.Video{}
+	video := Video{}
 
 	var t xml.Token
 	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
@@ -39,7 +38,7 @@ func (x *XMLDecoder) parseVideos() (videos []model.Video) {
 
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "video" {
 			videos = append(videos, video)
-			video = model.Video{}
+			video = Video{}
 		}
 	}
 

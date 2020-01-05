@@ -1,11 +1,10 @@
-package decoder
+package decode
 
 import (
 	"encoding/xml"
-	"github.com/lukasaron/discogs-parser/model"
 )
 
-func (x *XMLDecoder) parseArtists(limit int) (artists []model.Artist) {
+func (x *XMLDecoder) parseArtists(limit int) (artists []Artist) {
 	if x.err != nil {
 		return artists
 	}
@@ -26,7 +25,7 @@ func (x *XMLDecoder) parseArtists(limit int) (artists []model.Artist) {
 	return artists
 }
 
-func (x *XMLDecoder) parseArtist(se xml.StartElement) (artist model.Artist) {
+func (x *XMLDecoder) parseArtist(se xml.StartElement) (artist Artist) {
 	if x.err != nil {
 		return artist
 	}
@@ -72,7 +71,7 @@ func (x *XMLDecoder) parseArtist(se xml.StartElement) (artist model.Artist) {
 	return artist
 }
 
-func (x *XMLDecoder) parseAliases() (aliases []model.Alias) {
+func (x *XMLDecoder) parseAliases() (aliases []Alias) {
 	if x.err != nil {
 		return
 	}
@@ -80,7 +79,7 @@ func (x *XMLDecoder) parseAliases() (aliases []model.Alias) {
 
 	for t, x.err = x.d.Token(); x.err == nil && !x.endElementName(t, "aliases"); t, x.err = x.d.Token() {
 		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "name" {
-			alias := model.Alias{
+			alias := Alias{
 				Id:   se.Attr[0].Value,
 				Name: x.parseValue(),
 			}
@@ -91,14 +90,14 @@ func (x *XMLDecoder) parseAliases() (aliases []model.Alias) {
 	return aliases
 }
 
-func (x *XMLDecoder) parseMembers() (members []model.Member) {
+func (x *XMLDecoder) parseMembers() (members []Member) {
 	if x.err != nil {
 		return
 	}
 	var t xml.Token
 	for t, x.err = x.d.Token(); x.err == nil && !x.endElementName(t, "members"); t, x.err = x.d.Token() {
 		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "name" {
-			member := model.Member{
+			member := Member{
 				Id:   se.Attr[0].Value,
 				Name: x.parseValue(),
 			}

@@ -3,7 +3,7 @@ package writer
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/lukasaron/discogs-parser/model"
+	"github.com/lukasaron/discogs-parser/decode"
 	"os"
 )
 
@@ -37,7 +37,7 @@ func (j *JsonWriter) Close() error {
 	return j.f.Close()
 }
 
-func (j *JsonWriter) WriteArtist(a model.Artist) error {
+func (j *JsonWriter) WriteArtist(a decode.Artist) error {
 	if j.option.ExcludeImages {
 		a.Images = nil
 	}
@@ -49,7 +49,7 @@ func (j *JsonWriter) WriteArtist(a model.Artist) error {
 	return j.err
 }
 
-func (j *JsonWriter) WriteArtists(artists []model.Artist) error {
+func (j *JsonWriter) WriteArtists(artists []decode.Artist) error {
 	j.writeInitial()
 
 	for _, a := range artists {
@@ -72,7 +72,7 @@ func (j *JsonWriter) WriteArtists(artists []model.Artist) error {
 	return j.err
 }
 
-func (j *JsonWriter) WriteLabel(label model.Label) error {
+func (j *JsonWriter) WriteLabel(label decode.Label) error {
 	if j.option.ExcludeImages {
 		label.Images = nil
 	}
@@ -84,7 +84,7 @@ func (j *JsonWriter) WriteLabel(label model.Label) error {
 	return j.err
 }
 
-func (j *JsonWriter) WriteLabels(labels []model.Label) error {
+func (j *JsonWriter) WriteLabels(labels []decode.Label) error {
 	j.writeInitial()
 
 	for _, l := range labels {
@@ -107,7 +107,7 @@ func (j *JsonWriter) WriteLabels(labels []model.Label) error {
 	return j.err
 }
 
-func (j *JsonWriter) WriteMaster(master model.Master) error {
+func (j *JsonWriter) WriteMaster(master decode.Master) error {
 	if j.option.ExcludeImages {
 		master.Images = nil
 	}
@@ -119,7 +119,7 @@ func (j *JsonWriter) WriteMaster(master model.Master) error {
 	return j.err
 }
 
-func (j *JsonWriter) WriteMasters(masters []model.Master) error {
+func (j *JsonWriter) WriteMasters(masters []decode.Master) error {
 	j.writeInitial()
 	for _, m := range masters {
 		j.writeDelimiter()
@@ -140,7 +140,7 @@ func (j *JsonWriter) WriteMasters(masters []model.Master) error {
 
 	return j.err
 }
-func (j *JsonWriter) WriteRelease(release model.Release) error {
+func (j *JsonWriter) WriteRelease(release decode.Release) error {
 	if j.option.ExcludeImages {
 		release.Images = nil
 	}
@@ -151,7 +151,7 @@ func (j *JsonWriter) WriteRelease(release model.Release) error {
 	return j.err
 }
 
-func (j *JsonWriter) WriteReleases(releases []model.Release) error {
+func (j *JsonWriter) WriteReleases(releases []decode.Release) error {
 	j.writeInitial()
 
 	for _, r := range releases {

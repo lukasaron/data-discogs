@@ -3,7 +3,7 @@ package writer
 import (
 	"bytes"
 	"fmt"
-	"github.com/lukasaron/discogs-parser/model"
+	"github.com/lukasaron/discogs-parser/decode"
 	"os"
 	"strings"
 )
@@ -27,7 +27,7 @@ func NewSqlWriter(fileName string, options ...Options) Writer {
 	return s
 }
 
-func (s SqlWriter) WriteArtist(artist model.Artist) error {
+func (s SqlWriter) WriteArtist(artist decode.Artist) error {
 	s.beginTransaction()
 
 	s.writeArtist(artist)
@@ -42,7 +42,7 @@ func (s SqlWriter) WriteArtist(artist model.Artist) error {
 	return s.err
 }
 
-func (s SqlWriter) WriteArtists(artists []model.Artist) error {
+func (s SqlWriter) WriteArtists(artists []decode.Artist) error {
 	s.beginTransaction()
 
 	for _, a := range artists {
@@ -63,7 +63,7 @@ func (s SqlWriter) WriteArtists(artists []model.Artist) error {
 	return s.err
 }
 
-func (s SqlWriter) WriteLabel(label model.Label) error {
+func (s SqlWriter) WriteLabel(label decode.Label) error {
 	s.beginTransaction()
 
 	s.writeLabel(label)
@@ -80,7 +80,7 @@ func (s SqlWriter) WriteLabel(label model.Label) error {
 	return s.err
 }
 
-func (s SqlWriter) WriteLabels(labels []model.Label) error {
+func (s SqlWriter) WriteLabels(labels []decode.Label) error {
 	s.beginTransaction()
 
 	for _, l := range labels {
@@ -102,7 +102,7 @@ func (s SqlWriter) WriteLabels(labels []model.Label) error {
 	return s.err
 }
 
-func (s SqlWriter) WriteMaster(master model.Master) (err error) {
+func (s SqlWriter) WriteMaster(master decode.Master) (err error) {
 	s.beginTransaction()
 
 	s.writeMaster(master)
@@ -117,7 +117,7 @@ func (s SqlWriter) WriteMaster(master model.Master) (err error) {
 	return s.err
 }
 
-func (s SqlWriter) WriteMasters(masters []model.Master) error {
+func (s SqlWriter) WriteMasters(masters []decode.Master) error {
 	s.beginTransaction()
 
 	for _, m := range masters {
@@ -137,7 +137,7 @@ func (s SqlWriter) WriteMasters(masters []model.Master) error {
 	return s.err
 }
 
-func (s SqlWriter) WriteRelease(release model.Release) error {
+func (s SqlWriter) WriteRelease(release decode.Release) error {
 	s.beginTransaction()
 
 	s.writeRelease(release)
@@ -158,7 +158,7 @@ func (s SqlWriter) WriteRelease(release model.Release) error {
 
 	return s.err
 }
-func (s SqlWriter) WriteReleases(releases []model.Release) error {
+func (s SqlWriter) WriteReleases(releases []decode.Release) error {
 	s.beginTransaction()
 
 	for _, r := range releases {
@@ -210,7 +210,7 @@ func (s SqlWriter) commitTransaction() {
 	_, s.err = s.buffer.WriteString("COMMIT;\n")
 }
 
-func (s SqlWriter) writeArtist(a model.Artist) {
+func (s SqlWriter) writeArtist(a decode.Artist) {
 	if s.err != nil {
 		return
 	}
@@ -227,7 +227,7 @@ func (s SqlWriter) writeArtist(a model.Artist) {
 	)
 }
 
-func (s SqlWriter) writeImage(artistId, labelId, masterId, releaseId string, img model.Image) {
+func (s SqlWriter) writeImage(artistId, labelId, masterId, releaseId string, img decode.Image) {
 	if !s.option.ExcludeImages {
 		_, s.err = s.buffer.WriteString(
 			fmt.Sprintf("INSERT INTO images (artist_id, label_id, master_id, release_id, height, width, type, uri, uri_150) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');\n",
@@ -245,7 +245,7 @@ func (s SqlWriter) writeImage(artistId, labelId, masterId, releaseId string, img
 	}
 }
 
-func (s SqlWriter) writeImages(artistId, labelId, masterId, releaseId string, imgs []model.Image) {
+func (s SqlWriter) writeImages(artistId, labelId, masterId, releaseId string, imgs []decode.Image) {
 	if s.err == nil && !s.option.ExcludeImages {
 		for _, img := range imgs {
 			s.writeImage(artistId, labelId, masterId, releaseId, img)
@@ -256,7 +256,7 @@ func (s SqlWriter) writeImages(artistId, labelId, masterId, releaseId string, im
 	}
 }
 
-func (s SqlWriter) writeAlias(artistId string, a model.Alias) {
+func (s SqlWriter) writeAlias(artistId string, a decode.Alias) {
 	if s.err != nil {
 		return
 	}
@@ -269,7 +269,7 @@ func (s SqlWriter) writeAlias(artistId string, a model.Alias) {
 	)
 }
 
-func (s SqlWriter) writeAliases(artistId string, as []model.Alias) {
+func (s SqlWriter) writeAliases(artistId string, as []decode.Alias) {
 	if s.err != nil {
 		return
 	}
@@ -282,7 +282,7 @@ func (s SqlWriter) writeAliases(artistId string, as []model.Alias) {
 	}
 }
 
-func (s SqlWriter) writeArtistMember(artistId string, m model.Member) {
+func (s SqlWriter) writeArtistMember(artistId string, m decode.Member) {
 	if s.err != nil {
 		return
 	}
@@ -294,7 +294,7 @@ func (s SqlWriter) writeArtistMember(artistId string, m model.Member) {
 	)
 }
 
-func (s SqlWriter) writeArtistMembers(artistId string, ms []model.Member) {
+func (s SqlWriter) writeArtistMembers(artistId string, ms []decode.Member) {
 	if s.err != nil {
 		return
 	}
@@ -307,7 +307,7 @@ func (s SqlWriter) writeArtistMembers(artistId string, ms []model.Member) {
 	}
 }
 
-func (s SqlWriter) writeLabel(l model.Label) {
+func (s SqlWriter) writeLabel(l decode.Label) {
 	if s.err != nil {
 		return
 	}
@@ -324,7 +324,7 @@ func (s SqlWriter) writeLabel(l model.Label) {
 	)
 }
 
-func (s SqlWriter) writeLabelLabel(labelId, parent string, l model.LabelLabel) {
+func (s SqlWriter) writeLabelLabel(labelId, parent string, l decode.LabelLabel) {
 	if s.err != nil {
 		return
 	}
@@ -339,7 +339,7 @@ func (s SqlWriter) writeLabelLabel(labelId, parent string, l model.LabelLabel) {
 	)
 }
 
-func (s SqlWriter) writeLabelLabels(labelId, parent string, lls []model.LabelLabel) {
+func (s SqlWriter) writeLabelLabels(labelId, parent string, lls []decode.LabelLabel) {
 	if s.err != nil {
 		return
 	}
@@ -352,7 +352,7 @@ func (s SqlWriter) writeLabelLabels(labelId, parent string, lls []model.LabelLab
 	}
 }
 
-func (s SqlWriter) writeMaster(m model.Master) {
+func (s SqlWriter) writeMaster(m decode.Master) {
 	if s.err != nil {
 		return
 	}
@@ -368,7 +368,7 @@ func (s SqlWriter) writeMaster(m model.Master) {
 	)
 }
 
-func (s SqlWriter) writeRelease(r model.Release) {
+func (s SqlWriter) writeRelease(r decode.Release) {
 	if s.err != nil {
 		return
 	}
@@ -388,7 +388,7 @@ func (s SqlWriter) writeRelease(r model.Release) {
 	)
 }
 
-func (s SqlWriter) writeCompany(releaseId string, c model.Company) {
+func (s SqlWriter) writeCompany(releaseId string, c decode.Company) {
 	if s.err != nil {
 		return
 	}
@@ -404,7 +404,7 @@ func (s SqlWriter) writeCompany(releaseId string, c model.Company) {
 	)
 }
 
-func (s SqlWriter) writeCompanies(releaseId string, cs []model.Company) {
+func (s SqlWriter) writeCompanies(releaseId string, cs []decode.Company) {
 	if s.err != nil {
 		return
 	}
@@ -417,7 +417,7 @@ func (s SqlWriter) writeCompanies(releaseId string, cs []model.Company) {
 	}
 }
 
-func (s SqlWriter) writeReleaseLabel(releaseId string, rl model.ReleaseLabel) {
+func (s SqlWriter) writeReleaseLabel(releaseId string, rl decode.ReleaseLabel) {
 	if s.err != nil {
 		return
 	}
@@ -430,7 +430,7 @@ func (s SqlWriter) writeReleaseLabel(releaseId string, rl model.ReleaseLabel) {
 	)
 }
 
-func (s SqlWriter) writeReleaseLabels(releaseId string, rls []model.ReleaseLabel) {
+func (s SqlWriter) writeReleaseLabels(releaseId string, rls []decode.ReleaseLabel) {
 	if s.err != nil {
 		return
 	}
@@ -443,7 +443,7 @@ func (s SqlWriter) writeReleaseLabels(releaseId string, rls []model.ReleaseLabel
 	}
 }
 
-func (s SqlWriter) writeIdentifier(releaseId string, i model.Identifier) {
+func (s SqlWriter) writeIdentifier(releaseId string, i decode.Identifier) {
 	if s.err != nil {
 		return
 	}
@@ -456,7 +456,7 @@ func (s SqlWriter) writeIdentifier(releaseId string, i model.Identifier) {
 	)
 }
 
-func (s SqlWriter) writeIdentifiers(releaseId string, is []model.Identifier) {
+func (s SqlWriter) writeIdentifiers(releaseId string, is []decode.Identifier) {
 	if s.err != nil {
 		return
 	}
@@ -469,7 +469,7 @@ func (s SqlWriter) writeIdentifiers(releaseId string, is []model.Identifier) {
 	}
 }
 
-func (s SqlWriter) writeTrack(releaseId string, t model.Track) {
+func (s SqlWriter) writeTrack(releaseId string, t decode.Track) {
 	if s.err != nil {
 		return
 	}
@@ -482,7 +482,7 @@ func (s SqlWriter) writeTrack(releaseId string, t model.Track) {
 	)
 }
 
-func (s SqlWriter) writeTrackList(releaseId string, tl []model.Track) {
+func (s SqlWriter) writeTrackList(releaseId string, tl []decode.Track) {
 	if s.err != nil {
 		return
 	}
@@ -495,7 +495,7 @@ func (s SqlWriter) writeTrackList(releaseId string, tl []model.Track) {
 	}
 }
 
-func (s SqlWriter) writeFormat(releaseId string, f model.Format) {
+func (s SqlWriter) writeFormat(releaseId string, f decode.Format) {
 	if s.err != nil {
 		return
 	}
@@ -509,7 +509,7 @@ func (s SqlWriter) writeFormat(releaseId string, f model.Format) {
 	)
 }
 
-func (s SqlWriter) writeFormats(releaseId string, fs []model.Format) {
+func (s SqlWriter) writeFormats(releaseId string, fs []decode.Format) {
 	if s.err != nil {
 		return
 	}
@@ -522,7 +522,7 @@ func (s SqlWriter) writeFormats(releaseId string, fs []model.Format) {
 	}
 }
 
-func (s SqlWriter) writeReleaseArtist(masterId, releaseId, extra string, ra model.ReleaseArtist) {
+func (s SqlWriter) writeReleaseArtist(masterId, releaseId, extra string, ra decode.ReleaseArtist) {
 	if s.err != nil {
 		return
 	}
@@ -540,7 +540,7 @@ func (s SqlWriter) writeReleaseArtist(masterId, releaseId, extra string, ra mode
 	)
 }
 
-func (s SqlWriter) writeReleaseArtists(masterId, releaseId, extra string, ras []model.ReleaseArtist) {
+func (s SqlWriter) writeReleaseArtists(masterId, releaseId, extra string, ras []decode.ReleaseArtist) {
 	if s.err != nil {
 		return
 	}
@@ -553,7 +553,7 @@ func (s SqlWriter) writeReleaseArtists(masterId, releaseId, extra string, ras []
 	}
 }
 
-func (s SqlWriter) writeVideo(masterId, releaseId string, v model.Video) {
+func (s SqlWriter) writeVideo(masterId, releaseId string, v decode.Video) {
 	if s.err != nil {
 		return
 	}
@@ -569,7 +569,7 @@ func (s SqlWriter) writeVideo(masterId, releaseId string, v model.Video) {
 	)
 }
 
-func (s SqlWriter) writeVideos(masterId, releaseId string, vs []model.Video) {
+func (s SqlWriter) writeVideos(masterId, releaseId string, vs []decode.Video) {
 	if s.err != nil {
 		return
 	}

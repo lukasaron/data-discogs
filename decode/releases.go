@@ -1,11 +1,10 @@
-package decoder
+package decode
 
 import (
 	"encoding/xml"
-	"github.com/lukasaron/discogs-parser/model"
 )
 
-func (x *XMLDecoder) parseReleases(limit int) (releases []model.Release) {
+func (x *XMLDecoder) parseReleases(limit int) (releases []Release) {
 	if x.err != nil {
 		return releases
 	}
@@ -27,7 +26,7 @@ func (x *XMLDecoder) parseReleases(limit int) (releases []model.Release) {
 	return releases
 }
 
-func (x *XMLDecoder) parseRelease(se xml.StartElement) (release model.Release) {
+func (x *XMLDecoder) parseRelease(se xml.StartElement) (release Release) {
 	if x.err != nil {
 		return release
 	}
@@ -99,12 +98,12 @@ func (x *XMLDecoder) parseRelease(se xml.StartElement) (release model.Release) {
 	return release
 }
 
-func (x *XMLDecoder) parseReleaseArtists(wrapperName string) (artists []model.ReleaseArtist) {
+func (x *XMLDecoder) parseReleaseArtists(wrapperName string) (artists []ReleaseArtist) {
 	if x.err != nil {
 		return artists
 	}
 
-	artist := model.ReleaseArtist{}
+	artist := ReleaseArtist{}
 	var t xml.Token
 	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == wrapperName {
@@ -129,13 +128,13 @@ func (x *XMLDecoder) parseReleaseArtists(wrapperName string) (artists []model.Re
 
 		if ee, ok := t.(xml.EndElement); ok && ee.Name.Local == "artist" {
 			artists = append(artists, artist)
-			artist = model.ReleaseArtist{}
+			artist = ReleaseArtist{}
 		}
 	}
 	return artists
 }
 
-func (x *XMLDecoder) parseReleaseLabels() (labels []model.ReleaseLabel) {
+func (x *XMLDecoder) parseReleaseLabels() (labels []ReleaseLabel) {
 	if x.err != nil {
 		return labels
 	}
@@ -146,7 +145,7 @@ func (x *XMLDecoder) parseReleaseLabels() (labels []model.ReleaseLabel) {
 			break
 		}
 		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "label" {
-			label := model.ReleaseLabel{}
+			label := ReleaseLabel{}
 
 			for _, attr := range se.Attr {
 				switch attr.Name.Local {
@@ -165,7 +164,7 @@ func (x *XMLDecoder) parseReleaseLabels() (labels []model.ReleaseLabel) {
 	return labels
 }
 
-func (x *XMLDecoder) parseIdentifiers() (identifiers []model.Identifier) {
+func (x *XMLDecoder) parseIdentifiers() (identifiers []Identifier) {
 	if x.err != nil {
 		return identifiers
 	}
@@ -176,7 +175,7 @@ func (x *XMLDecoder) parseIdentifiers() (identifiers []model.Identifier) {
 			break
 		}
 		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "identifier" {
-			identifier := model.Identifier{}
+			identifier := Identifier{}
 			for _, attr := range se.Attr {
 				switch attr.Name.Local {
 				case "description":

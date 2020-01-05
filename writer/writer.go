@@ -1,18 +1,18 @@
 package writer
 
 import (
-	"github.com/lukasaron/discogs-parser/model"
+	"github.com/lukasaron/discogs-parser/decode"
 )
 
 type Writer interface {
-	WriteArtist(artist model.Artist) error
-	WriteArtists(artists []model.Artist) error
-	WriteLabel(label model.Label) error
-	WriteLabels(labels []model.Label) error
-	WriteMaster(master model.Master) error
-	WriteMasters(masters []model.Master) error
-	WriteRelease(release model.Release) error
-	WriteReleases(releases []model.Release) error
+	WriteArtist(artist decode.Artist) error
+	WriteArtists(artists []decode.Artist) error
+	WriteLabel(label decode.Label) error
+	WriteLabels(labels []decode.Label) error
+	WriteMaster(master decode.Master) error
+	WriteMasters(masters []decode.Master) error
+	WriteRelease(release decode.Release) error
+	WriteReleases(releases []decode.Release) error
 	Reset() error
 	Close() error
 }

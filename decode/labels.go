@@ -1,11 +1,10 @@
-package decoder
+package decode
 
 import (
 	"encoding/xml"
-	"github.com/lukasaron/discogs-parser/model"
 )
 
-func (x *XMLDecoder) parseLabels(limit int) (labels []model.Label) {
+func (x *XMLDecoder) parseLabels(limit int) (labels []Label) {
 	if x.err != nil {
 		return labels
 	}
@@ -27,7 +26,7 @@ func (x *XMLDecoder) parseLabels(limit int) (labels []model.Label) {
 	return labels
 }
 
-func (x *XMLDecoder) parseLabel(se xml.StartElement) (label model.Label) {
+func (x *XMLDecoder) parseLabel(se xml.StartElement) (label Label) {
 	if x.err != nil {
 		return label
 	}
@@ -63,7 +62,7 @@ func (x *XMLDecoder) parseLabel(se xml.StartElement) (label model.Label) {
 			case "data_quality":
 				label.DataQuality = x.parseValue()
 			case "parentLabel":
-				label.ParentLabel = &model.LabelLabel{
+				label.ParentLabel = &LabelLabel{
 					Id:   se.Attr[0].Value,
 					Name: x.parseValue(),
 				}
@@ -77,7 +76,7 @@ func (x *XMLDecoder) parseLabel(se xml.StartElement) (label model.Label) {
 	return label
 }
 
-func (x *XMLDecoder) parseSubLabels() (labels []model.LabelLabel) {
+func (x *XMLDecoder) parseSubLabels() (labels []LabelLabel) {
 	if x.err != nil {
 		return labels
 	}
@@ -88,7 +87,7 @@ func (x *XMLDecoder) parseSubLabels() (labels []model.LabelLabel) {
 			break
 		}
 		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "label" {
-			label := model.LabelLabel{}
+			label := LabelLabel{}
 			label.Id = se.Attr[0].Value
 			label.Name = x.parseValue()
 			labels = append(labels, label)

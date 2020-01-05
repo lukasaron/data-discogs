@@ -1,11 +1,10 @@
-package decoder
+package decode
 
 import (
 	"encoding/xml"
-	"github.com/lukasaron/discogs-parser/model"
 )
 
-func (x *XMLDecoder) parseFormats() (formats []model.Format) {
+func (x *XMLDecoder) parseFormats() (formats []Format) {
 	if x.err != nil {
 		return formats
 	}
@@ -16,7 +15,7 @@ func (x *XMLDecoder) parseFormats() (formats []model.Format) {
 			break
 		}
 		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "format" {
-			format := model.Format{}
+			format := Format{}
 			for _, attr := range se.Attr {
 				switch attr.Name.Local {
 				case "qty":
