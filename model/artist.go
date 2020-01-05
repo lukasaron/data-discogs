@@ -1,5 +1,8 @@
 package model
 
+//--------------------------------------------------- Artists ---------------------------------------------------
+
+// Artist is one of the main structure from Discogs.
 type Artist struct {
 	Id             string   `json:"id"`
 	Name           string   `json:"name"`
@@ -13,11 +16,13 @@ type Artist struct {
 	Members        []Member `json:"members,omitempty"`
 }
 
+// Alias is a sub structure of Artist.
 type Alias struct {
 	Id   string `json:"id"`
 	Name string `json:"name"`
 }
 
+// Member is a sub structure of Artist.
 type Member struct {
 	Id   string `json:"id"`
 	Name string `json:"name"`

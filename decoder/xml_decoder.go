@@ -4,12 +4,16 @@ import (
 	"encoding/xml"
 	"errors"
 	"github.com/lukasaron/discogs-parser/model"
+	"github.com/lukasaron/discogs-parser/writer"
 	"io"
+	"log"
 	"os"
 	"strings"
 )
 
 var (
+	// Errors returned when failure occurs
+	wrongTypeSpecified    = errors.New("wrong file type specified")
 	notCorrectStarElement = errors.New("token is not a correct start element")
 )
 
@@ -45,6 +49,44 @@ func (x *XMLDecoder) Options() Options {
 
 func (x *XMLDecoder) SetOptions(opt Options) {
 	x.o = opt
+}
+
+// Decode data
+func (x *XMLDecoder) Decode(writer writer.Writer) error {
+	if x.err != nil {
+		return x.err
+	}
+
+	if x.o.Block.Limit < 1 {
+		x.o.Block.Limit = int(^uint(0) >> 1)
+	}
+
+	// get decode function based on the file type
+	fn, err := x.decodeFunction()
+	if err != nil {
+		return err
+	}
+
+	for blockCount := 1; blockCount <= x.o.Block.Limit; blockCount++ {
+		// call appropriate decoder function
+		num, err := fn(writer, x.o.Block.Size, blockCount > x.o.Block.Skip)
+		if err != nil && err != io.EOF {
+			log.Printf("Block %d failed [%d]\n", blockCount, num)
+			return err
+		}
+
+		if num == 0 && err == io.EOF {
+			break
+		}
+
+		if blockCount > x.o.Block.Skip {
+			log.Printf("Block %d written [%d]\n", blockCount, num)
+		} else {
+			log.Printf("Block %d skipped [%d]\n", blockCount, num)
+		}
+	}
+
+	return nil
 }
 
 func (x *XMLDecoder) Artists(limit int) (int, []model.Artist, error) {
@@ -140,6 +182,77 @@ func (x *XMLDecoder) filterReleases(rs []model.Release) []model.Release {
 	}
 
 	return fr
+}
+
+//--------------------------------------------------- Decoders ---------------------------------------------------
+
+func (x *XMLDecoder) decodeFunction() (func(writer.Writer, int, bool) (int, error), error) {
+	switch x.o.FileType {
+	case Artists:
+		return x.decodeArtists, nil
+	case Labels:
+		return x.decodeLabels, nil
+	case Masters:
+		return x.decodeMasters, nil
+	case Releases:
+		return x.decodeReleases, nil
+	case Unknown:
+		fallthrough
+	default:
+		return nil, wrongTypeSpecified
+	}
+}
+
+func (x *XMLDecoder) decodeArtists(w writer.Writer, blockSize int, write bool) (int, error) {
+	num, a, err := x.Artists(blockSize)
+	if (err != nil && err != io.EOF) || num == 0 {
+		return num, err
+	}
+
+	if write {
+		return num, w.WriteArtists(a)
+	}
+
+	return num, err
+}
+
+func (x *XMLDecoder) decodeLabels(w writer.Writer, blockSize int, write bool) (int, error) {
+	num, l, err := x.Labels(blockSize)
+	if (err != nil && err != io.EOF) || num == 0 {
+		return num, err
+	}
+
+	if write {
+		return num, w.WriteLabels(l)
+	}
+
+	return num, err
+}
+
+func (x *XMLDecoder) decodeMasters(w writer.Writer, blockSize int, write bool) (int, error) {
+	num, m, err := x.Masters(blockSize)
+	if (err != nil && err != io.EOF) || num == 0 {
+		return num, err
+	}
+
+	if write {
+		return num, w.WriteMasters(m)
+	}
+
+	return num, err
+}
+
+func (x *XMLDecoder) decodeReleases(w writer.Writer, blockSize int, write bool) (int, error) {
+	num, r, err := x.Releases(blockSize)
+	if (err != nil && err != io.EOF) || num == 0 {
+		return num, err
+	}
+
+	if write {
+		return num, w.WriteReleases(r)
+	}
+
+	return num, err
 }
 
 //--------------------------------------------------- HELPERS ---------------------------------------------------

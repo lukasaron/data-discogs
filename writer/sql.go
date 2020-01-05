@@ -33,7 +33,7 @@ func (s SqlWriter) WriteArtist(artist model.Artist) error {
 	s.writeArtist(artist)
 	s.writeImages(artist.Id, "", "", "", artist.Images)
 	s.writeAliases(artist.Id, artist.Aliases)
-	s.writeMembers(artist.Id, artist.Members)
+	s.writeArtistMembers(artist.Id, artist.Members)
 
 	s.commitTransaction()
 	s.flush()
@@ -49,7 +49,7 @@ func (s SqlWriter) WriteArtists(artists []model.Artist) error {
 		s.writeArtist(a)
 		s.writeImages(a.Id, "", "", "", a.Images)
 		s.writeAliases(a.Id, a.Aliases)
-		s.writeMembers(a.Id, a.Members)
+		s.writeArtistMembers(a.Id, a.Members)
 
 		if s.err != nil {
 			return s.err
@@ -282,7 +282,7 @@ func (s SqlWriter) writeAliases(artistId string, as []model.Alias) {
 	}
 }
 
-func (s SqlWriter) writeMember(artistId string, m model.Member) {
+func (s SqlWriter) writeArtistMember(artistId string, m model.Member) {
 	if s.err != nil {
 		return
 	}
@@ -294,13 +294,13 @@ func (s SqlWriter) writeMember(artistId string, m model.Member) {
 	)
 }
 
-func (s SqlWriter) writeMembers(artistId string, ms []model.Member) {
+func (s SqlWriter) writeArtistMembers(artistId string, ms []model.Member) {
 	if s.err != nil {
 		return
 	}
 
 	for _, m := range ms {
-		s.writeMember(artistId, m)
+		s.writeArtistMember(artistId, m)
 		if s.err != nil {
 			return
 		}
