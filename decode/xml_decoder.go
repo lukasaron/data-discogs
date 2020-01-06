@@ -56,34 +56,45 @@ func (x *XMLDecoder) Reset() error {
 	return x.err
 }
 
-// Decode data
+// Decode data and save the result into the writer. The type of data is already defined by Option passed during creating
+// the decoder - otherwise Unknown file type is specified.
 func (x *XMLDecoder) Decode(w write.Writer) error {
 	if x.err != nil {
 		return x.err
 	}
 
+	var df func(write.Writer, int, bool) (int, error)
+	var num int
+
 	if x.o.Block.Limit < 1 {
 		x.o.Block.Limit = int(^uint(0) >> 1)
 	}
 
+	if x.o.Block.Size < 1 {
+		x.o.Block.Size = 10
+	}
+
 	// get decode function based on the file type
-	fn, err := x.decodeFunction()
-	if err != nil {
-		return err
+	df, x.err = x.decodeFunction()
+	if x.err != nil {
+		return x.err
 	}
 
 	for blockCount := 1; blockCount <= x.o.Block.Limit; blockCount++ {
 		// call appropriate decoder function
-		num, err := fn(w, x.o.Block.Size, blockCount > x.o.Block.Skip)
-		if err != nil && err != io.EOF {
+		num, x.err = df(w, x.o.Block.Size, blockCount > x.o.Block.Skip)
+		// error occurs (not the end of stream)
+		if x.err != nil && x.err != io.EOF {
 			log.Printf("Block %d failed [%d]\n", blockCount, num)
-			return err
+			return x.err
 		}
 
-		if num == 0 && err == io.EOF {
+		// no data anymore, end of stream
+		if num == 0 && x.err == io.EOF {
 			break
 		}
 
+		// we have data and no error (except end of stream)
 		if blockCount > x.o.Block.Skip {
 			log.Printf("Block %d written [%d]\n", blockCount, num)
 		} else {
@@ -91,7 +102,7 @@ func (x *XMLDecoder) Decode(w write.Writer) error {
 		}
 	}
 
-	return nil
+	return x.err
 }
 
 func (x *XMLDecoder) Artists(limit int) (int, []model.Artist, error) {
@@ -260,7 +271,7 @@ func (x *XMLDecoder) decodeReleases(w write.Writer, blockSize int, write bool) (
 	return num, err
 }
 
-//--------------------------------------------------- HELPERS ---------------------------------------------------
+//--------------------------------------------------- Helpers ---------------------------------------------------
 
 func (x *XMLDecoder) startElement(token xml.Token) bool {
 	_, ok := token.(xml.StartElement)
