@@ -50,6 +50,11 @@ func (x *XMLDecoder) SetOptions(opt Options) {
 	x.o = opt
 }
 
+func (x *XMLDecoder) Reset() error {
+	_, x.err = x.f.Seek(0, 0)
+	return x.err
+}
+
 // Decode data
 func (x *XMLDecoder) Decode(w writer.Writer) error {
 	if x.err != nil {

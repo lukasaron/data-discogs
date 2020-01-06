@@ -18,6 +18,7 @@ type Decoder interface {
 	Options() Options
 	SetOptions(Options)
 
+	Reset() error
 	Decode(writer.Writer) error
 
 	Artists(limit int) (int, []Artist, error)
