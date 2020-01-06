@@ -4,7 +4,7 @@ Package write covers specification of a writing feature to already parsed Discog
 package write
 
 import (
-	"github.com/lukasaron/discogs-parser/model"
+	"github.com/lukasaron/data-discogs/model"
 )
 
 /*

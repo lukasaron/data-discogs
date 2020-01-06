@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/lukasaron/discogs-parser/model"
+	"github.com/lukasaron/data-discogs/model"
 )
 
 type DbWriter struct {

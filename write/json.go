@@ -3,7 +3,7 @@ package write
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/lukasaron/discogs-parser/model"
+	"github.com/lukasaron/data-discogs/model"
 	"os"
 )
 

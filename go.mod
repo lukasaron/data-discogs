@@ -1,3 +1,3 @@
-module github.com/lukasaron/discogs-parser
+module github.com/lukasaron/data-discogs
 
 go 1.13

@@ -1,4 +1,4 @@
-// Discogs Parser introduces a way to categorize XML data dumps from Discogs [https://data.discogs.com/].
+// Data Discogs Parser introduces a way to categorize XML data dumps from Discogs [https://data.discogs.com/].
 //
 // The intention of using this parser is a library, which means there is not an executable part provided.
 // The project has no other dependencies than the Golang language itself.
@@ -22,7 +22,7 @@
 // Example of basic usage:
 //		import (
 //			"fmt"
-//			"github.com/lukasaron/discogs-parser/decode"
+//			"github.com/lukasaron/data-discogs/decode"
 //		)
 //		func main() {
 //			d := decode.NewXmlDecoder("./data_samples/artists.xml", nil)
@@ -32,4 +32,4 @@
 //		}
 //
 // By Lukas Aron
-package discogs_parser
+package discogs

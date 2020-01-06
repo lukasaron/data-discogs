@@ -4,8 +4,8 @@ Package decode implements a simple library for parsing Discogs dump files.
 package decode
 
 import (
-	"github.com/lukasaron/discogs-parser/model"
-	"github.com/lukasaron/discogs-parser/write"
+	"github.com/lukasaron/data-discogs/model"
+	"github.com/lukasaron/data-discogs/write"
 )
 
 // Decoder is the interface that wraps the basic decoding method.

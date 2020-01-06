@@ -3,8 +3,8 @@ package decode
 import (
 	"encoding/xml"
 	"errors"
-	"github.com/lukasaron/discogs-parser/model"
-	"github.com/lukasaron/discogs-parser/write"
+	"github.com/lukasaron/data-discogs/model"
+	"github.com/lukasaron/data-discogs/write"
 	"io"
 	"log"
 	"os"

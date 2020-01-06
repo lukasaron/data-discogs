@@ -5,7 +5,7 @@
 *.so
 *.dylib
 
-discogs-parser
+data_discogs
 main
 main.go
 
@@ -20,4 +20,4 @@ dbdata
 
 # IntelliJ IDEA project
 .idea
-discogs-parser.iml
+data-discogs.iml
