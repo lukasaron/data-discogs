@@ -6,6 +6,7 @@
 *.dylib
 
 data_discogs
+_main.go
 main
 main.go
 
