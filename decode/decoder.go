@@ -1,3 +1,4 @@
+// Package decode contains all necessary functionality to cover decoding of the Discogs data.
 package decode
 
 import (
@@ -12,17 +13,15 @@ import (
 //
 // Close method clean all data related to decoding.
 type Decoder interface {
-	Close() error
-	Options() Options
-	SetOptions(Options)
-
-	Reset() error
 	Decode(write.Writer) error
-
 	Artists(limit int) (int, []model.Artist, error)
 	Labels(limit int) (int, []model.Label, error)
 	Masters(limit int) (int, []model.Master, error)
 	Releases(limit int) (int, []model.Release, error)
+	Options() Options
+	SetOptions(Options)
+	Reset() error
+	Close() error
 }
 
 // Quality Level specifies the required data to be parsed based on the Discogs marking.
