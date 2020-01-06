@@ -32,4 +32,4 @@
 //		}
 //
 // By Lukas Aron
-package parser
+package discogs_parser
