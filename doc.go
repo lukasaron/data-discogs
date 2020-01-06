@@ -40,7 +40,10 @@
 //		)
 //
 //		func main() {
-//			d := decode.NewXmlDecoder("./data_samples/artists.xml", &decode.Options{FileType: decode.Artists})
+//			d := decode.NewXmlDecoder("./data_samples/artists.xml",
+//				&decode.Options{
+//					FileType: decode.Artists,
+//				})
 //			defer d.Close()
 //			// for instance the SQL writer
 //			w := write.NewSqlWriter("./data_samples/artists.sql", nil)
