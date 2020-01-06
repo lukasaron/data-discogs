@@ -1,18 +1,19 @@
 package writer
 
 import (
-	"github.com/lukasaron/discogs-parser/decode"
+	"github.com/lukasaron/discogs-parser/model"
 )
 
 type Writer interface {
-	WriteArtist(artist decode.Artist) error
-	WriteArtists(artists []decode.Artist) error
-	WriteLabel(label decode.Label) error
-	WriteLabels(labels []decode.Label) error
-	WriteMaster(master decode.Master) error
-	WriteMasters(masters []decode.Master) error
-	WriteRelease(release decode.Release) error
-	WriteReleases(releases []decode.Release) error
+	WriteArtist(artist model.Artist) error
+	WriteArtists(artists []model.Artist) error
+	WriteLabel(label model.Label) error
+	WriteLabels(labels []model.Label) error
+	WriteMaster(master model.Master) error
+	WriteMasters(masters []model.Master) error
+	WriteRelease(release model.Release) error
+	WriteReleases(releases []model.Release) error
+	Options() Options
 	Reset() error
 	Close() error
 }
@@ -29,7 +30,7 @@ const (
 	SqlType
 )
 
-func StrToWriterType(str string) (t Type) {
+func ToWriterType(str string) (t Type) {
 	switch str {
 	case "json":
 		t = JsonType

@@ -3,33 +3,33 @@ package writer
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/lukasaron/discogs-parser/decode"
+	"github.com/lukasaron/discogs-parser/model"
 	"os"
 )
 
 type JsonWriter struct {
-	option Options
-	f      *os.File
-	buffer bytes.Buffer
-	err    error
+	o   Options
+	f   *os.File
+	b   bytes.Buffer
+	err error
 }
 
-func NewJsonWriter(fileName string, options ...Options) Writer {
+func NewJsonWriter(fileName string, options *Options) Writer {
 	j := &JsonWriter{
-		buffer: bytes.Buffer{},
+		b: bytes.Buffer{},
 	}
 
 	j.f, j.err = os.Create(fileName)
 
-	if options != nil && len(options) > 0 {
-		j.option = options[0]
+	if options != nil {
+		j.o = *options
 	}
 
 	return j
 }
 
 func (j *JsonWriter) Reset() error {
-	j.buffer.Reset()
+	j.b.Reset()
 	return nil
 }
 
@@ -37,8 +37,12 @@ func (j *JsonWriter) Close() error {
 	return j.f.Close()
 }
 
-func (j *JsonWriter) WriteArtist(a decode.Artist) error {
-	if j.option.ExcludeImages {
+func (j JsonWriter) Options() Options {
+	return j.o
+}
+
+func (j *JsonWriter) WriteArtist(a model.Artist) error {
+	if j.o.ExcludeImages {
 		a.Images = nil
 	}
 
@@ -49,13 +53,13 @@ func (j *JsonWriter) WriteArtist(a decode.Artist) error {
 	return j.err
 }
 
-func (j *JsonWriter) WriteArtists(artists []decode.Artist) error {
+func (j *JsonWriter) WriteArtists(artists []model.Artist) error {
 	j.writeInitial()
 
 	for _, a := range artists {
 		j.writeDelimiter()
 
-		if j.option.ExcludeImages {
+		if j.o.ExcludeImages {
 			a.Images = nil
 		}
 
@@ -72,8 +76,8 @@ func (j *JsonWriter) WriteArtists(artists []decode.Artist) error {
 	return j.err
 }
 
-func (j *JsonWriter) WriteLabel(label decode.Label) error {
-	if j.option.ExcludeImages {
+func (j *JsonWriter) WriteLabel(label model.Label) error {
+	if j.o.ExcludeImages {
 		label.Images = nil
 	}
 
@@ -84,13 +88,13 @@ func (j *JsonWriter) WriteLabel(label decode.Label) error {
 	return j.err
 }
 
-func (j *JsonWriter) WriteLabels(labels []decode.Label) error {
+func (j *JsonWriter) WriteLabels(labels []model.Label) error {
 	j.writeInitial()
 
 	for _, l := range labels {
 		j.writeDelimiter()
 
-		if j.option.ExcludeImages {
+		if j.o.ExcludeImages {
 			l.Images = nil
 		}
 
@@ -107,8 +111,8 @@ func (j *JsonWriter) WriteLabels(labels []decode.Label) error {
 	return j.err
 }
 
-func (j *JsonWriter) WriteMaster(master decode.Master) error {
-	if j.option.ExcludeImages {
+func (j *JsonWriter) WriteMaster(master model.Master) error {
+	if j.o.ExcludeImages {
 		master.Images = nil
 	}
 
@@ -119,12 +123,12 @@ func (j *JsonWriter) WriteMaster(master decode.Master) error {
 	return j.err
 }
 
-func (j *JsonWriter) WriteMasters(masters []decode.Master) error {
+func (j *JsonWriter) WriteMasters(masters []model.Master) error {
 	j.writeInitial()
 	for _, m := range masters {
 		j.writeDelimiter()
 
-		if j.option.ExcludeImages {
+		if j.o.ExcludeImages {
 			m.Images = nil
 		}
 
@@ -140,8 +144,8 @@ func (j *JsonWriter) WriteMasters(masters []decode.Master) error {
 
 	return j.err
 }
-func (j *JsonWriter) WriteRelease(release decode.Release) error {
-	if j.option.ExcludeImages {
+func (j *JsonWriter) WriteRelease(release model.Release) error {
+	if j.o.ExcludeImages {
 		release.Images = nil
 	}
 
@@ -151,13 +155,13 @@ func (j *JsonWriter) WriteRelease(release decode.Release) error {
 	return j.err
 }
 
-func (j *JsonWriter) WriteReleases(releases []decode.Release) error {
+func (j *JsonWriter) WriteReleases(releases []model.Release) error {
 	j.writeInitial()
 
 	for _, r := range releases {
 		j.writeDelimiter()
 
-		if j.option.ExcludeImages {
+		if j.o.ExcludeImages {
 			r.Images = nil
 		}
 
@@ -189,8 +193,8 @@ func (j *JsonWriter) marshalAndWrite(d interface{}) {
 }
 
 func (j *JsonWriter) writeDelimiter() {
-	if j.err == nil && j.buffer.Len() > 0 {
-		_, j.err = j.buffer.WriteString(",")
+	if j.err == nil && j.b.Len() > 0 {
+		_, j.err = j.b.WriteString(",")
 	}
 }
 
@@ -198,7 +202,7 @@ func (j *JsonWriter) writeInitial() {
 	if j.err != nil {
 		return
 	}
-	_, j.err = j.buffer.WriteString("[")
+	_, j.err = j.b.WriteString("[")
 }
 
 func (j *JsonWriter) writeClosing() {
@@ -206,7 +210,7 @@ func (j *JsonWriter) writeClosing() {
 		return
 	}
 
-	_, j.err = j.buffer.WriteString("]")
+	_, j.err = j.b.WriteString("]")
 }
 
 func (j *JsonWriter) flush() {
@@ -214,9 +218,9 @@ func (j *JsonWriter) flush() {
 		return
 	}
 
-	_, j.err = j.f.Write(j.buffer.Bytes())
+	_, j.err = j.f.Write(j.b.Bytes())
 }
 
 func (j *JsonWriter) clean() {
-	j.buffer.Reset()
+	j.b.Reset()
 }
