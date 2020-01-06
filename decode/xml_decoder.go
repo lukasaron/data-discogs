@@ -11,6 +11,11 @@ import (
 	"strings"
 )
 
+const (
+	defaultBlockSize  = 10
+	defaultBlockLimit = int(^uint(0) >> 1)
+)
+
 var (
 	// Errors returned when failure occurs
 	wrongTypeSpecified    = errors.New("wrong file type specified")
@@ -26,6 +31,7 @@ type XMLDecoder struct {
 	err error
 }
 
+// Create a new XML decoder
 func NewXmlDecoder(fileName string, options *Options) Decoder {
 	d := &XMLDecoder{}
 
@@ -33,24 +39,36 @@ func NewXmlDecoder(fileName string, options *Options) Decoder {
 	d.d = xml.NewDecoder(d.f)
 
 	if options != nil {
-		d.o = *options
+		d.SetOptions(*options)
 	}
 
 	return d
 }
 
+// Closes properly the opened XML decoder
 func (x *XMLDecoder) Close() error {
 	return x.f.Close()
 }
 
+// Get options from XML decoder
 func (x *XMLDecoder) Options() Options {
 	return x.o
 }
 
+// Set new options
 func (x *XMLDecoder) SetOptions(opt Options) {
 	x.o = opt
+
+	if x.o.Block.Limit < 1 {
+		x.o.Block.Limit = defaultBlockLimit
+	}
+
+	if x.o.Block.Size < 1 {
+		x.o.Block.Size = defaultBlockSize
+	}
 }
 
+// Reset the XML decoder function move it's file cursor into the beginning.
 func (x *XMLDecoder) Reset() error {
 	_, x.err = x.f.Seek(0, 0)
 	return x.err
@@ -65,14 +83,6 @@ func (x *XMLDecoder) Decode(w write.Writer) error {
 
 	var df func(write.Writer, int, bool) (int, error)
 	var num int
-
-	if x.o.Block.Limit < 1 {
-		x.o.Block.Limit = int(^uint(0) >> 1)
-	}
-
-	if x.o.Block.Size < 1 {
-		x.o.Block.Size = 10
-	}
 
 	// get decode function based on the file type
 	df, x.err = x.decodeFunction()
@@ -106,7 +116,7 @@ func (x *XMLDecoder) Decode(w write.Writer) error {
 }
 
 func (x *XMLDecoder) Artists(limit int) (int, []model.Artist, error) {
-	if x.err != nil {
+	if x.err != nil || limit == 0 {
 		return 0, nil, x.err
 	}
 
@@ -118,7 +128,7 @@ func (x *XMLDecoder) Artists(limit int) (int, []model.Artist, error) {
 }
 
 func (x *XMLDecoder) Labels(limit int) (int, []model.Label, error) {
-	if x.err != nil {
+	if x.err != nil || limit == 0 {
 		return 0, nil, x.err
 	}
 
@@ -130,7 +140,7 @@ func (x *XMLDecoder) Labels(limit int) (int, []model.Label, error) {
 }
 
 func (x *XMLDecoder) Masters(limit int) (int, []model.Master, error) {
-	if x.err != nil {
+	if x.err != nil || limit == 0 {
 		return 0, nil, x.err
 	}
 
@@ -143,7 +153,7 @@ func (x *XMLDecoder) Masters(limit int) (int, []model.Master, error) {
 }
 
 func (x *XMLDecoder) Releases(limit int) (int, []model.Release, error) {
-	if x.err != nil {
+	if x.err != nil || limit == 0 {
 		return 0, nil, x.err
 	}
 
