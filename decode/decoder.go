@@ -31,7 +31,7 @@ type Decoder interface {
 // Quality Level specifies the required data to be parsed based on the Discogs marking.
 type QualityLevel int
 
-// Quality Level constants defined by a Discogs data.
+// Quality Level constants defined from a Discogs data.
 const (
 	All QualityLevel = iota
 	EntirelyIncorrect
