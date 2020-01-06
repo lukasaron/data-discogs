@@ -1,6 +1,3 @@
-/*
-Package write covers specification of a writing feature to already parsed Discogs data.
-*/
 package write
 
 import (

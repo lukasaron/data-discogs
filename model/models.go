@@ -1,7 +1,3 @@
-/*
-Package model defines the data structures that express the way how Discogs communicates with the world. Based on the
-provided data dumps and all information provided by Discogs these model structures should mirror the information logic.
-*/
 package model
 
 //--------------------------------------------------- Artist ---------------------------------------------------

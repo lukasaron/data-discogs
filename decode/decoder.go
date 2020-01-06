@@ -1,6 +1,3 @@
-/*
-Package decode implements a simple library for parsing Discogs dump files.
-*/
 package decode
 
 import (
