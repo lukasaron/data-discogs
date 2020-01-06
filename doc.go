@@ -45,6 +45,7 @@
 //					FileType: decode.Artists,
 //				})
 //			defer d.Close()
+
 //			// for instance the SQL writer
 //			w := write.NewSqlWriter("./data_samples/artists.sql", nil)
 //			defer w.Close()
