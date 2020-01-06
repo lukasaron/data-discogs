@@ -1,9 +1,15 @@
+/*
+Package writer covers specification of a writing feature to already parsed Discogs data.
+*/
 package writer
 
 import (
 	"github.com/lukasaron/discogs-parser/model"
 )
 
+/*
+The Writer interface specify all necessary methods for writing Disocgs data that could be useful during processing Discogs dump.
+*/
 type Writer interface {
 	WriteArtist(artist model.Artist) error
 	WriteArtists(artists []model.Artist) error
@@ -18,28 +24,13 @@ type Writer interface {
 	Close() error
 }
 
+/*
+Options related to writing settings. At this stage only one option is available - Exclude images. This specific option
+is in connection to the Discogs dump data and their politics to provide data without images.
+
+Provided XML data has XML pairs with images, however values are empty and it's up to user of this library
+if she wants to have these empty data or not.
+*/
 type Options struct {
 	ExcludeImages bool
-}
-
-type Type int
-
-const (
-	PostgresType Type = iota
-	JsonType
-	SqlType
-)
-
-func ToWriterType(str string) (t Type) {
-	switch str {
-	case "json":
-		t = JsonType
-	case "postgres":
-		t = PostgresType
-	case "sql":
-		t = SqlType
-	default:
-		t = SqlType
-	}
-	return t
 }
