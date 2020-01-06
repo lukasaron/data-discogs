@@ -12,10 +12,10 @@ There are three existing writers supported by default: **JSON**, **SQL** and **D
 More writers can be created by implementing the `writer` interface
 
 #### JSON Writer
-As the name prompts this writer transforms input XML into JSON format. This writer could be used as a solution that converts data into any NoSQL database.
+As the name prompts this writer transforms input XML into JSON format. This JSON writer can be used as a solution that converts data into any NoSQL database.
 
 #### SQL Writer
-The second supported writer creates SQL file with all necessary data from input. This file can be executed in any SQL database and the result will be populated table with the proper information.
+The second supported writer creates SQL file with all necessary data from input in the form of insert commands within transactions. This file can be executed in any SQL database and the result will be populated table with the proper information.
 
 #### DB Writer
 The last writer is for direct communication with the SQL database. All input data will be saved into appropriate tables immediately.
