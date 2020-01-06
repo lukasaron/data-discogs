@@ -2,11 +2,14 @@
 
 [![GoDoc](https://godoc.org/github.com/lukasaron/data-discogs?status.svg)](https://godoc.org/github.com/lukasaron/data-discogs)
 
-Data Discogs Parser introduces a way to categorize XML data dumps from Discogs: https://data.discogs.com.
+Data Discogs Parser introduces a way to categorize XML data dumps from Discogs: https://data.discogs.com. 
+The library can parse provided XML files from Discogs and then save results into JSON or SQL file and lastly 
+directly into SQL database. For this purpose three different writers were created.
 
 The intention of using this parser is a library, which means there is not an executable part provided. The project has no other dependencies than the Golang language itself. 
 
-There are three existing writers supported by default: `JSON`, `SQL` and `DB`.
+There are three existing writers supported by default: **JSON**, **SQL** and **DB**. 
+More can be created in the near future or you can define them by implementing the `writer` interface
 
 
 #### JSON Writer
