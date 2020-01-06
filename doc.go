@@ -54,5 +54,4 @@
 //			fmt.Println(err)
 //		}
 //
-// By Lukas Aron
 package discogs
