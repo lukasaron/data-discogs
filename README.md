@@ -9,8 +9,7 @@ directly into SQL database. For this purpose three different writers were create
 The intention of using this parser is a library, which means there is not an executable part provided. The project has no other dependencies than the Golang language itself. 
 
 There are three existing writers supported by default: **JSON**, **SQL** and **DB**. 
-More can be created in the near future or you can define them by implementing the `writer` interface
-
+More writers can be created by implementing the `writer` interface
 
 #### JSON Writer
 As the name prompts this writer transforms input XML into JSON format. This writer could be used as a solution that converts data into any NoSQL database.
