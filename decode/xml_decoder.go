@@ -4,7 +4,7 @@ import (
 	"encoding/xml"
 	"errors"
 	"github.com/lukasaron/discogs-parser/model"
-	"github.com/lukasaron/discogs-parser/writer"
+	"github.com/lukasaron/discogs-parser/write"
 	"io"
 	"log"
 	"os"
@@ -57,7 +57,7 @@ func (x *XMLDecoder) Reset() error {
 }
 
 // Decode data
-func (x *XMLDecoder) Decode(w writer.Writer) error {
+func (x *XMLDecoder) Decode(w write.Writer) error {
 	if x.err != nil {
 		return x.err
 	}
@@ -191,7 +191,7 @@ func (x *XMLDecoder) filterReleases(rs []model.Release) []model.Release {
 
 //--------------------------------------------------- Decoders ---------------------------------------------------
 
-func (x *XMLDecoder) decodeFunction() (func(writer.Writer, int, bool) (int, error), error) {
+func (x *XMLDecoder) decodeFunction() (func(write.Writer, int, bool) (int, error), error) {
 	switch x.o.FileType {
 	case Artists:
 		return x.decodeArtists, nil
@@ -208,7 +208,7 @@ func (x *XMLDecoder) decodeFunction() (func(writer.Writer, int, bool) (int, erro
 	}
 }
 
-func (x *XMLDecoder) decodeArtists(w writer.Writer, blockSize int, write bool) (int, error) {
+func (x *XMLDecoder) decodeArtists(w write.Writer, blockSize int, write bool) (int, error) {
 	num, a, err := x.Artists(blockSize)
 	if (err != nil && err != io.EOF) || num == 0 {
 		return num, err
@@ -221,7 +221,7 @@ func (x *XMLDecoder) decodeArtists(w writer.Writer, blockSize int, write bool) (
 	return num, err
 }
 
-func (x *XMLDecoder) decodeLabels(w writer.Writer, blockSize int, write bool) (int, error) {
+func (x *XMLDecoder) decodeLabels(w write.Writer, blockSize int, write bool) (int, error) {
 	num, l, err := x.Labels(blockSize)
 	if (err != nil && err != io.EOF) || num == 0 {
 		return num, err
@@ -234,7 +234,7 @@ func (x *XMLDecoder) decodeLabels(w writer.Writer, blockSize int, write bool) (i
 	return num, err
 }
 
-func (x *XMLDecoder) decodeMasters(w writer.Writer, blockSize int, write bool) (int, error) {
+func (x *XMLDecoder) decodeMasters(w write.Writer, blockSize int, write bool) (int, error) {
 	num, m, err := x.Masters(blockSize)
 	if (err != nil && err != io.EOF) || num == 0 {
 		return num, err
@@ -247,7 +247,7 @@ func (x *XMLDecoder) decodeMasters(w writer.Writer, blockSize int, write bool) (
 	return num, err
 }
 
-func (x *XMLDecoder) decodeReleases(w writer.Writer, blockSize int, write bool) (int, error) {
+func (x *XMLDecoder) decodeReleases(w write.Writer, blockSize int, write bool) (int, error) {
 	num, r, err := x.Releases(blockSize)
 	if (err != nil && err != io.EOF) || num == 0 {
 		return num, err

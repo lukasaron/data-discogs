@@ -1,7 +1,7 @@
 /*
-Package writer covers specification of a writing feature to already parsed Discogs data.
+Package write covers specification of a writing feature to already parsed Discogs data.
 */
-package writer
+package write
 
 import (
 	"github.com/lukasaron/discogs-parser/model"

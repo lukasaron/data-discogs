@@ -5,7 +5,7 @@ package decode
 
 import (
 	"github.com/lukasaron/discogs-parser/model"
-	"github.com/lukasaron/discogs-parser/writer"
+	"github.com/lukasaron/discogs-parser/write"
 )
 
 // Decoder is the interface that wraps the basic decoding method.
@@ -20,7 +20,7 @@ type Decoder interface {
 	SetOptions(Options)
 
 	Reset() error
-	Decode(writer.Writer) error
+	Decode(write.Writer) error
 
 	Artists(limit int) (int, []model.Artist, error)
 	Labels(limit int) (int, []model.Label, error)
