@@ -32,7 +32,7 @@
 //			fmt.Println(num, err, artists)
 //		}
 //
-// Example with usage of Writer
+// Example with SQL writer
 //		import (
 //			"fmt"
 //			"github.com/lukasaron/data-discogs/decode"
