@@ -24,11 +24,30 @@
 //			"fmt"
 //			"github.com/lukasaron/data-discogs/decode"
 //		)
+//
 //		func main() {
 //			d := decode.NewXmlDecoder("./data_samples/artists.xml", nil)
 //			defer d.Close()
 //			num, artists, err := d.Artists(100)
 //			fmt.Println(num, err, artists)
+//		}
+//
+// Example with usage of Writer
+//		import (
+//			"fmt"
+//			"github.com/lukasaron/data-discogs/decode"
+//			"github.com/lukasaron/data-discogs/write"
+//		)
+//
+//		func main() {
+//			d := decode.NewXmlDecoder("./data_samples/artists.xml", &decode.Options{FileType: decode.Artists})
+//			defer d.Close()
+//			// for instance the SQL writer
+//			w := write.NewSqlWriter("./data_samples/artists.sql", nil)
+//			defer w.Close()
+//
+//			err := d.Decode(w)
+//			fmt.Println(err)
 //		}
 //
 // By Lukas Aron
