@@ -19,18 +19,17 @@
 // to facilitate this process there is also the script called indexes.sql situated in the sql_script folder.
 // To speed up a data transformation I would rather recommend creating indexes after the whole processing is completed.
 //
+// Example of basic usage:
+//		import (
+//			"fmt"
+//			"github.com/lukasaron/discogs-parser/decode"
+//		)
+//		func main() {
+//			d := decode.NewXmlDecoder("./data_samples/artists.xml", nil)
+//			defer d.Close()
+//			num, artists, err := d.Artists(100)
+//			fmt.Println(num, err, artists)
+//		}
+//
 // By Lukas Aron
 package parser
-
-// Example of usage:
-// import (
-//	"fmt"
-//	"github.com/lukasaron/discogs-parser/decode"
-// )
-//
-// func main() {
-//	d := decode.NewXmlDecoder("./data_samples/artists.xml", nil)
-//	num, _, err := d.Artists(100)
-//	fmt.Println(num, err)
-//	_ = d.Close()
-// }
