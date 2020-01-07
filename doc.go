@@ -34,7 +34,7 @@
 //			defer f.Close()
 //
 //			d := decode.NewXmlDecoder(f, nil)
-//			// decodes 10 artists by default, Block Size can be changed in decoder.Options
+//			// decodes 10 artists by default, Block ItemSize can be changed in decoder.Options
 //			num, artists, err := d.Artists()
 //			fmt.Println(num, err, artists)
 //		}
