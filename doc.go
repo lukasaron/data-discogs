@@ -58,7 +58,7 @@
 //				&decode.Options{
 //					FileType: decode.Artists,
 //					Block: decode.Block{
-//						Size: 20, // size  = number of items returned
+//						Size: 20, // number of items processed at once
 //					},
 //				})
 //
