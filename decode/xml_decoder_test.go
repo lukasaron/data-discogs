@@ -229,13 +229,13 @@ func TestXMLDecoder_Artists_Block_ItemSize(t *testing.T) {
 }
 
 func TestXMLDecoder_Labels(t *testing.T) {
-	d := NewXmlDecoder(strings.NewReader(artists), &Options{
+	d := NewXmlDecoder(strings.NewReader(labels), &Options{
 		FileType: Labels,
 	})
 
 	num, l, err := d.Labels()
 	if num != 2 || len(l) != 2 {
-		t.Error("there should be 2 artists parsed")
+		t.Error("there should be 2 labels parsed")
 	}
 
 	if err == nil {
