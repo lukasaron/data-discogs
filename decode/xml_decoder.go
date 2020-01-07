@@ -17,6 +17,7 @@ const (
 
 var (
 	// Errors returned when failure occurs
+	readerIsNull          = errors.New("reader is null")
 	wrongTypeSpecified    = errors.New("wrong file type specified")
 	notCorrectStarElement = errors.New("token is not a correct start element")
 )
@@ -32,6 +33,11 @@ type XMLDecoder struct {
 // Create a new XML decoder
 func NewXmlDecoder(reader io.Reader, options *Options) Decoder {
 	d := &XMLDecoder{}
+
+	if reader == nil {
+		d.err = readerIsNull
+		return d
+	}
 
 	d.d = xml.NewDecoder(reader)
 
