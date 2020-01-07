@@ -34,7 +34,6 @@
 //			defer f.Close()
 //
 //			d := decode.NewXmlDecoder(f, nil)
-//			defer d.Close()
 //			num, artists, err := d.Artists(100)
 //			fmt.Println(num, err, artists)
 //		}
