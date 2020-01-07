@@ -192,6 +192,197 @@ func TestXMLDecoder_Artists(t *testing.T) {
 	}
 }
 
+func TestXMLDecoder_Artists_DataCheck_First(t *testing.T) {
+	d := NewXmlDecoder(strings.NewReader(artists), &Options{
+		FileType: Artists,
+	})
+
+	_, a, _ := d.Artists()
+	artist := a[0]
+
+	if artist.Id != "1" {
+		t.Errorf("wrong artist id, expected: %s, got: %s", "1", artist.Id)
+	}
+
+	if artist.Name != "The Persuader" {
+		t.Errorf("wrong name, expected: %s, got: %s", "The Persuader", artist.Name)
+	}
+
+	if artist.RealName != "Jesper Dahlbäck" {
+		t.Errorf("wrong real name, expected: %s, got: %s", "Jesper Dahlbäck", artist.RealName)
+	}
+
+	if artist.DataQuality != "Needs Vote" {
+		t.Errorf("wrong data quality, expected: %s, got: %s", "Needs Vote", artist.DataQuality)
+	}
+
+	if len(artist.Urls) != 1 {
+		t.Errorf("wrong number of urls, expected: %d, got: %d", 1, len(artist.Urls))
+	}
+
+	if len(artist.Urls) == 1 && artist.Urls[0] != "https://en.wikipedia.org/wiki/Jesper_Dahlbäck" {
+		t.Errorf("wrong url, expected: %s, got: %s", "https://en.wikipedia.org/wiki/Jesper_Dahlbäck", artist.Urls[0])
+	}
+
+	if len(artist.NameVariations) != 2 {
+		t.Errorf("wrong number of name variations, expected: %d, got: %d", 2, len(artist.NameVariations))
+	}
+
+	if len(artist.NameVariations) == 2 && artist.NameVariations[0] != "Persuader" {
+		t.Errorf("wrong name variation, expected: %s, got: %s", "Persuader", artist.NameVariations[0])
+	}
+
+	if len(artist.NameVariations) == 2 && artist.NameVariations[1] != "The Presuader" {
+		t.Errorf("wrong name variation, expected: %s, got: %s", "The Presuader", artist.NameVariations[1])
+	}
+
+	if len(artist.Images) != 2 {
+		t.Errorf("wrong number of images, expected: %d, got: %d", 2, len(artist.Images))
+	}
+
+	if len(artist.Aliases) != 7 {
+		t.Errorf("wrong number of aliases, expected: %d, got: %d", 7, len(artist.Aliases))
+	}
+
+	if len(artist.Aliases) == 7 && (artist.Aliases[0].Id != "239" || artist.Aliases[0].Name != "Jesper Dahlbäck") {
+		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
+			"239", artist.Aliases[0].Id,
+			"Jesper Dahlbäck", artist.Aliases[0].Name)
+	}
+
+	if len(artist.Aliases) == 7 && (artist.Aliases[1].Id != "16055" || artist.Aliases[1].Name != "Groove Machine") {
+		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
+			"16055", artist.Aliases[1].Id,
+			"Groove Machine", artist.Aliases[1].Name)
+	}
+
+	if len(artist.Aliases) == 7 && (artist.Aliases[2].Id != "19541" || artist.Aliases[2].Name != "Dick Track") {
+		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
+			"19541", artist.Aliases[2].Id,
+			"Dick Track", artist.Aliases[2].Name)
+	}
+
+	if len(artist.Aliases) == 7 && (artist.Aliases[3].Id != "25227" || artist.Aliases[3].Name != "Lenk") {
+		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
+			"25227", artist.Aliases[3].Id,
+			"Lenk", artist.Aliases[3].Name)
+	}
+
+	if len(artist.Aliases) == 7 && (artist.Aliases[4].Id != "196957" || artist.Aliases[4].Name != "Janne Me' Amazonen") {
+		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
+			"196957", artist.Aliases[4].Id,
+			"Janne Me' Amazonen", artist.Aliases[4].Name)
+	}
+
+	if len(artist.Aliases) == 7 && (artist.Aliases[5].Id != "278760" || artist.Aliases[5].Name != "Faxid") {
+		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
+			"278760", artist.Aliases[5].Id,
+			"Faxid", artist.Aliases[5].Name)
+	}
+
+	if len(artist.Aliases) == 7 && (artist.Aliases[6].Id != "439150" || artist.Aliases[6].Name != "The Pinguin Man") {
+		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
+			"439150", artist.Aliases[6].Id,
+			"The Pinguin Man", artist.Aliases[6].Name)
+	}
+
+}
+
+func TestXMLDecoder_Artists_DataCheck_Second(t *testing.T) {
+	d := NewXmlDecoder(strings.NewReader(artists), &Options{
+		FileType: Artists,
+	})
+
+	_, a, _ := d.Artists()
+	artist := a[1]
+
+	if artist.Id != "2" {
+		t.Errorf("wrong artist id, expected: %s, got: %s", "2", artist.Id)
+	}
+
+	if artist.Name != "Mr. James Barth & A.D." {
+		t.Errorf("wrong name, expected: %s, got: %s", "Mr. James Barth & A.D.", artist.Name)
+	}
+
+	if artist.RealName != "Cari Lekebusch & Alexi Delano" {
+		t.Errorf("wrong real name, expected: %s, got: %s", "Cari Lekebusch & Alexi Delano", artist.RealName)
+	}
+
+	if artist.DataQuality != "Correct" {
+		t.Errorf("wrong data quality, expected: %s, got: %s", "Correct", artist.DataQuality)
+	}
+
+	if len(artist.NameVariations) != 4 {
+		t.Errorf("wrong number of name variations, expected: %d, got: %d", 4, len(artist.NameVariations))
+	}
+
+	if len(artist.NameVariations) == 4 && artist.NameVariations[0] != "Mr Barth & A.D." {
+		t.Errorf("wrong name variation, expected: %s, got: %s", "Mr Barth & A.D.", artist.NameVariations[0])
+	}
+
+	if len(artist.NameVariations) == 4 && artist.NameVariations[1] != "MR JAMES BARTH & A. D." {
+		t.Errorf("wrong name variation, expected: %s, got: %s", "MR JAMES BARTH & A. D.", artist.NameVariations[1])
+	}
+
+	if len(artist.NameVariations) == 4 && artist.NameVariations[2] != "Mr. Barth & A.D." {
+		t.Errorf("wrong name variation, expected: %s, got: %s", "Mr. Barth & A.D.", artist.NameVariations[2])
+	}
+
+	if len(artist.NameVariations) == 4 && artist.NameVariations[3] != "Mr. James Barth & A. D." {
+		t.Errorf("wrong name variation, expected: %s, got: %s", "Mr. James Barth & A. D.", artist.NameVariations[3])
+	}
+
+	if len(artist.Aliases) != 5 {
+		t.Errorf("wrong number of aliases, expected: %d, got: %d", 5, len(artist.Aliases))
+	}
+
+	if len(artist.Aliases) == 5 && (artist.Aliases[0].Id != "2470" || artist.Aliases[0].Name != "Puente Latino") {
+		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
+			"2470", artist.Aliases[0].Id,
+			"Puente Latino", artist.Aliases[0].Name)
+	}
+
+	if len(artist.Aliases) == 5 && (artist.Aliases[1].Id != "19536" || artist.Aliases[1].Name != "Yakari & Delano") {
+		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
+			"19536", artist.Aliases[1].Id,
+			"Yakari & Delano", artist.Aliases[1].Name)
+	}
+
+	if len(artist.Aliases) == 5 && (artist.Aliases[2].Id != "103709" || artist.Aliases[2].Name != "Crushed Insect & The Sick Puppy") {
+		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
+			"103709", artist.Aliases[2].Id,
+			"Crushed Insect & The Sick Puppy", artist.Aliases[2].Name)
+	}
+
+	if len(artist.Aliases) == 5 && (artist.Aliases[3].Id != "384581" || artist.Aliases[3].Name != "ADCL") {
+		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
+			"384581", artist.Aliases[3].Id,
+			"ADCL", artist.Aliases[3].Name)
+	}
+
+	if len(artist.Aliases) == 5 && (artist.Aliases[4].Id != "1779857" || artist.Aliases[4].Name != "Alexi Delano & Cari Lekebusch") {
+		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
+			"1779857", artist.Aliases[4].Id,
+			"Alexi Delano & Cari Lekebusch", artist.Aliases[4].Name)
+	}
+
+	if len(artist.Members) != 2 {
+		t.Errorf("wrong number of members, expected: %d, got: %d", 5, len(artist.Members))
+	}
+
+	if len(artist.Members) == 2 && (artist.Members[0].Id != "26" || artist.Members[0].Name != "Alexi Delano") {
+		t.Errorf("wrong member, expected id: %s, got: %s, expected name: %s, got: %s",
+			"26", artist.Members[0].Id,
+			"Alexi Delano", artist.Members[0].Name)
+	}
+
+	if len(artist.Members) == 2 && (artist.Members[1].Id != "27" || artist.Members[1].Name != "Cari Lekebusch") {
+		t.Errorf("wrong member, expected id: %s, got: %s, expected name: %s, got: %s",
+			"27", artist.Members[1].Id,
+			"Cari Lekebusch", artist.Members[1].Name)
+	}
+}
+
 func TestXMLDecoder_Artists_Block_ItemSize(t *testing.T) {
 	d := NewXmlDecoder(strings.NewReader(artists), &Options{
 		FileType: Artists,
@@ -275,13 +466,125 @@ func TestXMLDecoder_Labels_Block_ItemSize(t *testing.T) {
 
 	num, l, err = d.Labels()
 	if num != 0 || len(l) != 0 {
-		t.Error("there shouldn't be any artist parsed")
+		t.Error("there shouldn't be any label parsed")
 	}
 
 	if err == nil {
 		t.Error("EOF  error expected when there is nothing else to parse")
 	}
 }
+
+func TestXMLDecoder_Masters(t *testing.T) {
+	d := NewXmlDecoder(strings.NewReader(masters), &Options{
+		FileType: Masters,
+	})
+
+	num, m, err := d.Masters()
+	if num != 2 || len(m) != 2 {
+		t.Error("there should be 2 masters parsed")
+	}
+
+	if err == nil {
+		t.Error("expecting EOF error")
+	}
+
+	if err != io.EOF {
+		t.Errorf("there should be EOF error instead of %v", err)
+	}
+}
+
+func TestXMLDecoder_Masters_Block_ItemSize(t *testing.T) {
+	d := NewXmlDecoder(strings.NewReader(masters), &Options{
+		FileType: Masters,
+		Block: Block{
+			ItemSize: 1,
+		},
+	})
+
+	num, m, err := d.Masters()
+	if num != 1 || len(m) != 1 {
+		t.Error("there should be 1 master parsed")
+	}
+
+	if err != nil {
+		t.Errorf("no error expected when there are still some data to process, got %v", err)
+	}
+
+	num, m, err = d.Masters()
+	if num != 1 || len(m) != 1 {
+		t.Error("there should be 1 master parsed")
+	}
+
+	if err != nil {
+		t.Errorf("no error expected when there are still some data to process, got %v", err)
+	}
+
+	num, m, err = d.Masters()
+	if num != 0 || len(m) != 0 {
+		t.Error("there shouldn't be any masters parsed")
+	}
+
+	if err == nil {
+		t.Error("EOF  error expected when there is nothing else to parse")
+	}
+}
+
+func TestXMLDecoder_Releases(t *testing.T) {
+	d := NewXmlDecoder(strings.NewReader(releases), &Options{
+		FileType: Releases,
+	})
+
+	num, r, err := d.Releases()
+	if num != 2 || len(r) != 2 {
+		t.Error("there should be 2 releases parsed")
+	}
+
+	if err == nil {
+		t.Error("expecting EOF error")
+	}
+
+	if err != io.EOF {
+		t.Errorf("there should be EOF error instead of %v", err)
+	}
+}
+
+func TestXMLDecoder_Releases_Block_ItemSize(t *testing.T) {
+	d := NewXmlDecoder(strings.NewReader(releases), &Options{
+		FileType: Releases,
+		Block: Block{
+			ItemSize: 1,
+		},
+	})
+
+	num, r, err := d.Releases()
+	if num != 1 || len(r) != 1 {
+		t.Error("there should be 1 release parsed")
+	}
+
+	if err != nil {
+		t.Errorf("no error expected when there are still some data to process, got %v", err)
+	}
+
+	num, r, err = d.Releases()
+	if num != 1 || len(r) != 1 {
+		t.Error("there should be 1 release parsed")
+	}
+
+	if err != nil {
+		t.Errorf("no error expected when there are still some data to process, got %v", err)
+	}
+
+	num, r, err = d.Releases()
+	if num != 0 || len(r) != 0 {
+		t.Error("there shouldn't be any releases parsed")
+	}
+
+	if err == nil {
+		t.Error("EOF  error expected when there is nothing else to parse")
+	}
+}
+
+// ---------------------------------------------------- DATA ----------------------------------------------------
 
 var artists = `
 <artists>
@@ -312,3 +615,21 @@ fax: +1.949.574.0255&#13;
 email: jthinnes@seasonsrecordings.com&#13;
 </contactinfo><profile>California deep house label founded by [a=Jamie Thinnes]. Now defunct and continued as [l=Seasons Recordings].</profile><data_quality>Correct</data_quality><urls><url>http://www.seasonsrecordings.com/</url></urls></label>
 </labels>`
+
+var masters = `
+<masters>
+<master id="18500"><main_release>155102</main_release><images><image height="588" type="primary" uri="" uri150="" width="600"/></images><artists><artist><id>212070</id><name>Samuel L Session</name><anv>Samuel L</anv><join></join><role></role><tracks></tracks></artist></artists><genres><genre>Electronic</genre></genres><styles><style>Techno</style></styles><year>2001</year><title>New Soil</title><data_quality>Correct</data_quality><videos><video duration="489" embed="true" src="https://www.youtube.com/watch?v=f05Ai921itM"><title>Samuel L - Velvet</title><description>Samuel L - Velvet</description></video><video duration="348" embed="true" src="https://www.youtube.com/watch?v=v23rSPG_StA"><title>Samuel L - Danses D'Afrique</title><description>Samuel L - Danses D'Afrique</description></video><video duration="288" embed="true" src="https://www.youtube.com/watch?v=tHo82ha6p40"><title>Samuel L - Body N' Soul</title><description>Samuel L - Body N' Soul</description></video><video duration="331" embed="true" src="https://www.youtube.com/watch?v=KDcqzHca5dk"><title>Samuel L - Into The Groove</title><description>Samuel L - Into The Groove</description></video><video duration="334" embed="true" src="https://www.youtube.com/watch?v=3DIYjJFl8Dk"><title>Samuel L - Soul Syndrome</title><description>Samuel L - Soul Syndrome</description></video><video duration="325" embed="true" src="https://www.youtube.com/watch?v=_o8yZMPqvNg"><title>Samuel L - Lush</title><description>Samuel L - Lush</description></video><video duration="346" embed="true" src="https://www.youtube.com/watch?v=JPwwJSc_-30"><title>Samuel L - Velvet ( Direct Me )</title><description>Samuel L - Velvet ( Direct Me )</description></video></videos></master>
+<master id="18512"><main_release>33699</main_release><images><image height="150" type="primary" uri="" uri150="" width="150"/><image height="592" type="secondary" uri="" uri150="" width="600"/><image height="592" type="secondary" uri="" uri150="" width="600"/></images><artists><artist><id>212070</id><name>Samuel L Session</name><anv></anv><join></join><role></role><tracks></tracks></artist></artists><genres><genre>Electronic</genre></genres><styles><style>Tribal</style><style>Techno</style></styles><year>2002</year><title>Psyche EP</title><data_quality>Correct</data_quality><videos><video duration="118" embed="true" src="https://www.youtube.com/watch?v=QYf4j0Pd2FU"><title>Samuel L. Session - Arrival</title><description>Samuel L. Session - Arrival</description></video><video duration="376" embed="true" src="https://www.youtube.com/watch?v=c_AfLqTdncI"><title>Samuel L. Session - Psyche Part 1</title><description>Samuel L. Session - Psyche Part 1</description></video><video duration="419" embed="true" src="https://www.youtube.com/watch?v=0nxvR8Zl9wY"><title>Samuel L. Session - Psyche Part 2</title><description>Samuel L. Session - Psyche Part 2</description></video></videos></master>
+</masters>`
+
+var releases = `
+<releases>
+<release id="1" status="Accepted"><images><image height="600" type="primary" uri="" uri150="" width="600"/><image height="600" type="secondary" uri="" uri150="" width="600"/><image height="600" type="secondary" uri="" uri150="" width="600"/><image height="600" type="secondary" uri="" uri150="" width="600"/></images><artists><artist><id>1</id><name>The Persuader</name><anv></anv><join></join><role></role><tracks></tracks></artist></artists><title>Stockholm</title><labels><label catno="SK032" id="5" name="Svek"/></labels><extraartists><artist><id>239</id><name>Jesper Dahlbäck</name><anv></anv><join></join><role>Music By [All Tracks By]</role><tracks></tracks></artist></extraartists><formats><format name="Vinyl" qty="2" text=""><descriptions><description>12"</description><description>33 ⅓ RPM</description></descriptions></format></formats><genres><genre>Electronic</genre></genres><styles><style>Deep House</style></styles><country>Sweden</country><released>1999-03-00</released><notes>The song titles are the names of six of Stockholm's 82 districts.
+
+Title on label: - Stockholm -
+
+Recorded at the Globe Studio, Stockholm
+
+FAX: +46 8 679 64 53</notes><data_quality>Needs Vote</data_quality><tracklist><track><position>A</position><title>Östermalm</title><duration>4:45</duration></track><track><position>B1</position><title>Vasastaden</title><duration>6:11</duration></track><track><position>B2</position><title>Kungsholmen</title><duration>2:49</duration></track><track><position>C1</position><title>Södermalm</title><duration>5:38</duration></track><track><position>C2</position><title>Norrmalm</title><duration>4:52</duration></track><track><position>D</position><title>Gamla Stan</title><duration>5:16</duration></track></tracklist><identifiers><identifier description="A-Side Runout" type="Matrix / Runout" value="MPO SK 032 A1"/><identifier description="B-Side Runout" type="Matrix / Runout" value="MPO SK 032 B1"/><identifier description="C-Side Runout" type="Matrix / Runout" value="MPO SK 032 C1"/><identifier description="D-Side Runout" type="Matrix / Runout" value="MPO SK 032 D1"/><identifier description="Only On A-Side Runout" type="Matrix / Runout" value="G PHRUPMASTERGENERAL T27 LONDON"/></identifiers><videos><video duration="296" embed="true" src="https://www.youtube.com/watch?v=MpmbntGDyNE"><title>The Persuader - Östermalm</title><description>The Persuader - Östermalm</description></video><video duration="376" embed="true" src="https://www.youtube.com/watch?v=Cawyll0pOI4"><title>The Persuader - Vasastaden</title><description>The Persuader - Vasastaden</description></video><video duration="176" embed="true" src="https://www.youtube.com/watch?v=XExCZfMCXdo"><title>The Persuader - Kungsholmen</title><description>The Persuader - Kungsholmen</description></video><video duration="341" embed="true" src="https://www.youtube.com/watch?v=WDZqiENap_U"><title>The Persuader - Södermalm</title><description>The Persuader - Södermalm</description></video><video duration="301" embed="true" src="https://www.youtube.com/watch?v=EBBHR3EMN50"><title>The Persuader - Norrmalm</title><description>The Persuader - Norrmalm</description></video><video duration="326" embed="true" src="https://www.youtube.com/watch?v=afMHNll9EVM"><title>The Persuader - Gamla Stan</title><description>The Persuader - Gamla Stan</description></video></videos><companies><company><id>271046</id><name>The Globe Studios</name><catno></catno><entity_type>23</entity_type><entity_type_name>Recorded At</entity_type_name><resource_url>https://api.discogs.com/labels/271046</resource_url></company><company><id>56025</id><name>MPO</name><catno></catno><entity_type>17</entity_type><entity_type_name>Pressed By</entity_type_name><resource_url>https://api.discogs.com/labels/56025</resource_url></company></companies></release>
+<release id="2" status="Accepted"><images><image height="394" type="primary" uri="" uri150="" width="400"/><image height="600" type="secondary" uri="" uri150="" width="600"/><image height="600" type="secondary" uri="" uri150="" width="600"/></images><artists><artist><id>2</id><name>Mr. James Barth &amp; A.D.</name><anv></anv><join></join><role></role><tracks></tracks></artist></artists><title>Knockin' Boots Vol 2 Of 2</title><labels><label catno="SK 026" id="5" name="Svek"/><label catno="SK026" id="5" name="Svek"/></labels><extraartists><artist><id>26</id><name>Alexi Delano</name><anv></anv><join></join><role>Producer, Recorded By</role><tracks></tracks></artist><artist><id>27</id><name>Cari Lekebusch</name><anv></anv><join></join><role>Producer, Recorded By</role><tracks></tracks></artist><artist><id>26</id><name>Alexi Delano</name><anv>A. Delano</anv><join></join><role>Written-By</role><tracks></tracks></artist><artist><id>27</id><name>Cari Lekebusch</name><anv>C. Lekebusch</anv><join></join><role>Written-By</role><tracks></tracks></artist></extraartists><formats><format name="Vinyl" qty="1" text=""><descriptions><description>12"</description><description>33 ⅓ RPM</description></descriptions></format></formats><genres><genre>Electronic</genre></genres><styles><style>Broken Beat</style><style>Techno</style><style>Tech House</style></styles><country>Sweden</country><released>1998-06-00</released><notes>All joints recorded in NYC (Dec.97).</notes><data_quality>Correct</data_quality><master_id is_main_release="true">713738</master_id><tracklist><track><position>A1</position><title>A Sea Apart</title><duration>5:08</duration></track><track><position>A2</position><title>Dutchmaster</title><duration>4:21</duration></track><track><position>B1</position><title>Inner City Lullaby</title><duration>4:22</duration></track><track><position>B2</position><title>Yeah Kid!</title><duration>4:46</duration></track></tracklist><identifiers><identifier description="Side A Runout Etching" type="Matrix / Runout" value="MPO SK026-A -J.T.S.-"/><identifier description="Side B Runout Etching" type="Matrix / Runout" value="MPO SK026-B -J.T.S.-"/></identifiers><videos><video duration="310" embed="true" src="https://www.youtube.com/watch?v=MIgQNVhYILA"><title>Mr. James Barth &amp; A.D. - A Sea Apart</title><description>Mr. James Barth &amp; A.D. - A Sea Apart</description></video><video duration="265" embed="true" src="https://www.youtube.com/watch?v=LgLchSRehhc"><title>Mr. James Barth &amp; A.D. - Dutchmaster</title><description>Mr. James Barth &amp; A.D. - Dutchmaster</description></video><video duration="260" embed="true" src="https://www.youtube.com/watch?v=iaqHaULlqqg"><title>Mr. James Barth &amp; A.D. - Inner City Lullaby</title><description>Mr. James Barth &amp; A.D. - Inner City Lullaby</description></video><video duration="290" embed="true" src="https://www.youtube.com/watch?v=x_Os7b-iWKs"><title>Mr. James Barth &amp; A.D. - Yeah Kid!</title><description>Mr. James Barth &amp; A.D. - Yeah Kid!</description></video></videos><companies><company><id>266169</id><name>JTS Studios</name><catno></catno><entity_type>29</entity_type><entity_type_name>Mastered At</entity_type_name><resource_url>https://api.discogs.com/labels/266169</resource_url></company><company><id>56025</id><name>MPO</name><catno></catno><entity_type>17</entity_type><entity_type_name>Pressed By</entity_type_name><resource_url>https://api.discogs.com/labels/56025</resource_url></company></companies></release>
+</releases>`
