@@ -34,7 +34,8 @@
 //			defer f.Close()
 //
 //			d := decode.NewXmlDecoder(f, nil)
-//			num, artists, err := d.Artists(100)
+//			// decodes 10 artists by default, Block Size can be changed in decoder.Options
+//			num, artists, err := d.Artists()
 //			fmt.Println(num, err, artists)
 //		}
 //
@@ -56,13 +57,16 @@
 //			d := decode.NewXmlDecoder(f,
 //				&decode.Options{
 //					FileType: decode.Artists,
+//					Block: decode.Block{
+//						Size: 20, // size of the block = number of items returned
+//					},
 //				})
 //
 //			// for instance the SQL writer
 //			w := write.NewSqlWriter("./data_samples/artists.sql", nil)
 //			defer w.Close()
 //
-//			err := d.Decode(w)
+//			err = d.Decode(w)
 //			fmt.Println(err)
 //		}
 //

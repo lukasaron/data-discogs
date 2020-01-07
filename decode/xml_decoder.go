@@ -34,12 +34,11 @@ type XMLDecoder struct {
 func NewXmlDecoder(reader io.Reader, options *Options) Decoder {
 	d := &XMLDecoder{}
 
-	if reader == nil {
+	if reader != nil {
+		d.d = xml.NewDecoder(reader)
+	} else {
 		d.err = readerIsNull
-		return d
 	}
-
-	d.d = xml.NewDecoder(reader)
 
 	if options != nil {
 		d.SetOptions(*options)
@@ -68,8 +67,12 @@ func (x *XMLDecoder) SetOptions(opt Options) {
 		x.o.Block.Limit = defaultBlockLimit
 	}
 
-	if x.o.Block.Size < 1 {
-		x.o.Block.Size = defaultBlockSize
+	if x.o.Block.ItemSize < 1 {
+		x.o.Block.ItemSize = defaultBlockSize
+	}
+
+	if x.o.Block.Skip < 0 {
+		x.o.Block.Skip = 0
 	}
 }
 
@@ -80,7 +83,7 @@ func (x *XMLDecoder) Decode(w write.Writer) error {
 		return x.err
 	}
 
-	var df func(write.Writer, int, bool) (int, error)
+	var df func(write.Writer, bool) (int, error)
 	var num int
 
 	// get decode function based on the file type
@@ -91,7 +94,7 @@ func (x *XMLDecoder) Decode(w write.Writer) error {
 
 	for blockCount := 1; blockCount <= x.o.Block.Limit; blockCount++ {
 		// call appropriate decoder function
-		num, x.err = df(w, x.o.Block.Size, blockCount > x.o.Block.Skip)
+		num, x.err = df(w, blockCount > x.o.Block.Skip)
 		// error occurs (not the end of stream)
 		if x.err != nil && x.err != io.EOF {
 			log.Printf("Block %d failed [%d]\n", blockCount, num)
@@ -114,36 +117,36 @@ func (x *XMLDecoder) Decode(w write.Writer) error {
 	return x.err
 }
 
-func (x *XMLDecoder) Artists(limit int) (int, []model.Artist, error) {
-	if x.err != nil || limit == 0 {
+func (x *XMLDecoder) Artists() (int, []model.Artist, error) {
+	if x.err != nil {
 		return 0, nil, x.err
 	}
 
-	artists := x.parseArtists(limit)
+	artists := x.parseArtists()
 	if x.err == nil || x.err == io.EOF {
 		artists = x.filterArtists(artists)
 	}
 	return len(artists), artists, x.err
 }
 
-func (x *XMLDecoder) Labels(limit int) (int, []model.Label, error) {
-	if x.err != nil || limit == 0 {
+func (x *XMLDecoder) Labels() (int, []model.Label, error) {
+	if x.err != nil {
 		return 0, nil, x.err
 	}
 
-	labels := x.parseLabels(limit)
+	labels := x.parseLabels()
 	if x.err == nil || x.err == io.EOF {
 		labels = x.filterLabels(labels)
 	}
 	return len(labels), labels, x.err
 }
 
-func (x *XMLDecoder) Masters(limit int) (int, []model.Master, error) {
-	if x.err != nil || limit == 0 {
+func (x *XMLDecoder) Masters() (int, []model.Master, error) {
+	if x.err != nil {
 		return 0, nil, x.err
 	}
 
-	masters := x.parseMasters(limit)
+	masters := x.parseMasters()
 	if x.err == nil || x.err == io.EOF {
 		masters = x.filterMasters(masters)
 	}
@@ -151,12 +154,12 @@ func (x *XMLDecoder) Masters(limit int) (int, []model.Master, error) {
 	return len(masters), masters, x.err
 }
 
-func (x *XMLDecoder) Releases(limit int) (int, []model.Release, error) {
-	if x.err != nil || limit == 0 {
+func (x *XMLDecoder) Releases() (int, []model.Release, error) {
+	if x.err != nil {
 		return 0, nil, x.err
 	}
 
-	releases := x.parseReleases(limit)
+	releases := x.parseReleases()
 	if x.err == nil || x.err == io.EOF {
 		releases = x.filterReleases(releases)
 	}
@@ -211,7 +214,7 @@ func (x *XMLDecoder) filterReleases(rs []model.Release) []model.Release {
 
 //--------------------------------------------------- Decoders ---------------------------------------------------
 
-func (x *XMLDecoder) decodeFunction() (func(write.Writer, int, bool) (int, error), error) {
+func (x *XMLDecoder) decodeFunction() (func(write.Writer, bool) (int, error), error) {
 	switch x.o.FileType {
 	case Artists:
 		return x.decodeArtists, nil
@@ -228,8 +231,8 @@ func (x *XMLDecoder) decodeFunction() (func(write.Writer, int, bool) (int, error
 	}
 }
 
-func (x *XMLDecoder) decodeArtists(w write.Writer, blockSize int, write bool) (int, error) {
-	num, a, err := x.Artists(blockSize)
+func (x *XMLDecoder) decodeArtists(w write.Writer, write bool) (int, error) {
+	num, a, err := x.Artists()
 	if (err != nil && err != io.EOF) || num == 0 {
 		return num, err
 	}
@@ -241,8 +244,8 @@ func (x *XMLDecoder) decodeArtists(w write.Writer, blockSize int, write bool) (i
 	return num, err
 }
 
-func (x *XMLDecoder) decodeLabels(w write.Writer, blockSize int, write bool) (int, error) {
-	num, l, err := x.Labels(blockSize)
+func (x *XMLDecoder) decodeLabels(w write.Writer, write bool) (int, error) {
+	num, l, err := x.Labels()
 	if (err != nil && err != io.EOF) || num == 0 {
 		return num, err
 	}
@@ -254,8 +257,8 @@ func (x *XMLDecoder) decodeLabels(w write.Writer, blockSize int, write bool) (in
 	return num, err
 }
 
-func (x *XMLDecoder) decodeMasters(w write.Writer, blockSize int, write bool) (int, error) {
-	num, m, err := x.Masters(blockSize)
+func (x *XMLDecoder) decodeMasters(w write.Writer, write bool) (int, error) {
+	num, m, err := x.Masters()
 	if (err != nil && err != io.EOF) || num == 0 {
 		return num, err
 	}
@@ -267,8 +270,8 @@ func (x *XMLDecoder) decodeMasters(w write.Writer, blockSize int, write bool) (i
 	return num, err
 }
 
-func (x *XMLDecoder) decodeReleases(w write.Writer, blockSize int, write bool) (int, error) {
-	num, r, err := x.Releases(blockSize)
+func (x *XMLDecoder) decodeReleases(w write.Writer, write bool) (int, error) {
+	num, r, err := x.Releases()
 	if (err != nil && err != io.EOF) || num == 0 {
 		return num, err
 	}
@@ -334,14 +337,14 @@ func (x *XMLDecoder) parseChildValues(parentName, childName string) (children []
 
 //--------------------------------------------------- Artist ---------------------------------------------------
 
-func (x *XMLDecoder) parseArtists(limit int) (artists []model.Artist) {
+func (x *XMLDecoder) parseArtists() (artists []model.Artist) {
 	if x.err != nil {
 		return artists
 	}
 
 	var t xml.Token
 	cnt := 0
-	for t, x.err = x.d.Token(); t != nil && x.err == nil && cnt != limit; t, x.err = x.d.Token() {
+	for t, x.err = x.d.Token(); t != nil && x.err == nil && cnt != x.o.Block.ItemSize; t, x.err = x.d.Token() {
 		if x.startElementName(t, "artist") {
 			artist := x.parseArtist(t.(xml.StartElement))
 			if x.err != nil {
@@ -571,14 +574,14 @@ func (x *XMLDecoder) parseImage(se xml.StartElement) (img model.Image) {
 
 //--------------------------------------------------- Label ---------------------------------------------------
 
-func (x *XMLDecoder) parseLabels(limit int) (labels []model.Label) {
+func (x *XMLDecoder) parseLabels() (labels []model.Label) {
 	if x.err != nil {
 		return labels
 	}
 
 	var t xml.Token
 	cnt := 0
-	for t, x.err = x.d.Token(); t != nil && x.err == nil && cnt != limit; t, x.err = x.d.Token() {
+	for t, x.err = x.d.Token(); t != nil && x.err == nil && cnt != x.o.Block.ItemSize; t, x.err = x.d.Token() {
 		if x.startElementName(t, "label") {
 			l := x.parseLabel(t.(xml.StartElement))
 			if x.err != nil {
@@ -666,14 +669,14 @@ func (x *XMLDecoder) parseSubLabels() (labels []model.LabelLabel) {
 
 //--------------------------------------------------- Master ---------------------------------------------------
 
-func (x *XMLDecoder) parseMasters(limit int) (masters []model.Master) {
+func (x *XMLDecoder) parseMasters() (masters []model.Master) {
 	if x.err != nil {
 		return masters
 	}
 
 	var t xml.Token
 	cnt := 0
-	for t, x.err = x.d.Token(); t != nil && x.err == nil && cnt != limit; t, x.err = x.d.Token() {
+	for t, x.err = x.d.Token(); t != nil && x.err == nil && cnt != x.o.Block.ItemSize; t, x.err = x.d.Token() {
 		if x.startElementName(t, "master") {
 			m := x.parseMaster(t.(xml.StartElement))
 			if x.err != nil {
@@ -737,14 +740,14 @@ func (x *XMLDecoder) parseMaster(se xml.StartElement) (master model.Master) {
 
 //--------------------------------------------------- Release ---------------------------------------------------
 
-func (x *XMLDecoder) parseReleases(limit int) (releases []model.Release) {
+func (x *XMLDecoder) parseReleases() (releases []model.Release) {
 	if x.err != nil {
 		return releases
 	}
 
 	var t xml.Token
 	cnt := 0
-	for t, x.err = x.d.Token(); t != nil && x.err == nil && cnt != limit; t, x.err = x.d.Token() {
+	for t, x.err = x.d.Token(); t != nil && x.err == nil && cnt != x.o.Block.ItemSize; t, x.err = x.d.Token() {
 		if x.startElementName(t, "release") {
 			rls := x.parseRelease(t.(xml.StartElement))
 			if x.err != nil {

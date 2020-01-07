@@ -2,14 +2,14 @@ package decode
 
 import "testing"
 
-func TestToQualityLevelInValid(t *testing.T) {
+func TestToQualityLevel_InValid(t *testing.T) {
 	ql := ToQualityLevel("")
 	if ql != All {
 		t.Error("when the value is invalid, should be All")
 	}
 }
 
-func TestToQualityLevelAll(t *testing.T) {
+func TestToQualityLevel_All(t *testing.T) {
 	value := "All"
 	ql := ToQualityLevel(value)
 	if ql != All {
@@ -17,7 +17,7 @@ func TestToQualityLevelAll(t *testing.T) {
 	}
 }
 
-func TestToQualityLevelNeedsVote(t *testing.T) {
+func TestToQualityLevel_NeedsVote(t *testing.T) {
 	value := "Needs Vote"
 	ql := ToQualityLevel(value)
 	if ql != NeedsVote {
@@ -25,7 +25,7 @@ func TestToQualityLevelNeedsVote(t *testing.T) {
 	}
 }
 
-func TestToQualityLevelEntirelyIncorrect(t *testing.T) {
+func TestToQualityLevel_EntirelyIncorrect(t *testing.T) {
 	value := "Entirely Incorrect"
 	ql := ToQualityLevel(value)
 	if ql != EntirelyIncorrect {
@@ -33,7 +33,7 @@ func TestToQualityLevelEntirelyIncorrect(t *testing.T) {
 	}
 }
 
-func TestToQualityLevelNeedsMajorChanges(t *testing.T) {
+func TestToQualityLevel_NeedsMajorChanges(t *testing.T) {
 	value := "Needs Major Changes"
 	ql := ToQualityLevel(value)
 	if ql != NeedsMajorChanges {
@@ -41,7 +41,7 @@ func TestToQualityLevelNeedsMajorChanges(t *testing.T) {
 	}
 }
 
-func TestToQualityLevelNeedsMinorChanges(t *testing.T) {
+func TestToQualityLevel_NeedsMinorChanges(t *testing.T) {
 	value := "Needs Minor Changes"
 	ql := ToQualityLevel(value)
 	if ql != NeedsMinorChanges {
@@ -49,7 +49,7 @@ func TestToQualityLevelNeedsMinorChanges(t *testing.T) {
 	}
 }
 
-func TestToQualityLevelCorrect(t *testing.T) {
+func TestToQualityLevel_Correct(t *testing.T) {
 	value := "Correct"
 	ql := ToQualityLevel(value)
 	if ql != Correct {
@@ -57,7 +57,7 @@ func TestToQualityLevelCorrect(t *testing.T) {
 	}
 }
 
-func TestToQualityLevelCompleteAndCorrect(t *testing.T) {
+func TestToQualityLevel_CompleteAndCorrect(t *testing.T) {
 	value := "Complete and Correct"
 	ql := ToQualityLevel(value)
 	if ql != CompleteAndCorrect {
@@ -65,7 +65,7 @@ func TestToQualityLevelCompleteAndCorrect(t *testing.T) {
 	}
 }
 
-func TestQualityLevelIncludesAll(t *testing.T) {
+func TestQualityLevel_Includes_All(t *testing.T) {
 	ql := All
 	if !ql.Includes(CompleteAndCorrect) {
 		t.Error("all should contain Complete and Correct")
@@ -96,7 +96,7 @@ func TestQualityLevelIncludesAll(t *testing.T) {
 	}
 }
 
-func TestQualityLevelIncludesEntirelyIncorrect(t *testing.T) {
+func TestQualityLevel_Includes_EntirelyIncorrect(t *testing.T) {
 	ql := EntirelyIncorrect
 	if !ql.Includes(CompleteAndCorrect) {
 		t.Error("entirely incorrect should contain Complete and Correct")
@@ -127,7 +127,7 @@ func TestQualityLevelIncludesEntirelyIncorrect(t *testing.T) {
 	}
 }
 
-func TestQualityLevelIncludesNeedsVote(t *testing.T) {
+func TestQualityLevel_Includes_NeedsVote(t *testing.T) {
 	ql := NeedsVote
 	if !ql.Includes(CompleteAndCorrect) {
 		t.Error("needs vote should contain Complete and Correct")
@@ -158,7 +158,7 @@ func TestQualityLevelIncludesNeedsVote(t *testing.T) {
 	}
 }
 
-func TestQualityLevelIncludesNeedsMajorChanges(t *testing.T) {
+func TestQualityLevel_Includes_NeedsMajorChanges(t *testing.T) {
 	ql := NeedsMajorChanges
 	if !ql.Includes(CompleteAndCorrect) {
 		t.Error("needs major changes should contain Complete and Correct")
@@ -189,7 +189,7 @@ func TestQualityLevelIncludesNeedsMajorChanges(t *testing.T) {
 	}
 }
 
-func TestToQualityLevelIncludesNeedsMinorChanges(t *testing.T) {
+func TestToQualityLevel_Includes_NeedsMinorChanges(t *testing.T) {
 	ql := NeedsMinorChanges
 	if !ql.Includes(CompleteAndCorrect) {
 		t.Error("needs minor changes should contain Complete and Correct")
@@ -220,7 +220,7 @@ func TestToQualityLevelIncludesNeedsMinorChanges(t *testing.T) {
 	}
 }
 
-func TestQualityLevelIncludesCorrect(t *testing.T) {
+func TestQualityLevel_Includes_Correct(t *testing.T) {
 	ql := Correct
 	if !ql.Includes(CompleteAndCorrect) {
 		t.Error("correct should contain Complete and Correct")
@@ -251,7 +251,7 @@ func TestQualityLevelIncludesCorrect(t *testing.T) {
 	}
 }
 
-func TestQualityLevelIncludesCompleteAndCorrect(t *testing.T) {
+func TestQualityLevel_Includes_CompleteAndCorrect(t *testing.T) {
 	ql := CompleteAndCorrect
 	if !ql.Includes(CompleteAndCorrect) {
 		t.Error("complete and correct should contain itself")

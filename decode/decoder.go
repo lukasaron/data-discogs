@@ -14,10 +14,10 @@ import (
 // Close method clean all data related to decoding.
 type Decoder interface {
 	Decode(write.Writer) error
-	Artists(limit int) (int, []model.Artist, error)
-	Labels(limit int) (int, []model.Label, error)
-	Masters(limit int) (int, []model.Master, error)
-	Releases(limit int) (int, []model.Release, error)
+	Artists() (int, []model.Artist, error)
+	Labels() (int, []model.Label, error)
+	Masters() (int, []model.Master, error)
+	Releases() (int, []model.Release, error)
 	Options() Options
 	SetOptions(Options)
 	Error() error
@@ -69,9 +69,9 @@ func (ql QualityLevel) Includes(q QualityLevel) bool {
 
 // Block option structure implements the pagination principle for decoding the stream of data.
 type Block struct {
-	Size  int
-	Limit int
-	Skip  int
+	ItemSize int // Item size of the block - how many items will be parsed at one block
+	Limit    int // Limit of blocks - how many blocks will be parsed - the upper limit
+	Skip     int // Skip blocks - how many blocks will be skipped from the beginning
 }
 
 // File Type determines the input type of data to be decoded.
