@@ -31,7 +31,7 @@ type XMLDecoder struct {
 }
 
 // Create a new XML decoder
-func NewXmlDecoder(reader io.Reader, options *Options) Decoder {
+func NewXMLDecoder(reader io.Reader, options *Options) Decoder {
 	d := &XMLDecoder{}
 
 	if reader != nil {

@@ -7,7 +7,7 @@ import (
 )
 
 func TestNewXmlDecoder(t *testing.T) {
-	d := NewXmlDecoder(nil, nil)
+	d := NewXMLDecoder(nil, nil)
 	readerError := d.Error()
 	if readerError == nil {
 		t.Error("there should be error when the reader is null")
@@ -45,7 +45,7 @@ func TestNewXmlDecoder(t *testing.T) {
 }
 
 func TestNewXmlDecoderNoOptions(t *testing.T) {
-	d := NewXmlDecoder(strings.NewReader(artists), nil)
+	d := NewXMLDecoder(strings.NewReader(artists), nil)
 	if d.Error() != nil {
 		t.Errorf("there shouldn't be the error: %v", d.Error())
 	}
@@ -73,7 +73,7 @@ func TestNewXmlDecoderNoOptions(t *testing.T) {
 }
 
 func TestNewXmlDecoderWithOptions(t *testing.T) {
-	d := NewXmlDecoder(strings.NewReader(artists), &Options{
+	d := NewXMLDecoder(strings.NewReader(artists), &Options{
 		QualityLevel: Correct,
 		Block: Block{
 			ItemSize: 100,
@@ -110,7 +110,7 @@ func TestNewXmlDecoderWithOptions(t *testing.T) {
 }
 
 func TestXMLDecoder_SetOptions(t *testing.T) {
-	d := NewXmlDecoder(nil, &Options{
+	d := NewXMLDecoder(nil, &Options{
 		QualityLevel: NeedsVote,
 		Block: Block{
 			ItemSize: 0,
@@ -174,7 +174,7 @@ func TestXMLDecoder_SetOptions(t *testing.T) {
 }
 
 func TestXMLDecoder_Artists(t *testing.T) {
-	d := NewXmlDecoder(strings.NewReader(artists), &Options{
+	d := NewXMLDecoder(strings.NewReader(artists), &Options{
 		FileType: Artists,
 	})
 
@@ -193,7 +193,7 @@ func TestXMLDecoder_Artists(t *testing.T) {
 }
 
 func TestXMLDecoder_Artists_DataCheck_First(t *testing.T) {
-	d := NewXmlDecoder(strings.NewReader(artists), &Options{
+	d := NewXMLDecoder(strings.NewReader(artists), &Options{
 		FileType: Artists,
 	})
 
@@ -289,7 +289,7 @@ func TestXMLDecoder_Artists_DataCheck_First(t *testing.T) {
 }
 
 func TestXMLDecoder_Artists_DataCheck_Second(t *testing.T) {
-	d := NewXmlDecoder(strings.NewReader(artists), &Options{
+	d := NewXMLDecoder(strings.NewReader(artists), &Options{
 		FileType: Artists,
 	})
 
@@ -298,6 +298,7 @@ func TestXMLDecoder_Artists_DataCheck_Second(t *testing.T) {
 
 	if artist.Id != "2" {
 		t.Errorf("wrong artist id, expected: %s, got: %s", "2", artist.Id)
+		t.FailNow()
 	}
 
 	if artist.Name != "Mr. James Barth & A.D." {
@@ -384,7 +385,7 @@ func TestXMLDecoder_Artists_DataCheck_Second(t *testing.T) {
 }
 
 func TestXMLDecoder_Artists_Block_ItemSize(t *testing.T) {
-	d := NewXmlDecoder(strings.NewReader(artists), &Options{
+	d := NewXMLDecoder(strings.NewReader(artists), &Options{
 		FileType: Artists,
 		Block: Block{
 			ItemSize: 1,
@@ -420,7 +421,7 @@ func TestXMLDecoder_Artists_Block_ItemSize(t *testing.T) {
 }
 
 func TestXMLDecoder_Labels(t *testing.T) {
-	d := NewXmlDecoder(strings.NewReader(labels), &Options{
+	d := NewXMLDecoder(strings.NewReader(labels), &Options{
 		FileType: Labels,
 	})
 
@@ -439,7 +440,7 @@ func TestXMLDecoder_Labels(t *testing.T) {
 }
 
 func TestXMLDecoder_Labels_Block_ItemSize(t *testing.T) {
-	d := NewXmlDecoder(strings.NewReader(labels), &Options{
+	d := NewXMLDecoder(strings.NewReader(labels), &Options{
 		FileType: Labels,
 		Block: Block{
 			ItemSize: 1,
@@ -475,7 +476,7 @@ func TestXMLDecoder_Labels_Block_ItemSize(t *testing.T) {
 }
 
 func TestXMLDecoder_Masters(t *testing.T) {
-	d := NewXmlDecoder(strings.NewReader(masters), &Options{
+	d := NewXMLDecoder(strings.NewReader(masters), &Options{
 		FileType: Masters,
 	})
 
@@ -494,7 +495,7 @@ func TestXMLDecoder_Masters(t *testing.T) {
 }
 
 func TestXMLDecoder_Masters_Block_ItemSize(t *testing.T) {
-	d := NewXmlDecoder(strings.NewReader(masters), &Options{
+	d := NewXMLDecoder(strings.NewReader(masters), &Options{
 		FileType: Masters,
 		Block: Block{
 			ItemSize: 1,
@@ -530,7 +531,7 @@ func TestXMLDecoder_Masters_Block_ItemSize(t *testing.T) {
 }
 
 func TestXMLDecoder_Releases(t *testing.T) {
-	d := NewXmlDecoder(strings.NewReader(releases), &Options{
+	d := NewXMLDecoder(strings.NewReader(releases), &Options{
 		FileType: Releases,
 	})
 
@@ -549,7 +550,7 @@ func TestXMLDecoder_Releases(t *testing.T) {
 }
 
 func TestXMLDecoder_Releases_Block_ItemSize(t *testing.T) {
-	d := NewXmlDecoder(strings.NewReader(releases), &Options{
+	d := NewXMLDecoder(strings.NewReader(releases), &Options{
 		FileType: Releases,
 		Block: Block{
 			ItemSize: 1,
