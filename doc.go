@@ -23,10 +23,17 @@
 //		import (
 //			"fmt"
 //			"github.com/lukasaron/data-discogs/decode"
+//			"log"
 //		)
 //
 //		func main() {
-//			d := decode.NewXmlDecoder("./data_samples/artists.xml", nil)
+//			f, err := os.Open("./data_samples/artists.xml")
+//			if err != nil {
+//				log.Fatal(err)
+//			}
+//			defer f.Close()
+//
+//			d := decode.NewXmlDecoder(f, nil)
 //			defer d.Close()
 //			num, artists, err := d.Artists(100)
 //			fmt.Println(num, err, artists)
@@ -37,14 +44,20 @@
 //			"fmt"
 //			"github.com/lukasaron/data-discogs/decode"
 //			"github.com/lukasaron/data-discogs/write"
+//			"log"
 //		)
 //
 //		func main() {
-//			d := decode.NewXmlDecoder("./data_samples/artists.xml",
+//			f, err := os.Open("./data_samples/artists.xml")
+//			if err != nil {
+//				log.Fatal(err)
+//			}
+//			defer f.Close()
+//
+//			d := decode.NewXmlDecoder(f,
 //				&decode.Options{
 //					FileType: decode.Artists,
 //				})
-//			defer d.Close()
 //
 //			// for instance the SQL writer
 //			w := write.NewSqlWriter("./data_samples/artists.sql", nil)

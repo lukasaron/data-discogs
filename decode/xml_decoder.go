@@ -7,7 +7,6 @@ import (
 	"github.com/lukasaron/data-discogs/write"
 	"io"
 	"log"
-	"os"
 	"strings"
 )
 
@@ -25,29 +24,29 @@ var (
 // XML Decoder type is behaviour structure that implements Decoder interface and supports
 // the Discogs XML dump data decoding.
 type XMLDecoder struct {
-	f   *os.File
 	d   *xml.Decoder
 	o   Options
 	err error
 }
 
 // Create a new XML decoder
-func NewXmlDecoder(fileName string, options *Options) Decoder {
+func NewXmlDecoder(reader io.Reader, options *Options) Decoder {
 	d := &XMLDecoder{}
 
-	d.f, d.err = os.Open(fileName)
-	d.d = xml.NewDecoder(d.f)
+	d.d = xml.NewDecoder(reader)
 
 	if options != nil {
 		d.SetOptions(*options)
+	} else {
+		d.SetOptions(Options{})
 	}
 
 	return d
 }
 
-// Closes properly the opened XML decoder
-func (x *XMLDecoder) Close() error {
-	return x.f.Close()
+// Provides the state error
+func (x *XMLDecoder) Error() error {
+	return x.err
 }
 
 // Get options from XML decoder
@@ -66,12 +65,6 @@ func (x *XMLDecoder) SetOptions(opt Options) {
 	if x.o.Block.Size < 1 {
 		x.o.Block.Size = defaultBlockSize
 	}
-}
-
-// Reset the XML decoder function move it's file cursor into the beginning.
-func (x *XMLDecoder) Reset() error {
-	_, x.err = x.f.Seek(0, 0)
-	return x.err
 }
 
 // Decode data and save the result into the writer. The type of data is already defined by Option passed during creating

@@ -20,8 +20,7 @@ type Decoder interface {
 	Releases(limit int) (int, []model.Release, error)
 	Options() Options
 	SetOptions(Options)
-	Reset() error
-	Close() error
+	Error() error
 }
 
 // Quality Level specifies the required data to be parsed based on the Discogs marking.
