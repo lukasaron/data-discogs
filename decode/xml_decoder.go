@@ -34,18 +34,16 @@ type XMLDecoder struct {
 func NewXMLDecoder(reader io.Reader, options *Options) Decoder {
 	d := &XMLDecoder{}
 
-	if reader != nil {
-		d.d = xml.NewDecoder(reader)
-	} else {
+	if reader == nil {
 		d.err = readerIsNull
 	}
 
-	if options != nil {
-		d.SetOptions(*options)
-	} else {
-		d.SetOptions(Options{})
+	if options == nil {
+		options = &Options{}
 	}
+	d.SetOptions(*options)
 
+	d.d = xml.NewDecoder(reader)
 	return d
 }
 
