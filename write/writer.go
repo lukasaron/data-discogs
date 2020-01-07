@@ -1,4 +1,4 @@
-// Package write integrates a few writer that could be used for storage the decoded Discogs data.
+// Package integrates a few writer that could be used for storage the decoded Discogs data.
 package write
 
 import (

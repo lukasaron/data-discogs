@@ -1,4 +1,4 @@
-// Package decode contains all necessary functionality to cover decoding of the Discogs data.
+// Package contains all necessary functionality to cover decoding of the Discogs data.
 package decode
 
 import (

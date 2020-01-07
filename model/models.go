@@ -1,4 +1,4 @@
-// Package model expresses data structures based on XML files provided by Discogs.
+// Package expresses data structures based on XML files provided by Discogs.
 package model
 
 //--------------------------------------------------- Artist ---------------------------------------------------
