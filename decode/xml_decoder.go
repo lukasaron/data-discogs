@@ -17,12 +17,12 @@ const (
 
 var (
 	// Errors returned when failure occurs
-	readerIsNull          = errors.New("reader is null")
-	wrongTypeSpecified    = errors.New("wrong file type specified")
-	notCorrectStarElement = errors.New("token is not a correct start element")
+	errReaderIsNull          = errors.New("reader is null")
+	errWrongTypeSpecified    = errors.New("wrong file type specified")
+	errNotCorrectStarElement = errors.New("token is not a correct start element")
 )
 
-// XML Decoder type is behaviour structure that implements Decoder interface and supports
+// XMLDecoder type is behaviour structure that implements Decoder interface and supports
 // the Discogs XML dump data decoding.
 type XMLDecoder struct {
 	d   *xml.Decoder
@@ -30,12 +30,12 @@ type XMLDecoder struct {
 	err error
 }
 
-// Create a new XML decoder
+// NewXMLDecoder creates new decoder with the implementation of XMLDecoder.
 func NewXMLDecoder(reader io.Reader, options *Options) Decoder {
 	d := &XMLDecoder{}
 
 	if reader == nil {
-		d.err = readerIsNull
+		d.err = errReaderIsNull
 	}
 
 	if options == nil {
@@ -47,17 +47,17 @@ func NewXMLDecoder(reader io.Reader, options *Options) Decoder {
 	return d
 }
 
-// Provides the state error
+// Error provides the state error.
 func (x *XMLDecoder) Error() error {
 	return x.err
 }
 
-// Get options from XML decoder
+// Options returns options from XML decoder.
 func (x *XMLDecoder) Options() Options {
 	return x.o
 }
 
-// Set new options
+// SetOptions sets new options
 func (x *XMLDecoder) SetOptions(opt Options) {
 	x.o = opt
 
@@ -74,7 +74,7 @@ func (x *XMLDecoder) SetOptions(opt Options) {
 	}
 }
 
-// Decode data and save the result into the writer. The type of data is already defined by Option passed during creating
+// Decode function parses data and saves the result into the writer. The type of data is already defined by Option passed during creating
 // the decoder - otherwise Unknown file type is specified.
 //
 // The Options play important role in this function, especially the Block feature.
@@ -124,7 +124,10 @@ func (x *XMLDecoder) Decode(w write.Writer) error {
 	return x.err
 }
 
-// Decodes artists from provided XML file and pays attention into Block options, specifically into ItemSize value.
+// Artists function performs decoding the artist items from provided XML file and uses Options,
+// especially the block ItemSize value.
+//
+// Function returns number of decoded and filtered items, slice of items and possible error, when occurs.
 func (x *XMLDecoder) Artists() (int, []model.Artist, error) {
 	if x.err != nil {
 		return 0, nil, x.err
@@ -137,7 +140,10 @@ func (x *XMLDecoder) Artists() (int, []model.Artist, error) {
 	return len(artists), artists, x.err
 }
 
-// Decodes labels from provided XML file and pays attention into Block options, specifically into ItemSize value.
+// Labels function performs decoding the label items from provided XML file and uses Options,
+// especially the block ItemSize value.
+//
+// Function returns number of decoded and filtered items, slice of items and possible error, when occurs.
 func (x *XMLDecoder) Labels() (int, []model.Label, error) {
 	if x.err != nil {
 		return 0, nil, x.err
@@ -150,7 +156,10 @@ func (x *XMLDecoder) Labels() (int, []model.Label, error) {
 	return len(labels), labels, x.err
 }
 
-// Decodes masters from provided XML file and pays attention into Block options, specifically into ItemSize value.
+// Masters function performs decoding the master items from provided XML file and uses Options,
+// especially the block ItemSize value.
+//
+// Function returns number of decoded and filtered items, slice of items and possible error, when occurs.
 func (x *XMLDecoder) Masters() (int, []model.Master, error) {
 	if x.err != nil {
 		return 0, nil, x.err
@@ -164,7 +173,10 @@ func (x *XMLDecoder) Masters() (int, []model.Master, error) {
 	return len(masters), masters, x.err
 }
 
-// Decodes releases from provided XML file and pays attention into Block options, specifically into ItemSize value.
+// Releases function performs decoding the release items from provided XML file and uses Options,
+// especially the block ItemSize value.
+//
+// Function returns number of decoded and filtered items, slice of items and possible error, when occurs.
 func (x *XMLDecoder) Releases() (int, []model.Release, error) {
 	if x.err != nil {
 		return 0, nil, x.err
@@ -238,7 +250,7 @@ func (x *XMLDecoder) decodeFunction() (func(write.Writer, bool) (int, error), er
 	case Unknown:
 		fallthrough
 	default:
-		return nil, wrongTypeSpecified
+		return nil, errWrongTypeSpecified
 	}
 }
 
@@ -375,7 +387,7 @@ func (x *XMLDecoder) parseArtist(se xml.StartElement) (artist model.Artist) {
 	}
 
 	if se.Name.Local != "artist" {
-		x.err = notCorrectStarElement
+		x.err = errNotCorrectStarElement
 		return artist
 	}
 
@@ -391,7 +403,7 @@ func (x *XMLDecoder) parseArtist(se xml.StartElement) (artist model.Artist) {
 
 				artist.Images = imgs
 			case "id":
-				artist.Id = x.parseValue()
+				artist.ID = x.parseValue()
 			case "name":
 				artist.Name = x.parseValue()
 			case "realname":
@@ -424,7 +436,7 @@ func (x *XMLDecoder) parseAliases() (aliases []model.Alias) {
 	for t, x.err = x.d.Token(); x.err == nil && !x.endElementName(t, "aliases"); t, x.err = x.d.Token() {
 		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "name" {
 			alias := model.Alias{
-				Id:   se.Attr[0].Value,
+				ID:   se.Attr[0].Value,
 				Name: x.parseValue(),
 			}
 			aliases = append(aliases, alias)
@@ -442,7 +454,7 @@ func (x *XMLDecoder) parseMembers() (members []model.Member) {
 	for t, x.err = x.d.Token(); x.err == nil && !x.endElementName(t, "members"); t, x.err = x.d.Token() {
 		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "name" {
 			member := model.Member{
-				Id:   se.Attr[0].Value,
+				ID:   se.Attr[0].Value,
 				Name: x.parseValue(),
 			}
 			members = append(members, member)
@@ -470,7 +482,7 @@ func (x *XMLDecoder) parseCompanies() (companies []model.Company) {
 		if se, ok := t.(xml.StartElement); ok {
 			switch se.Name.Local {
 			case "id":
-				company.Id = x.parseValue()
+				company.ID = x.parseValue()
 			case "name":
 				company.Name = x.parseValue()
 			case "catno":
@@ -480,7 +492,7 @@ func (x *XMLDecoder) parseCompanies() (companies []model.Company) {
 			case "entity_type_name":
 				company.EntityTypeName = x.parseValue()
 			case "resource_url":
-				company.ResourceUrl = x.parseValue()
+				company.ResourceURL = x.parseValue()
 			}
 		}
 
@@ -532,7 +544,7 @@ func (x *XMLDecoder) parseImages(se xml.StartElement) (images []model.Image) {
 	}
 
 	if se.Name.Local != "images" {
-		x.err = notCorrectStarElement
+		x.err = errNotCorrectStarElement
 		return images
 	}
 
@@ -561,7 +573,7 @@ func (x *XMLDecoder) parseImage(se xml.StartElement) (img model.Image) {
 	}
 
 	if se.Name.Local != "image" {
-		x.err = notCorrectStarElement
+		x.err = errNotCorrectStarElement
 		return img
 	}
 
@@ -574,9 +586,9 @@ func (x *XMLDecoder) parseImage(se xml.StartElement) (img model.Image) {
 		case "type":
 			img.Type = attr.Value
 		case "uri":
-			img.Uri = attr.Value
+			img.URI = attr.Value
 		case "uri150":
-			img.Uri150 = attr.Value
+			img.URI150 = attr.Value
 		}
 	}
 
@@ -613,7 +625,7 @@ func (x *XMLDecoder) parseLabel(se xml.StartElement) (label model.Label) {
 	}
 
 	if se.Name.Local != "label" {
-		x.err = notCorrectStarElement
+		x.err = errNotCorrectStarElement
 		return label
 	}
 
@@ -629,7 +641,7 @@ func (x *XMLDecoder) parseLabel(se xml.StartElement) (label model.Label) {
 
 				label.Images = imgs
 			case "id":
-				label.Id = x.parseValue()
+				label.ID = x.parseValue()
 			case "name":
 				label.Name = x.parseValue()
 			case "contactinfo":
@@ -644,7 +656,7 @@ func (x *XMLDecoder) parseLabel(se xml.StartElement) (label model.Label) {
 				label.DataQuality = x.parseValue()
 			case "parentLabel":
 				label.ParentLabel = &model.LabelLabel{
-					Id:   se.Attr[0].Value,
+					ID:   se.Attr[0].Value,
 					Name: x.parseValue(),
 				}
 			}
@@ -669,7 +681,7 @@ func (x *XMLDecoder) parseSubLabels() (labels []model.LabelLabel) {
 		}
 		if se, ok := t.(xml.StartElement); ok && se.Name.Local == "label" {
 			label := model.LabelLabel{}
-			label.Id = se.Attr[0].Value
+			label.ID = se.Attr[0].Value
 			label.Name = x.parseValue()
 			labels = append(labels, label)
 		}
@@ -708,11 +720,11 @@ func (x *XMLDecoder) parseMaster(se xml.StartElement) (master model.Master) {
 	}
 
 	if se.Name.Local != "master" {
-		x.err = notCorrectStarElement
+		x.err = errNotCorrectStarElement
 		return master
 	}
 
-	master.Id = se.Attr[0].Value
+	master.ID = se.Attr[0].Value
 	var t xml.Token
 	for t, x.err = x.d.Token(); x.err == nil; t, x.err = x.d.Token() {
 		if se, ok := t.(xml.StartElement); ok {
@@ -779,14 +791,14 @@ func (x *XMLDecoder) parseRelease(se xml.StartElement) (release model.Release) {
 	}
 
 	if se.Name.Local != "release" {
-		x.err = notCorrectStarElement
+		x.err = errNotCorrectStarElement
 		return release
 	}
 
 	for _, attr := range se.Attr {
 		switch attr.Name.Local {
 		case "id":
-			release.Id = attr.Value
+			release.ID = attr.Value
 		case "status":
 			release.Status = attr.Value
 		}
@@ -826,7 +838,7 @@ func (x *XMLDecoder) parseRelease(se xml.StartElement) (release model.Release) {
 				release.DataQuality = x.parseValue()
 			case "master_id":
 				release.MainRelease = se.Attr[0].Value
-				release.MasterId = x.parseValue()
+				release.MasterID = x.parseValue()
 			case "tracklist":
 				release.TrackList = x.parseTrackList()
 			case "identifiers":
@@ -859,7 +871,7 @@ func (x *XMLDecoder) parseReleaseArtists(wrapperName string) (artists []model.Re
 		if se, ok := t.(xml.StartElement); ok {
 			switch se.Name.Local {
 			case "id":
-				artist.Id = x.parseValue()
+				artist.ID = x.parseValue()
 			case "name":
 				artist.Name = x.parseValue()
 			case "anv":
@@ -897,7 +909,7 @@ func (x *XMLDecoder) parseReleaseLabels() (labels []model.ReleaseLabel) {
 			for _, attr := range se.Attr {
 				switch attr.Name.Local {
 				case "id":
-					label.Id = attr.Value
+					label.ID = attr.Value
 				case "name":
 					label.Name = attr.Value
 				case "catno":

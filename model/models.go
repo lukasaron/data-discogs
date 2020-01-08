@@ -1,11 +1,11 @@
-// Package expresses data structures based on XML files provided by Discogs.
+// Package model expresses data structures based on XML files provided by Discogs.
 package model
 
 //--------------------------------------------------- Artist ---------------------------------------------------
 
 //Artist is one of the main structure from Discogs:
 type Artist struct {
-	Id             string   `json:"id"`
+	ID             string   `json:"id"`
 	Name           string   `json:"name"`
 	RealName       string   `json:"realName"`
 	Images         []Image  `json:"images,omitempty"`
@@ -19,13 +19,13 @@ type Artist struct {
 
 // Alias is a sub structure of Artist:
 type Alias struct {
-	Id   string `json:"id"`
+	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 
 // Member is a sub structure of Artist:
 type Member struct {
-	Id   string `json:"id"`
+	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 
@@ -33,12 +33,12 @@ type Member struct {
 
 //Company structure:
 type Company struct {
-	Id             string `json:"id"`
+	ID             string `json:"id"`
 	Name           string `json:"name"`
 	Category       string `json:"category"`
 	EntityType     string `json:"entity_type"`
 	EntityTypeName string `json:"entity_type_name"`
-	ResourceUrl    string `json:"resource_url"`
+	ResourceURL    string `json:"resource_url"`
 }
 
 //--------------------------------------------------- Format ---------------------------------------------------
@@ -58,15 +58,15 @@ type Image struct {
 	Height string `json:"height"`
 	Width  string `json:"width"`
 	Type   string `json:"type"`
-	Uri    string `json:"uri"`
-	Uri150 string `json:"uri_150"`
+	URI    string `json:"uri"`
+	URI150 string `json:"uri_150"`
 }
 
 //--------------------------------------------------- Label ---------------------------------------------------
 
 // Label is one of the main structure from Discogs:
 type Label struct {
-	Id          string       `json:"id"`
+	ID          string       `json:"id"`
 	Name        string       `json:"name"`
 	Images      []Image      `json:"images,omitempty"`
 	ContactInfo string       `json:"contact_info"`
@@ -77,8 +77,9 @@ type Label struct {
 	SubLabels   []LabelLabel `json:"sub_labels,omitempty"`
 }
 
+// LabelLabel is a sub structure of Label
 type LabelLabel struct {
-	Id   string `json:"id"`
+	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 
@@ -86,7 +87,7 @@ type LabelLabel struct {
 
 // Master is one of the main structure from Discogs:
 type Master struct {
-	Id          string          `json:"id"`
+	ID          string          `json:"id"`
 	MainRelease string          `json:"main_release"`
 	Images      []Image         `json:"images,omitempty"`
 	Artists     []ReleaseArtist `json:"artists,omitempty"`
@@ -102,7 +103,7 @@ type Master struct {
 
 // Release is one of the main structure from Discogs:
 type Release struct {
-	Id           string          `json:"id"`
+	ID           string          `json:"id"`
 	Status       string          `json:"status"`
 	Images       []Image         `json:"images,omitempty"`
 	Artists      []ReleaseArtist `json:"artists,omitempty"`
@@ -115,7 +116,7 @@ type Release struct {
 	Released     string          `json:"released"`
 	Notes        string          `json:"notes"`
 	DataQuality  string          `json:"data_quality"`
-	MasterId     string          `json:"master_id"`
+	MasterID     string          `json:"master_id"`
 	MainRelease  string          `json:"main_release"`
 	TrackList    []Track         `json:"track_list,omitempty"`
 	Identifiers  []Identifier    `json:"identifiers,omitempty"`
@@ -124,9 +125,9 @@ type Release struct {
 	Companies    []Company       `json:"companies,omitempty"`
 }
 
-// Release artist is a sub structure of Release
+// ReleaseArtist is a sub structure of Release
 type ReleaseArtist struct {
-	Id     string `json:"id"`
+	ID     string `json:"id"`
 	Name   string `json:"name"`
 	Join   string `json:"join"`
 	Anv    string `json:"anv"`
@@ -134,9 +135,9 @@ type ReleaseArtist struct {
 	Tracks string `json:"tracks"`
 }
 
-// Release label is a sub structure of Release
+// ReleaseLabel is a sub structure of Release
 type ReleaseLabel struct {
-	Id       string `json:"id"`
+	ID       string `json:"id"`
 	Name     string `json:"name"`
 	Category string `json:"category"`
 }

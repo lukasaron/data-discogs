@@ -196,8 +196,8 @@ func TestXMLDecoder_Artists_DataCheck_First(t *testing.T) {
 	_, a, _ := d.Artists()
 	artist := a[0]
 
-	if artist.Id != "1" {
-		t.Errorf("wrong artist id, expected: %s, got: %s", "1", artist.Id)
+	if artist.ID != "1" {
+		t.Errorf("wrong artist id, expected: %s, got: %s", "1", artist.ID)
 	}
 
 	if artist.Name != "The Persuader" {
@@ -240,45 +240,45 @@ func TestXMLDecoder_Artists_DataCheck_First(t *testing.T) {
 		t.Errorf("wrong number of aliases, expected: %d, got: %d", 7, len(artist.Aliases))
 	}
 
-	if len(artist.Aliases) == 7 && (artist.Aliases[0].Id != "239" || artist.Aliases[0].Name != "Jesper Dahlbäck") {
+	if len(artist.Aliases) == 7 && (artist.Aliases[0].ID != "239" || artist.Aliases[0].Name != "Jesper Dahlbäck") {
 		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
-			"239", artist.Aliases[0].Id,
+			"239", artist.Aliases[0].ID,
 			"Jesper Dahlbäck", artist.Aliases[0].Name)
 	}
 
-	if len(artist.Aliases) == 7 && (artist.Aliases[1].Id != "16055" || artist.Aliases[1].Name != "Groove Machine") {
+	if len(artist.Aliases) == 7 && (artist.Aliases[1].ID != "16055" || artist.Aliases[1].Name != "Groove Machine") {
 		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
-			"16055", artist.Aliases[1].Id,
+			"16055", artist.Aliases[1].ID,
 			"Groove Machine", artist.Aliases[1].Name)
 	}
 
-	if len(artist.Aliases) == 7 && (artist.Aliases[2].Id != "19541" || artist.Aliases[2].Name != "Dick Track") {
+	if len(artist.Aliases) == 7 && (artist.Aliases[2].ID != "19541" || artist.Aliases[2].Name != "Dick Track") {
 		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
-			"19541", artist.Aliases[2].Id,
+			"19541", artist.Aliases[2].ID,
 			"Dick Track", artist.Aliases[2].Name)
 	}
 
-	if len(artist.Aliases) == 7 && (artist.Aliases[3].Id != "25227" || artist.Aliases[3].Name != "Lenk") {
+	if len(artist.Aliases) == 7 && (artist.Aliases[3].ID != "25227" || artist.Aliases[3].Name != "Lenk") {
 		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
-			"25227", artist.Aliases[3].Id,
+			"25227", artist.Aliases[3].ID,
 			"Lenk", artist.Aliases[3].Name)
 	}
 
-	if len(artist.Aliases) == 7 && (artist.Aliases[4].Id != "196957" || artist.Aliases[4].Name != "Janne Me' Amazonen") {
+	if len(artist.Aliases) == 7 && (artist.Aliases[4].ID != "196957" || artist.Aliases[4].Name != "Janne Me' Amazonen") {
 		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
-			"196957", artist.Aliases[4].Id,
+			"196957", artist.Aliases[4].ID,
 			"Janne Me' Amazonen", artist.Aliases[4].Name)
 	}
 
-	if len(artist.Aliases) == 7 && (artist.Aliases[5].Id != "278760" || artist.Aliases[5].Name != "Faxid") {
+	if len(artist.Aliases) == 7 && (artist.Aliases[5].ID != "278760" || artist.Aliases[5].Name != "Faxid") {
 		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
-			"278760", artist.Aliases[5].Id,
+			"278760", artist.Aliases[5].ID,
 			"Faxid", artist.Aliases[5].Name)
 	}
 
-	if len(artist.Aliases) == 7 && (artist.Aliases[6].Id != "439150" || artist.Aliases[6].Name != "The Pinguin Man") {
+	if len(artist.Aliases) == 7 && (artist.Aliases[6].ID != "439150" || artist.Aliases[6].Name != "The Pinguin Man") {
 		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
-			"439150", artist.Aliases[6].Id,
+			"439150", artist.Aliases[6].ID,
 			"The Pinguin Man", artist.Aliases[6].Name)
 	}
 
@@ -290,8 +290,8 @@ func TestXMLDecoder_Artists_DataCheck_Second(t *testing.T) {
 	_, a, _ := d.Artists()
 	artist := a[1]
 
-	if artist.Id != "2" {
-		t.Errorf("wrong artist id, expected: %s, got: %s", "2", artist.Id)
+	if artist.ID != "2" {
+		t.Errorf("wrong artist id, expected: %s, got: %s", "2", artist.ID)
 		t.FailNow()
 	}
 
@@ -331,33 +331,33 @@ func TestXMLDecoder_Artists_DataCheck_Second(t *testing.T) {
 		t.Errorf("wrong number of aliases, expected: %d, got: %d", 5, len(artist.Aliases))
 	}
 
-	if len(artist.Aliases) == 5 && (artist.Aliases[0].Id != "2470" || artist.Aliases[0].Name != "Puente Latino") {
+	if len(artist.Aliases) == 5 && (artist.Aliases[0].ID != "2470" || artist.Aliases[0].Name != "Puente Latino") {
 		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
-			"2470", artist.Aliases[0].Id,
+			"2470", artist.Aliases[0].ID,
 			"Puente Latino", artist.Aliases[0].Name)
 	}
 
-	if len(artist.Aliases) == 5 && (artist.Aliases[1].Id != "19536" || artist.Aliases[1].Name != "Yakari & Delano") {
+	if len(artist.Aliases) == 5 && (artist.Aliases[1].ID != "19536" || artist.Aliases[1].Name != "Yakari & Delano") {
 		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
-			"19536", artist.Aliases[1].Id,
+			"19536", artist.Aliases[1].ID,
 			"Yakari & Delano", artist.Aliases[1].Name)
 	}
 
-	if len(artist.Aliases) == 5 && (artist.Aliases[2].Id != "103709" || artist.Aliases[2].Name != "Crushed Insect & The Sick Puppy") {
+	if len(artist.Aliases) == 5 && (artist.Aliases[2].ID != "103709" || artist.Aliases[2].Name != "Crushed Insect & The Sick Puppy") {
 		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
-			"103709", artist.Aliases[2].Id,
+			"103709", artist.Aliases[2].ID,
 			"Crushed Insect & The Sick Puppy", artist.Aliases[2].Name)
 	}
 
-	if len(artist.Aliases) == 5 && (artist.Aliases[3].Id != "384581" || artist.Aliases[3].Name != "ADCL") {
+	if len(artist.Aliases) == 5 && (artist.Aliases[3].ID != "384581" || artist.Aliases[3].Name != "ADCL") {
 		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
-			"384581", artist.Aliases[3].Id,
+			"384581", artist.Aliases[3].ID,
 			"ADCL", artist.Aliases[3].Name)
 	}
 
-	if len(artist.Aliases) == 5 && (artist.Aliases[4].Id != "1779857" || artist.Aliases[4].Name != "Alexi Delano & Cari Lekebusch") {
+	if len(artist.Aliases) == 5 && (artist.Aliases[4].ID != "1779857" || artist.Aliases[4].Name != "Alexi Delano & Cari Lekebusch") {
 		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
-			"1779857", artist.Aliases[4].Id,
+			"1779857", artist.Aliases[4].ID,
 			"Alexi Delano & Cari Lekebusch", artist.Aliases[4].Name)
 	}
 
@@ -365,15 +365,15 @@ func TestXMLDecoder_Artists_DataCheck_Second(t *testing.T) {
 		t.Errorf("wrong number of members, expected: %d, got: %d", 5, len(artist.Members))
 	}
 
-	if len(artist.Members) == 2 && (artist.Members[0].Id != "26" || artist.Members[0].Name != "Alexi Delano") {
+	if len(artist.Members) == 2 && (artist.Members[0].ID != "26" || artist.Members[0].Name != "Alexi Delano") {
 		t.Errorf("wrong member, expected id: %s, got: %s, expected name: %s, got: %s",
-			"26", artist.Members[0].Id,
+			"26", artist.Members[0].ID,
 			"Alexi Delano", artist.Members[0].Name)
 	}
 
-	if len(artist.Members) == 2 && (artist.Members[1].Id != "27" || artist.Members[1].Name != "Cari Lekebusch") {
+	if len(artist.Members) == 2 && (artist.Members[1].ID != "27" || artist.Members[1].Name != "Cari Lekebusch") {
 		t.Errorf("wrong member, expected id: %s, got: %s, expected name: %s, got: %s",
-			"27", artist.Members[1].Id,
+			"27", artist.Members[1].ID,
 			"Cari Lekebusch", artist.Members[1].Name)
 	}
 }

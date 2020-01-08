@@ -37,9 +37,9 @@ func (s SQLWriter) WriteArtist(artist model.Artist) error {
 	s.beginTransaction()
 
 	s.writeArtist(artist)
-	s.writeImages(artist.Id, "", "", "", artist.Images)
-	s.writeAliases(artist.Id, artist.Aliases)
-	s.writeArtistMembers(artist.Id, artist.Members)
+	s.writeImages(artist.ID, "", "", "", artist.Images)
+	s.writeAliases(artist.ID, artist.Aliases)
+	s.writeArtistMembers(artist.ID, artist.Members)
 
 	s.commitTransaction()
 	s.flush()
@@ -54,9 +54,9 @@ func (s SQLWriter) WriteArtists(artists []model.Artist) error {
 
 	for _, a := range artists {
 		s.writeArtist(a)
-		s.writeImages(a.Id, "", "", "", a.Images)
-		s.writeAliases(a.Id, a.Aliases)
-		s.writeArtistMembers(a.Id, a.Members)
+		s.writeImages(a.ID, "", "", "", a.Images)
+		s.writeAliases(a.ID, a.Aliases)
+		s.writeArtistMembers(a.ID, a.Members)
 
 		if s.err != nil {
 			return s.err
@@ -75,10 +75,10 @@ func (s SQLWriter) WriteLabel(label model.Label) error {
 	s.beginTransaction()
 
 	s.writeLabel(label)
-	s.writeLabelLabels(label.Id, "false", label.SubLabels)
-	s.writeImages("", label.Id, "", "", label.Images)
+	s.writeLabelLabels(label.ID, "false", label.SubLabels)
+	s.writeImages("", label.ID, "", "", label.Images)
 	if label.ParentLabel != nil {
-		s.writeLabelLabel(label.Id, "true", *label.ParentLabel)
+		s.writeLabelLabel(label.ID, "true", *label.ParentLabel)
 	}
 
 	s.commitTransaction()
@@ -94,10 +94,10 @@ func (s SQLWriter) WriteLabels(labels []model.Label) error {
 
 	for _, l := range labels {
 		s.writeLabel(l)
-		s.writeLabelLabels(l.Id, "false", l.SubLabels)
-		s.writeImages("", l.Id, "", "", l.Images)
+		s.writeLabelLabels(l.ID, "false", l.SubLabels)
+		s.writeImages("", l.ID, "", "", l.Images)
 		if l.ParentLabel != nil {
-			s.writeLabelLabel(l.Id, "true", *l.ParentLabel)
+			s.writeLabelLabel(l.ID, "true", *l.ParentLabel)
 		}
 		if s.err != nil {
 			return s.err
@@ -116,9 +116,9 @@ func (s SQLWriter) WriteMaster(master model.Master) (err error) {
 	s.beginTransaction()
 
 	s.writeMaster(master)
-	s.writeReleaseArtists(master.Id, "", "false", master.Artists)
-	s.writeImages("", "", master.Id, "", master.Images)
-	s.writeVideos(master.Id, "", master.Videos)
+	s.writeReleaseArtists(master.ID, "", "false", master.Artists)
+	s.writeImages("", "", master.ID, "", master.Images)
+	s.writeVideos(master.ID, "", master.Videos)
 
 	s.commitTransaction()
 	s.flush()
@@ -133,9 +133,9 @@ func (s SQLWriter) WriteMasters(masters []model.Master) error {
 
 	for _, m := range masters {
 		s.writeMaster(m)
-		s.writeReleaseArtists(m.Id, "", "false", m.Artists)
-		s.writeImages("", "", m.Id, "", m.Images)
-		s.writeVideos(m.Id, "", m.Videos)
+		s.writeReleaseArtists(m.ID, "", "false", m.Artists)
+		s.writeImages("", "", m.ID, "", m.Images)
+		s.writeVideos(m.ID, "", m.Videos)
 		if s.err != nil {
 			return s.err
 		}
@@ -153,15 +153,15 @@ func (s SQLWriter) WriteRelease(release model.Release) error {
 	s.beginTransaction()
 
 	s.writeRelease(release)
-	s.writeImages("", "", "", release.Id, release.Images)
-	s.writeReleaseArtists("", release.Id, "false", release.Artists)
-	s.writeReleaseArtists("", release.Id, "true", release.ExtraArtists)
-	s.writeFormats(release.Id, release.Formats)
-	s.writeTrackList(release.Id, release.TrackList)
-	s.writeIdentifiers(release.Id, release.Identifiers)
-	s.writeReleaseLabels(release.Id, release.Labels)
-	s.writeCompanies(release.Id, release.Companies)
-	s.writeVideos("", release.Id, release.Videos)
+	s.writeImages("", "", "", release.ID, release.Images)
+	s.writeReleaseArtists("", release.ID, "false", release.Artists)
+	s.writeReleaseArtists("", release.ID, "true", release.ExtraArtists)
+	s.writeFormats(release.ID, release.Formats)
+	s.writeTrackList(release.ID, release.TrackList)
+	s.writeIdentifiers(release.ID, release.Identifiers)
+	s.writeReleaseLabels(release.ID, release.Labels)
+	s.writeCompanies(release.ID, release.Companies)
+	s.writeVideos("", release.ID, release.Videos)
 
 	s.commitTransaction()
 
@@ -177,15 +177,15 @@ func (s SQLWriter) WriteReleases(releases []model.Release) error {
 
 	for _, r := range releases {
 		s.writeRelease(r)
-		s.writeImages("", "", "", r.Id, r.Images)
-		s.writeReleaseArtists("", r.Id, "false", r.Artists)
-		s.writeReleaseArtists("", r.Id, "true", r.ExtraArtists)
-		s.writeFormats(r.Id, r.Formats)
-		s.writeTrackList(r.Id, r.TrackList)
-		s.writeIdentifiers(r.Id, r.Identifiers)
-		s.writeReleaseLabels(r.Id, r.Labels)
-		s.writeCompanies(r.Id, r.Companies)
-		s.writeVideos("", r.Id, r.Videos)
+		s.writeImages("", "", "", r.ID, r.Images)
+		s.writeReleaseArtists("", r.ID, "false", r.Artists)
+		s.writeReleaseArtists("", r.ID, "true", r.ExtraArtists)
+		s.writeFormats(r.ID, r.Formats)
+		s.writeTrackList(r.ID, r.TrackList)
+		s.writeIdentifiers(r.ID, r.Identifiers)
+		s.writeReleaseLabels(r.ID, r.Labels)
+		s.writeCompanies(r.ID, r.Companies)
+		s.writeVideos("", r.ID, r.Videos)
 		if s.err != nil {
 			return s.err
 		}
@@ -238,7 +238,7 @@ func (s SQLWriter) writeArtist(a model.Artist) {
 
 	_, s.err = s.b.WriteString(
 		fmt.Sprintf("INSERT INTO artists (artist_id, name, real_name, profile, data_quality, name_variations, urls) VALUES ('%s', '%s', '%s', '%s', '%s', ARRAY[%s], ARRAY[%s]);\n",
-			a.Id,
+			a.ID,
 			cleanText(a.Name),
 			cleanText(a.RealName),
 			cleanText(a.Profile),
@@ -259,8 +259,8 @@ func (s SQLWriter) writeImage(artistId, labelId, masterId, releaseId string, img
 				img.Height,
 				img.Width,
 				img.Type,
-				img.Uri,
-				img.Uri150,
+				img.URI,
+				img.URI150,
 			),
 		)
 	}
@@ -285,7 +285,7 @@ func (s SQLWriter) writeAlias(artistId string, a model.Alias) {
 	_, s.err = s.b.WriteString(
 		fmt.Sprintf("INSERT INTO artist_aliases (artist_id, alias_id, name) VALUES ('%s', '%s', '%s');\n",
 			artistId,
-			a.Id,
+			a.ID,
 			cleanText(a.Name)),
 	)
 }
@@ -310,7 +310,7 @@ func (s SQLWriter) writeArtistMember(artistId string, m model.Member) {
 
 	_, s.err = s.b.WriteString(fmt.Sprintf("INSERT INTO artist_members (artist_id, member_id, name) VALUES ('%s', '%s', '%s');\n",
 		artistId,
-		m.Id,
+		m.ID,
 		cleanText(m.Name)),
 	)
 }
@@ -335,7 +335,7 @@ func (s SQLWriter) writeLabel(l model.Label) {
 
 	_, s.err = s.b.WriteString(
 		fmt.Sprintf("INSERT INTO labels (label_id, name, contact_info, profile, data_quality, urls) VALUES ('%s', '%s', '%s', '%s', '%s', ARRAY[%s]);\n",
-			l.Id,
+			l.ID,
 			cleanText(l.Name),
 			cleanText(l.ContactInfo),
 			cleanText(l.Profile),
@@ -353,7 +353,7 @@ func (s SQLWriter) writeLabelLabel(labelId, parent string, l model.LabelLabel) {
 	_, s.err = s.b.WriteString(
 		fmt.Sprintf("INSERT INTO label_labels (label_id, sub_label_id, name, parent) VALUES ('%s', '%s', '%s', '%s');\n",
 			labelId,
-			l.Id,
+			l.ID,
 			cleanText(l.Name),
 			parent,
 		),
@@ -379,7 +379,7 @@ func (s SQLWriter) writeMaster(m model.Master) {
 	}
 
 	_, s.err = s.b.WriteString(fmt.Sprintf("INSERT INTO masters (master_id, main_release, genres, styles, year, title, data_quality) VALUES ('%s', '%s', ARRAY[%s], ARRAY[%s], '%s', '%s', '%s');\n",
-		m.Id,
+		m.ID,
 		m.MainRelease,
 		array(m.Genres),
 		array(m.Styles),
@@ -395,7 +395,7 @@ func (s SQLWriter) writeRelease(r model.Release) {
 	}
 
 	_, s.err = s.b.WriteString(fmt.Sprintf("INSERT INTO releases (release_id, status, title, genres, styles, country, released, notes, data_quality, master_id, main_release) VALUES ('%s', '%s', '%s', ARRAY[%s], ARRAY[%s], '%s', '%s', '%s', '%s', '%s', '%s');\n",
-		r.Id,
+		r.ID,
 		cleanText(r.Status),
 		cleanText(r.Title),
 		array(r.Genres),
@@ -404,7 +404,7 @@ func (s SQLWriter) writeRelease(r model.Release) {
 		r.Released,
 		cleanText(r.Notes),
 		r.DataQuality,
-		r.MasterId,
+		r.MasterID,
 		r.MainRelease),
 	)
 }
@@ -416,12 +416,12 @@ func (s SQLWriter) writeCompany(releaseId string, c model.Company) {
 
 	_, s.err = s.b.WriteString(fmt.Sprintf("INSERT INTO release_companies (release_id, release_company_id, name, category, entity_type, entity_type_name, resource_url) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s');\n",
 		releaseId,
-		c.Id,
+		c.ID,
 		cleanText(c.Name),
 		cleanText(c.Category),
 		cleanText(c.EntityType),
 		cleanText(c.EntityTypeName),
-		cleanText(c.ResourceUrl)),
+		cleanText(c.ResourceURL)),
 	)
 }
 
@@ -445,7 +445,7 @@ func (s SQLWriter) writeReleaseLabel(releaseId string, rl model.ReleaseLabel) {
 
 	_, s.err = s.b.WriteString(fmt.Sprintf("INSERT INTO release_labels (release_id, release_label_id, name, category) VALUES ('%s', '%s', '%s', '%s');\n",
 		releaseId,
-		rl.Id,
+		rl.ID,
 		cleanText(rl.Name),
 		cleanText(rl.Category)),
 	)
@@ -551,7 +551,7 @@ func (s SQLWriter) writeReleaseArtist(masterId, releaseId, extra string, ra mode
 	_, s.err = s.b.WriteString(fmt.Sprintf("INSERT INTO release_artists (master_id, release_id, release_artist_id, name, extra, joiner, anv, role, tracks) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');\n",
 		masterId,
 		releaseId,
-		ra.Id,
+		ra.ID,
 		cleanText(ra.Name),
 		extra,
 		cleanText(ra.Join),

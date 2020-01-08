@@ -1,4 +1,4 @@
-// Package contains all necessary functionality to cover decoding of the Discogs data.
+// Package decode contains all necessary functionality to cover decoding of the Discogs data.
 package decode
 
 import (
@@ -68,7 +68,7 @@ func ToQualityLevel(str string) (ql QualityLevel) {
 	return
 }
 
-// Includes decide if the Quality Level in the parameter has lower priority and thus the current Quality Level already
+// Includes function decides if the Quality Level in the parameter has lower priority and thus the current Quality Level already
 // contains the parameter value or not.
 func (ql QualityLevel) Includes(q QualityLevel) bool {
 	return ql <= q
@@ -81,7 +81,7 @@ type Block struct {
 	Skip     int // Skip blocks - how many blocks will be skipped from the beginning
 }
 
-// File Type determines the input type of data to be decoded.
+// FileType determines the input type of data to be decoded.
 type FileType int
 
 // Various types of input File types are considered based on the Discogs dump files, moreover this set

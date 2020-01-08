@@ -1,4 +1,4 @@
-// Data Discogs Parser introduces a way to categorize XML data dumps from Discogs: https://data.discogs.com.
+// Package discogs introduces a way to categorize XML data dumps from Discogs: https://data.discogs.com.
 //
 // The intention of using this parser is a library, which means there is not an executable part provided.
 // The project has no other dependencies than the Golang language itself.
