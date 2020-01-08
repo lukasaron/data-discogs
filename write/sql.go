@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+// SQLWriter is one of few provided writers that implements the Writer interface and provides the ability to save
+// decoded data in the format of SQL insert commands.
 type SQLWriter struct {
 	o   Options
 	w   io.Writer
@@ -15,7 +17,7 @@ type SQLWriter struct {
 	err error
 }
 
-// Creates a new Writer based on the provided output writer (for instance a file).
+// NewSQLWriter creates a new Writer instance based on the provided output writer (for instance a file).
 // Options with ExcludeImages can be set when we don't want images as part of the final solution.
 // When this is not the case and we want images in the result SQL commands the Option has to be passed as a
 // second argument.
@@ -32,7 +34,7 @@ func NewSQLWriter(output io.Writer, options *Options) Writer {
 	}
 }
 
-// Writes an artist as a set of SQL insert commands into the SQL output.
+// WriteArtist function writes an artist as a set of SQL insert commands into the SQL output.
 func (s SQLWriter) WriteArtist(artist model.Artist) error {
 	s.beginTransaction()
 
@@ -48,7 +50,7 @@ func (s SQLWriter) WriteArtist(artist model.Artist) error {
 	return s.err
 }
 
-// Writes a slice of artists as a set of SQL insert commands into the SQL output.
+// WriteArtists function writes a slice of artists as a set of SQL insert commands into the SQL output.
 func (s SQLWriter) WriteArtists(artists []model.Artist) error {
 	s.beginTransaction()
 
@@ -70,7 +72,7 @@ func (s SQLWriter) WriteArtists(artists []model.Artist) error {
 	return s.err
 }
 
-// Writes a label as a set of SQL insert commands into the SQL output.
+// WriteLabel function writes a label as a set of SQL insert commands into the SQL output.
 func (s SQLWriter) WriteLabel(label model.Label) error {
 	s.beginTransaction()
 
@@ -88,7 +90,7 @@ func (s SQLWriter) WriteLabel(label model.Label) error {
 	return s.err
 }
 
-// Writes a slice of labels as a set of SQL insert commands into the SQL output.
+// WriteLabels function writes a slice of labels as a set of SQL insert commands into the SQL output.
 func (s SQLWriter) WriteLabels(labels []model.Label) error {
 	s.beginTransaction()
 
@@ -111,7 +113,7 @@ func (s SQLWriter) WriteLabels(labels []model.Label) error {
 	return s.err
 }
 
-// Writes a master as a set of SQL insert commands into the SQL output.
+// WriteMaster function writes a master as a set of SQL insert commands into the SQL output.
 func (s SQLWriter) WriteMaster(master model.Master) (err error) {
 	s.beginTransaction()
 
@@ -127,7 +129,7 @@ func (s SQLWriter) WriteMaster(master model.Master) (err error) {
 	return s.err
 }
 
-// Writes a slice of masters as a set of SQL insert commands into the SQL output.
+// WriteMasters function writes a slice of masters as a set of SQL insert commands into the SQL output.
 func (s SQLWriter) WriteMasters(masters []model.Master) error {
 	s.beginTransaction()
 
@@ -148,7 +150,7 @@ func (s SQLWriter) WriteMasters(masters []model.Master) error {
 	return s.err
 }
 
-// Writes a release as a set of SQL insert commands into the SQL output.
+// WriteRelease function writes a release as a set of SQL insert commands into the SQL output.
 func (s SQLWriter) WriteRelease(release model.Release) error {
 	s.beginTransaction()
 
@@ -171,7 +173,7 @@ func (s SQLWriter) WriteRelease(release model.Release) error {
 	return s.err
 }
 
-// Writes a slice of releases as a set of SQL insert commands into the SQL output.
+// WriteReleases function writes a slice of releases as a set of SQL insert commands into the SQL output.
 func (s SQLWriter) WriteReleases(releases []model.Release) error {
 	s.beginTransaction()
 
@@ -198,22 +200,24 @@ func (s SQLWriter) WriteReleases(releases []model.Release) error {
 	return s.err
 }
 
-// Removes the inner state error and also reset the inner buffer.
+// Reset function removes the inner state error and also reset the inner buffer.
 func (s SQLWriter) Reset() error {
 	s.err = nil
 	s.clean()
 	return nil
 }
 
-// No behavior implemented.
+// Close function has no behavior implemented.
 func (s SQLWriter) Close() error {
 	return nil
 }
 
-// Returns the current options. It could be useful to get the default options.
+// Options function returns the current options. It could be useful to get the default options.
 func (s SQLWriter) Options() Options {
 	return s.o
 }
+
+// ----------------------------------------------- UNPUBLISHED FUNCTIONS -----------------------------------------------
 
 func (s SQLWriter) beginTransaction() {
 	if s.err != nil {
@@ -248,14 +252,14 @@ func (s SQLWriter) writeArtist(a model.Artist) {
 	)
 }
 
-func (s SQLWriter) writeImage(artistId, labelId, masterId, releaseId string, img model.Image) {
+func (s SQLWriter) writeImage(artistID, labelID, masterID, releaseID string, img model.Image) {
 	if !s.o.ExcludeImages {
 		_, s.err = s.b.WriteString(
 			fmt.Sprintf("INSERT INTO images (artist_id, label_id, master_id, release_id, height, width, type, uri, uri_150) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');\n",
-				artistId,
-				labelId,
-				masterId,
-				releaseId,
+				artistID,
+				labelID,
+				masterID,
+				releaseID,
 				img.Height,
 				img.Width,
 				img.Type,
@@ -266,10 +270,10 @@ func (s SQLWriter) writeImage(artistId, labelId, masterId, releaseId string, img
 	}
 }
 
-func (s SQLWriter) writeImages(artistId, labelId, masterId, releaseId string, imgs []model.Image) {
+func (s SQLWriter) writeImages(artistID, labelID, masterID, releaseID string, imgs []model.Image) {
 	if s.err == nil && !s.o.ExcludeImages {
 		for _, img := range imgs {
-			s.writeImage(artistId, labelId, masterId, releaseId, img)
+			s.writeImage(artistID, labelID, masterID, releaseID, img)
 			if s.err != nil {
 				return
 			}
@@ -277,51 +281,51 @@ func (s SQLWriter) writeImages(artistId, labelId, masterId, releaseId string, im
 	}
 }
 
-func (s SQLWriter) writeAlias(artistId string, a model.Alias) {
+func (s SQLWriter) writeAlias(artistID string, a model.Alias) {
 	if s.err != nil {
 		return
 	}
 
 	_, s.err = s.b.WriteString(
 		fmt.Sprintf("INSERT INTO artist_aliases (artist_id, alias_id, name) VALUES ('%s', '%s', '%s');\n",
-			artistId,
+			artistID,
 			a.ID,
 			cleanText(a.Name)),
 	)
 }
 
-func (s SQLWriter) writeAliases(artistId string, as []model.Alias) {
+func (s SQLWriter) writeAliases(artistID string, as []model.Alias) {
 	if s.err != nil {
 		return
 	}
 
 	for _, a := range as {
-		s.writeAlias(artistId, a)
+		s.writeAlias(artistID, a)
 		if s.err != nil {
 			return
 		}
 	}
 }
 
-func (s SQLWriter) writeArtistMember(artistId string, m model.Member) {
+func (s SQLWriter) writeArtistMember(artistID string, m model.Member) {
 	if s.err != nil {
 		return
 	}
 
 	_, s.err = s.b.WriteString(fmt.Sprintf("INSERT INTO artist_members (artist_id, member_id, name) VALUES ('%s', '%s', '%s');\n",
-		artistId,
+		artistID,
 		m.ID,
 		cleanText(m.Name)),
 	)
 }
 
-func (s SQLWriter) writeArtistMembers(artistId string, ms []model.Member) {
+func (s SQLWriter) writeArtistMembers(artistID string, ms []model.Member) {
 	if s.err != nil {
 		return
 	}
 
 	for _, m := range ms {
-		s.writeArtistMember(artistId, m)
+		s.writeArtistMember(artistID, m)
 		if s.err != nil {
 			return
 		}
@@ -345,14 +349,14 @@ func (s SQLWriter) writeLabel(l model.Label) {
 	)
 }
 
-func (s SQLWriter) writeLabelLabel(labelId, parent string, l model.LabelLabel) {
+func (s SQLWriter) writeLabelLabel(labelID, parent string, l model.LabelLabel) {
 	if s.err != nil {
 		return
 	}
 
 	_, s.err = s.b.WriteString(
 		fmt.Sprintf("INSERT INTO label_labels (label_id, sub_label_id, name, parent) VALUES ('%s', '%s', '%s', '%s');\n",
-			labelId,
+			labelID,
 			l.ID,
 			cleanText(l.Name),
 			parent,
@@ -360,13 +364,13 @@ func (s SQLWriter) writeLabelLabel(labelId, parent string, l model.LabelLabel) {
 	)
 }
 
-func (s SQLWriter) writeLabelLabels(labelId, parent string, lls []model.LabelLabel) {
+func (s SQLWriter) writeLabelLabels(labelID, parent string, lls []model.LabelLabel) {
 	if s.err != nil {
 		return
 	}
 
 	for _, ll := range lls {
-		s.writeLabelLabel(labelId, parent, ll)
+		s.writeLabelLabel(labelID, parent, ll)
 		if s.err != nil {
 			return
 		}
@@ -404,18 +408,18 @@ func (s SQLWriter) writeRelease(r model.Release) {
 		r.Released,
 		cleanText(r.Notes),
 		r.DataQuality,
-		r.MasterID,
+		r.masterID,
 		r.MainRelease),
 	)
 }
 
-func (s SQLWriter) writeCompany(releaseId string, c model.Company) {
+func (s SQLWriter) writeCompany(releaseID string, c model.Company) {
 	if s.err != nil {
 		return
 	}
 
 	_, s.err = s.b.WriteString(fmt.Sprintf("INSERT INTO release_companies (release_id, release_company_id, name, category, entity_type, entity_type_name, resource_url) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s');\n",
-		releaseId,
+		releaseID,
 		c.ID,
 		cleanText(c.Name),
 		cleanText(c.Category),
@@ -425,104 +429,104 @@ func (s SQLWriter) writeCompany(releaseId string, c model.Company) {
 	)
 }
 
-func (s SQLWriter) writeCompanies(releaseId string, cs []model.Company) {
+func (s SQLWriter) writeCompanies(releaseID string, cs []model.Company) {
 	if s.err != nil {
 		return
 	}
 
 	for _, c := range cs {
-		s.writeCompany(releaseId, c)
+		s.writeCompany(releaseID, c)
 		if s.err != nil {
 			return
 		}
 	}
 }
 
-func (s SQLWriter) writeReleaseLabel(releaseId string, rl model.ReleaseLabel) {
+func (s SQLWriter) writeReleaseLabel(releaseID string, rl model.ReleaseLabel) {
 	if s.err != nil {
 		return
 	}
 
 	_, s.err = s.b.WriteString(fmt.Sprintf("INSERT INTO release_labels (release_id, release_label_id, name, category) VALUES ('%s', '%s', '%s', '%s');\n",
-		releaseId,
+		releaseID,
 		rl.ID,
 		cleanText(rl.Name),
 		cleanText(rl.Category)),
 	)
 }
 
-func (s SQLWriter) writeReleaseLabels(releaseId string, rls []model.ReleaseLabel) {
+func (s SQLWriter) writeReleaseLabels(releaseID string, rls []model.ReleaseLabel) {
 	if s.err != nil {
 		return
 	}
 
 	for _, rl := range rls {
-		s.writeReleaseLabel(releaseId, rl)
+		s.writeReleaseLabel(releaseID, rl)
 		if s.err != nil {
 			return
 		}
 	}
 }
 
-func (s SQLWriter) writeIdentifier(releaseId string, i model.Identifier) {
+func (s SQLWriter) writeIdentifier(releaseID string, i model.Identifier) {
 	if s.err != nil {
 		return
 	}
 
 	_, s.err = s.b.WriteString(fmt.Sprintf("INSERT INTO release_identifiers (release_id, description, type, value) VALUES ('%s', '%s', '%s', '%s');\n",
-		releaseId,
+		releaseID,
 		cleanText(i.Description),
 		cleanText(i.Type),
 		cleanText(i.Value)),
 	)
 }
 
-func (s SQLWriter) writeIdentifiers(releaseId string, is []model.Identifier) {
+func (s SQLWriter) writeIdentifiers(releaseID string, is []model.Identifier) {
 	if s.err != nil {
 		return
 	}
 
 	for _, i := range is {
-		s.writeIdentifier(releaseId, i)
+		s.writeIdentifier(releaseID, i)
 		if s.err != nil {
 			return
 		}
 	}
 }
 
-func (s SQLWriter) writeTrack(releaseId string, t model.Track) {
+func (s SQLWriter) writeTrack(releaseID string, t model.Track) {
 	if s.err != nil {
 		return
 	}
 
 	_, s.err = s.b.WriteString(fmt.Sprintf("INSERT INTO release_tracks (release_id, position, title, duration) VALUES ('%s', '%s', '%s', '%s');\n",
-		releaseId,
+		releaseID,
 		cleanText(t.Position),
 		cleanText(t.Title),
 		cleanText(t.Duration)),
 	)
 }
 
-func (s SQLWriter) writeTrackList(releaseId string, tl []model.Track) {
+func (s SQLWriter) writeTrackList(releaseID string, tl []model.Track) {
 	if s.err != nil {
 		return
 	}
 
 	for _, t := range tl {
-		s.writeTrack(releaseId, t)
+		s.writeTrack(releaseID, t)
 		if s.err != nil {
 			return
 		}
 	}
 }
 
-func (s SQLWriter) writeFormat(releaseId string, f model.Format) {
+func (s SQLWriter) writeFormat(releaseID string, f model.Format) {
 	if s.err != nil {
 		return
 	}
 
 	_, s.err = s.b.WriteString(fmt.Sprintf("INSERT INTO release_formats (release_id, name, quantity, text, descriptions) VALUES ('%s', '%s', '%s', '%s', ARRAY[%s]);\n",
-		releaseId,
+		releaseID,
 		cleanText(f.Name),
 		f.Quantity,
 		cleanText(f.Text),
@@ -530,27 +534,27 @@ func (s SQLWriter) writeFormat(releaseId string, f model.Format) {
 	)
 }
 
-func (s SQLWriter) writeFormats(releaseId string, fs []model.Format) {
+func (s SQLWriter) writeFormats(releaseID string, fs []model.Format) {
 	if s.err != nil {
 		return
 	}
 
 	for _, f := range fs {
-		s.writeFormat(releaseId, f)
+		s.writeFormat(releaseID, f)
 		if s.err != nil {
 			return
 		}
 	}
 }
 
-func (s SQLWriter) writeReleaseArtist(masterId, releaseId, extra string, ra model.ReleaseArtist) {
+func (s SQLWriter) writeReleaseArtist(masterID, releaseID, extra string, ra model.ReleaseArtist) {
 	if s.err != nil {
 		return
 	}
 
 	_, s.err = s.b.WriteString(fmt.Sprintf("INSERT INTO release_artists (master_id, release_id, release_artist_id, name, extra, joiner, anv, role, tracks) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');\n",
-		masterId,
-		releaseId,
+		masterID,
+		releaseID,
 		ra.ID,
 		cleanText(ra.Name),
 		extra,
@@ -561,27 +565,27 @@ func (s SQLWriter) writeReleaseArtist(masterId, releaseId, extra string, ra mode
 	)
 }
 
-func (s SQLWriter) writeReleaseArtists(masterId, releaseId, extra string, ras []model.ReleaseArtist) {
+func (s SQLWriter) writeReleaseArtists(masterID, releaseID, extra string, ras []model.ReleaseArtist) {
 	if s.err != nil {
 		return
 	}
 
 	for _, ra := range ras {
-		s.writeReleaseArtist(masterId, releaseId, extra, ra)
+		s.writeReleaseArtist(masterID, releaseID, extra, ra)
 		if s.err != nil {
 			return
 		}
 	}
 }
 
-func (s SQLWriter) writeVideo(masterId, releaseId string, v model.Video) {
+func (s SQLWriter) writeVideo(masterID, releaseID string, v model.Video) {
 	if s.err != nil {
 		return
 	}
 
 	_, s.err = s.b.WriteString(fmt.Sprintf("INSERT INTO videos (master_id, release_id, duration, embed, src, title, description) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s');\n",
-		masterId,
-		releaseId,
+		masterID,
+		releaseID,
 		cleanText(v.Duration),
 		v.Embed,
 		cleanText(v.Src),
@@ -590,13 +594,13 @@ func (s SQLWriter) writeVideo(masterId, releaseId string, v model.Video) {
 	)
 }
 
-func (s SQLWriter) writeVideos(masterId, releaseId string, vs []model.Video) {
+func (s SQLWriter) writeVideos(masterID, releaseID string, vs []model.Video) {
 	if s.err != nil {
 		return
 	}
 
 	for _, v := range vs {
-		s.writeVideo(masterId, releaseId, v)
+		s.writeVideo(masterID, releaseID, v)
 		if s.err != nil {
 			return
 		}
@@ -615,7 +619,7 @@ func (s SQLWriter) clean() {
 	s.b.Reset()
 }
 
-//----------------------------------------------- HELPER FUNCTIONS -----------------------------------------------
+// ----------------------------------------------- HELPER FUNCTIONS -----------------------------------------------
 
 func cleanText(str string) string {
 	return strings.ReplaceAll(str, "'", "''")

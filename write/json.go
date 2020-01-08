@@ -16,7 +16,7 @@ type JSONWriter struct {
 	err error
 }
 
-// Creates a new Writer based on the provided output writer (for instance a file).
+// NewJSONWriter creates a new Writer instance based on the provided output writer (for instance a file).
 // Options with ExcludeImages can be set when we don't want images as part of the final solution.
 // When this is not the case and we want images in the result JSON the Option has to be passed as a second argument.
 func NewJSONWriter(output io.Writer, options *Options) Writer {
@@ -32,24 +32,24 @@ func NewJSONWriter(output io.Writer, options *Options) Writer {
 	}
 }
 
-// Removes the inner state error and also reset the inner buffer.
+// Reset function removes the inner state error and also reset the inner buffer.
 func (j *JSONWriter) Reset() error {
 	j.clean()
 	j.err = nil
 	return nil
 }
 
-// No behavior implemented.
+// Close function does nothing here.
 func (j *JSONWriter) Close() error {
 	return nil
 }
 
-// Returns the current options. It could be useful to get the default options.
+// Options function returns the current options. It could be useful to get the default options.
 func (j JSONWriter) Options() Options {
 	return j.o
 }
 
-// Writes an artist to the JSON output.
+// WriteArtist function writes an artist to the JSON output.
 func (j *JSONWriter) WriteArtist(a model.Artist) error {
 	if j.o.ExcludeImages {
 		a.Images = nil
@@ -62,7 +62,7 @@ func (j *JSONWriter) WriteArtist(a model.Artist) error {
 	return j.err
 }
 
-// Writes a slice of artists to the JSON output.
+// WriteArtists function writes a slice of artists to the JSON output.
 func (j *JSONWriter) WriteArtists(artists []model.Artist) error {
 	j.writeInitial()
 
@@ -86,7 +86,7 @@ func (j *JSONWriter) WriteArtists(artists []model.Artist) error {
 	return j.err
 }
 
-// Writes a label to the JSON output.
+// WriteLabel function writes a label to the JSON output.
 func (j *JSONWriter) WriteLabel(label model.Label) error {
 	if j.o.ExcludeImages {
 		label.Images = nil
@@ -99,7 +99,7 @@ func (j *JSONWriter) WriteLabel(label model.Label) error {
 	return j.err
 }
 
-// Writes a slice of labels to the JSON output.
+// WriteLabels function writes a slice of labels to the JSON output.
 func (j *JSONWriter) WriteLabels(labels []model.Label) error {
 	j.writeInitial()
 
@@ -123,7 +123,7 @@ func (j *JSONWriter) WriteLabels(labels []model.Label) error {
 	return j.err
 }
 
-// Writes a master to the JSON output.
+// WriteMaster function writes a master to the JSON output.
 func (j *JSONWriter) WriteMaster(master model.Master) error {
 	if j.o.ExcludeImages {
 		master.Images = nil
@@ -136,7 +136,7 @@ func (j *JSONWriter) WriteMaster(master model.Master) error {
 	return j.err
 }
 
-// Writes a slice of masters to the JSON output.
+// WriteMasters function writes a slice of masters to the JSON output.
 func (j *JSONWriter) WriteMasters(masters []model.Master) error {
 	j.writeInitial()
 	for _, m := range masters {
@@ -159,7 +159,7 @@ func (j *JSONWriter) WriteMasters(masters []model.Master) error {
 	return j.err
 }
 
-// Writes a release to the JSON output.
+// WriteRelease function writes a release to the JSON output.
 func (j *JSONWriter) WriteRelease(release model.Release) error {
 	if j.o.ExcludeImages {
 		release.Images = nil
@@ -171,7 +171,7 @@ func (j *JSONWriter) WriteRelease(release model.Release) error {
 	return j.err
 }
 
-// Writes a slice of releases to the JSON output.
+// WriteReleases function writes a slice of releases to the JSON output.
 func (j *JSONWriter) WriteReleases(releases []model.Release) error {
 	j.writeInitial()
 
@@ -194,6 +194,8 @@ func (j *JSONWriter) WriteReleases(releases []model.Release) error {
 
 	return j.err
 }
+
+// ----------------------------------------------- UNPUBLISHED FUNCTIONS -----------------------------------------------
 
 func (j *JSONWriter) marshalAndWrite(d interface{}) {
 	if j.err != nil {

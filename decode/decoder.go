@@ -23,11 +23,11 @@ type Decoder interface {
 	Error() error
 }
 
-// Quality Level specifies the Quality Data field defined by Discogs in specific order to be able to define
+// QualityLevel specifies the Quality Data field defined by Discogs in specific order to be able to define
 // basic relationship and provide filtering ability.
 type QualityLevel int
 
-// Quality Level constants mirror the Data Quality field defined by Discogs. Quality Level defines the order of these
+// QualityLevel constants mirror the Data Quality field defined by Discogs. Quality Level defines the order of these
 // data quality values to be able to filter input items based on the quality level. Moreover, the All value has been
 // added as a basic value (floor level), which covers all quality levels (this is a default value). When another value
 // is set the chosen quality level will be part of decoded data set and all levels above as well. For instance when the
