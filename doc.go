@@ -33,41 +33,38 @@
 //			}
 //			defer f.Close()
 //
-//			d := decode.NewXmlDecoder(f, nil)
+//			d := decode.NewXMLDecoder(f, nil)
 //			// decodes 10 artists by default, Block ItemSize can be changed via Options
 //			num, artists, err := d.Artists()
 //			fmt.Println(num, err, artists)
 //		}
 //
 // Example with SQL writer
-//		import (
-//			"fmt"
-//			"github.com/lukasaron/data-discogs/decode"
-//			"github.com/lukasaron/data-discogs/write"
-//			"log"
-//		)
 //
-//		func main() {
-//			f, err := os.Open("./data_samples/artists.xml")
-//			if err != nil {
-//				log.Fatal(err)
-//			}
-//			defer f.Close()
-//
-//			d := decode.NewXmlDecoder(f,
-//				&decode.Options{
-//					FileType: decode.Artists,
-//					Block: decode.Block{
-//						Size: 20, // number of items processed at once
-//					},
-//				})
-//
-//			// for instance the SQL writer
-//			w := write.NewSqlWriter("./data_samples/artists.sql", nil)
-//			defer w.Close()
-//
-//			err = d.Decode(w)
-//			fmt.Println(err)
+//	func main() {
+//		f, err := os.Open("./data_samples/artists.xml")
+//		if err != nil {
+//			log.Fatal(err)
 //		}
+//		defer f.Close()
+//
+//		d := decode.NewXMLDecoder(f,
+//			&decode.Options{
+//				FileType: decode.Artists,
+//				Block: decode.Block{
+//					ItemSize: 20, // number of items processed at once
+//				},
+//			})
+//
+//		o, _ := os.Create("./data_samples/artists.sql")
+//		defer o.Close()
+//
+//		// for instance the SQL writer
+//		w := write.NewSQLWriter(o, nil)
+//		defer w.Close()
+//
+//		err = d.Decode(w)
+//		fmt.Println(err)
+//	}
 //
 package discogs

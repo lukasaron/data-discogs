@@ -24,4 +24,4 @@ Before using this writer all required data tables need to be created. For that p
 
 You can also set up indexes on any column you want, to facilitate this process there is also a script for that `sql_scripts/indexes.sql`. 
 
-To speed up a data transformation I would rather recommend creating indexes after the whole processing is completed. 
+To speed up a data transformation I would rather recommend creating indexes after the whole processing is completed.
