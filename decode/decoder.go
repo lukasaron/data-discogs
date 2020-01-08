@@ -86,7 +86,7 @@ const (
 	Releases
 )
 
-// Options consist of QualityLevel and Block settings
+// Options consist of QualityLevel, Block settings and FileType that will be decoded.
 type Options struct {
 	QualityLevel QualityLevel
 	Block        Block
