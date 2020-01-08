@@ -174,9 +174,7 @@ func TestXMLDecoder_SetOptions(t *testing.T) {
 }
 
 func TestXMLDecoder_Artists(t *testing.T) {
-	d := NewXMLDecoder(strings.NewReader(artists), &Options{
-		FileType: Artists,
-	})
+	d := NewXMLDecoder(strings.NewReader(artists), nil)
 
 	num, a, err := d.Artists()
 	if num != 2 || len(a) != 2 {
@@ -193,9 +191,7 @@ func TestXMLDecoder_Artists(t *testing.T) {
 }
 
 func TestXMLDecoder_Artists_DataCheck_First(t *testing.T) {
-	d := NewXMLDecoder(strings.NewReader(artists), &Options{
-		FileType: Artists,
-	})
+	d := NewXMLDecoder(strings.NewReader(artists), nil)
 
 	_, a, _ := d.Artists()
 	artist := a[0]
@@ -289,9 +285,7 @@ func TestXMLDecoder_Artists_DataCheck_First(t *testing.T) {
 }
 
 func TestXMLDecoder_Artists_DataCheck_Second(t *testing.T) {
-	d := NewXMLDecoder(strings.NewReader(artists), &Options{
-		FileType: Artists,
-	})
+	d := NewXMLDecoder(strings.NewReader(artists), nil)
 
 	_, a, _ := d.Artists()
 	artist := a[1]
@@ -386,7 +380,6 @@ func TestXMLDecoder_Artists_DataCheck_Second(t *testing.T) {
 
 func TestXMLDecoder_Artists_Block_ItemSize(t *testing.T) {
 	d := NewXMLDecoder(strings.NewReader(artists), &Options{
-		FileType: Artists,
 		Block: Block{
 			ItemSize: 1,
 		},
@@ -421,9 +414,7 @@ func TestXMLDecoder_Artists_Block_ItemSize(t *testing.T) {
 }
 
 func TestXMLDecoder_Labels(t *testing.T) {
-	d := NewXMLDecoder(strings.NewReader(labels), &Options{
-		FileType: Labels,
-	})
+	d := NewXMLDecoder(strings.NewReader(labels), nil)
 
 	num, l, err := d.Labels()
 	if num != 2 || len(l) != 2 {
@@ -436,6 +427,130 @@ func TestXMLDecoder_Labels(t *testing.T) {
 
 	if err != io.EOF {
 		t.Errorf("there should be EOF error instead of %v", err)
+	}
+}
+
+func TestXMLDecoder_Labels_DataCheck_First(t *testing.T) {
+	d := NewXMLDecoder(strings.NewReader(labels), nil)
+	_, l, _ := d.Labels()
+	label := l[0]
+
+	if label.Id != "1" {
+		t.Errorf("wrong label id, expected: %s, got: %s", "1", label.Id)
+	}
+
+	if label.Name != "Planet E" {
+		t.Errorf("wrong label name, expected: %s, got: %s", "Planet E", label.Name)
+	}
+
+	if label.ContactInfo != "Planet E Communications\r\nP.O. Box 27218\r\nDetroit, Michigan, MI 48227\r\nUSA\r\n\r\nPhone: +1 313 874 8729\r\nFax: +1 313 874 8732\r\nEmail: info@Planet-e.net" {
+		t.Error("wrong contact info")
+	}
+
+	if label.Profile != "[a=Carl Craig]'s classic techno label founded in 1991.\r\n\r\nOn at least 1 release, Planet E is listed as publisher." {
+		t.Error("wrong profile")
+	}
+
+	if label.DataQuality != "Correct" {
+		t.Errorf("wrong data quality, expected: %s, got: %s", "Correct", label.DataQuality)
+	}
+
+	if len(label.Images) != 7 {
+		t.Error("wrong number of images")
+	}
+
+	if len(label.Urls) != 13 {
+		t.Error("wrong number of urls")
+		t.FailNow()
+	}
+
+	if label.Urls[0] != "http://planet-e.net" {
+		t.Errorf("wrong url, expected: %s, got: %s", "http://planet-e.net", label.Urls[0])
+	}
+
+	if label.Urls[1] != "http://planetecommunications.bandcamp.com" {
+		t.Errorf("wrong url, expected: %s, got: %s", "http://planetecommunications.bandcamp.com", label.Urls[1])
+	}
+
+	if label.Urls[2] != "http://www.facebook.com/planetedetroit" {
+		t.Errorf("wrong url, expected: %s, got: %s", "http://www.facebook.com/planetedetroit", label.Urls[2])
+	}
+
+	if label.Urls[3] != "http://www.flickr.com/photos/planetedetroit" {
+		t.Errorf("wrong url, expected: %s, got: %s", "http://www.flickr.com/photos/planetedetroit", label.Urls[3])
+	}
+
+	if label.Urls[4] != "http://plus.google.com/100841702106447505236" {
+		t.Errorf("wrong url, expected: %s, got: %s", "http://plus.google.com/100841702106447505236", label.Urls[4])
+	}
+
+	if label.Urls[5] != "http://www.instagram.com/carlcraignet" {
+		t.Errorf("wrong url, expected: %s, got: %s", "http://www.instagram.com/carlcraignet", label.Urls[5])
+	}
+
+	if label.Urls[6] != "http://myspace.com/planetecom" {
+		t.Errorf("wrong url, expected: %s, got: %s", "http://myspace.com/planetecom", label.Urls[6])
+	}
+
+	if label.Urls[7] != "http://myspace.com/planetedetroit" {
+		t.Errorf("wrong url, expected: %s, got: %s", "http://myspace.com/planetedetroit", label.Urls[7])
+	}
+
+	if label.Urls[8] != "http://soundcloud.com/planetedetroit" {
+		t.Errorf("wrong url, expected: %s, got: %s", "http://soundcloud.com/planetedetroit", label.Urls[8])
+	}
+
+	if label.Urls[9] != "http://twitter.com/planetedetroit" {
+		t.Errorf("wrong url, expected: %s, got: %s", "http://twitter.com/planetedetroit", label.Urls[9])
+	}
+
+	if label.Urls[10] != "http://vimeo.com/user1265384" {
+		t.Errorf("wrong url, expected: %s, got: %s", "http://vimeo.com/user1265384", label.Urls[10])
+	}
+
+	if label.Urls[11] != "http://en.wikipedia.org/wiki/Planet_E_Communications" {
+		t.Errorf("wrong url, expected: %s, got: %s", "http://en.wikipedia.org/wiki/Planet_E_Communications", label.Urls[11])
+	}
+
+	if label.Urls[12] != "http://www.youtube.com/user/planetedetroit" {
+		t.Errorf("wrong url, expected: %s, got: %s", "http://www.youtube.com/user/planetedetroit", label.Urls[12])
+	}
+
+	if len(label.SubLabels) != 8 {
+		t.Error("wrong number of sub labels")
+		t.FailNow()
+	}
+
+	if label.SubLabels[0].Id != "86537" || label.SubLabels[0].Name != "Antidote (4)" {
+		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "86537", "Antidote (4)", label.SubLabels[0].Id, label.SubLabels[0].Name)
+	}
+
+	if label.SubLabels[1].Id != "41841" || label.SubLabels[1].Name != "Community Projects" {
+		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "41841", "Community Projects", label.SubLabels[1].Id, label.SubLabels[1].Name)
+	}
+
+	if label.SubLabels[2].Id != "153760" || label.SubLabels[2].Name != "Guilty Pleasures" {
+		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "153760", "Guilty Pleasures", label.SubLabels[2].Id, label.SubLabels[2].Name)
+	}
+
+	if label.SubLabels[3].Id != "31405" || label.SubLabels[3].Name != "I Ner Zon Sounds" {
+		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "31405", "I Ner Zon Sounds", label.SubLabels[3].Id, label.SubLabels[3].Name)
+	}
+
+	if label.SubLabels[4].Id != "277579" || label.SubLabels[4].Name != "Planet E Communications" {
+		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "277579", "Planet E Communications", label.SubLabels[4].Id, label.SubLabels[4].Name)
+	}
+
+	if label.SubLabels[5].Id != "294738" || label.SubLabels[5].Name != "Planet E Communications, Inc." {
+		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "294738", "Planet E Communications, Inc.", label.SubLabels[5].Id, label.SubLabels[5].Name)
+	}
+
+	if label.SubLabels[6].Id != "1560615" || label.SubLabels[6].Name != "Planet E Productions" {
+		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "1560615", "Planet E Productions", label.SubLabels[6].Id, label.SubLabels[6].Name)
+	}
+
+	if label.SubLabels[7].Id != "488315" || label.SubLabels[7].Name != "TWPENTY" {
+		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "488315", "TWPENTY", label.SubLabels[7].Id, label.SubLabels[7].Name)
 	}
 }
 
