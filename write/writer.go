@@ -22,13 +22,9 @@ type Writer interface {
 	Close() error
 }
 
-/*
-Options related to writing settings. At this stage only one option is available - Exclude images. This specific option
-is in connection to the Discogs dump data and their politics to provide data without images.
-
-Provided XML data has XML pairs with images, however values are empty and it's up to user of this library
-if she wants to have these empty data or not.
-*/
+// Options related to writing settings. At this stage only one option is available - Exclude images. This specific option
+// is in connection to the Discogs dump data and their politics to provide data without images.
+// However, provided data dumps still contains XML tags with property values which are mostly empty.
 type Options struct {
 	ExcludeImages bool
 }

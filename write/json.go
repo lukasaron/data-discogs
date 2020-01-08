@@ -4,44 +4,53 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/lukasaron/data-discogs/model"
-	"os"
+	"io"
 )
 
-type JsonWriter struct {
+// JSONWriter is one of few provided writers that implements the Writer interface and provides the ability to save
+// decoded data directly into JSON output.
+type JSONWriter struct {
 	o   Options
-	f   *os.File
+	w   io.Writer
 	b   bytes.Buffer
 	err error
 }
 
-func NewJsonWriter(fileName string, options *Options) Writer {
-	j := &JsonWriter{
+// Creates a new Writer based on the provided output writer (for instance a file).
+// Options with ExcludeImages can be set when we don't want images as part of the final solution.
+// When this is not the case and we want images in the result JSON the Option has to be passed as a second argument.
+func NewJSONWriter(output io.Writer, options *Options) Writer {
+
+	if options == nil {
+		options = &Options{}
+	}
+
+	return &JSONWriter{
 		b: bytes.Buffer{},
+		o: *options,
+		w: output,
 	}
-
-	j.f, j.err = os.Create(fileName)
-
-	if options != nil {
-		j.o = *options
-	}
-
-	return j
 }
 
-func (j *JsonWriter) Reset() error {
-	j.b.Reset()
+// Removes the inner state error and also reset the inner buffer.
+func (j *JSONWriter) Reset() error {
+	j.clean()
+	j.err = nil
 	return nil
 }
 
-func (j *JsonWriter) Close() error {
-	return j.f.Close()
+// No behavior implemented.
+func (j *JSONWriter) Close() error {
+	return nil
 }
 
-func (j JsonWriter) Options() Options {
+// Returns the current options. It could be useful to get the default options.
+func (j JSONWriter) Options() Options {
 	return j.o
 }
 
-func (j *JsonWriter) WriteArtist(a model.Artist) error {
+// Writes an artist to the JSON output.
+func (j *JSONWriter) WriteArtist(a model.Artist) error {
 	if j.o.ExcludeImages {
 		a.Images = nil
 	}
@@ -53,7 +62,8 @@ func (j *JsonWriter) WriteArtist(a model.Artist) error {
 	return j.err
 }
 
-func (j *JsonWriter) WriteArtists(artists []model.Artist) error {
+// Writes a slice of artists to the JSON output.
+func (j *JSONWriter) WriteArtists(artists []model.Artist) error {
 	j.writeInitial()
 
 	for _, a := range artists {
@@ -76,7 +86,8 @@ func (j *JsonWriter) WriteArtists(artists []model.Artist) error {
 	return j.err
 }
 
-func (j *JsonWriter) WriteLabel(label model.Label) error {
+// Writes a label to the JSON output.
+func (j *JSONWriter) WriteLabel(label model.Label) error {
 	if j.o.ExcludeImages {
 		label.Images = nil
 	}
@@ -88,7 +99,8 @@ func (j *JsonWriter) WriteLabel(label model.Label) error {
 	return j.err
 }
 
-func (j *JsonWriter) WriteLabels(labels []model.Label) error {
+// Writes a slice of labels to the JSON output.
+func (j *JSONWriter) WriteLabels(labels []model.Label) error {
 	j.writeInitial()
 
 	for _, l := range labels {
@@ -111,7 +123,8 @@ func (j *JsonWriter) WriteLabels(labels []model.Label) error {
 	return j.err
 }
 
-func (j *JsonWriter) WriteMaster(master model.Master) error {
+// Writes a master to the JSON output.
+func (j *JSONWriter) WriteMaster(master model.Master) error {
 	if j.o.ExcludeImages {
 		master.Images = nil
 	}
@@ -123,7 +136,8 @@ func (j *JsonWriter) WriteMaster(master model.Master) error {
 	return j.err
 }
 
-func (j *JsonWriter) WriteMasters(masters []model.Master) error {
+// Writes a slice of masters to the JSON output.
+func (j *JSONWriter) WriteMasters(masters []model.Master) error {
 	j.writeInitial()
 	for _, m := range masters {
 		j.writeDelimiter()
@@ -144,7 +158,9 @@ func (j *JsonWriter) WriteMasters(masters []model.Master) error {
 
 	return j.err
 }
-func (j *JsonWriter) WriteRelease(release model.Release) error {
+
+// Writes a release to the JSON output.
+func (j *JSONWriter) WriteRelease(release model.Release) error {
 	if j.o.ExcludeImages {
 		release.Images = nil
 	}
@@ -155,7 +171,8 @@ func (j *JsonWriter) WriteRelease(release model.Release) error {
 	return j.err
 }
 
-func (j *JsonWriter) WriteReleases(releases []model.Release) error {
+// Writes a slice of releases to the JSON output.
+func (j *JSONWriter) WriteReleases(releases []model.Release) error {
 	j.writeInitial()
 
 	for _, r := range releases {
@@ -178,7 +195,7 @@ func (j *JsonWriter) WriteReleases(releases []model.Release) error {
 	return j.err
 }
 
-func (j *JsonWriter) marshalAndWrite(d interface{}) {
+func (j *JSONWriter) marshalAndWrite(d interface{}) {
 	if j.err != nil {
 		return
 	}
@@ -189,23 +206,23 @@ func (j *JsonWriter) marshalAndWrite(d interface{}) {
 		return
 	}
 
-	_, j.err = j.f.Write(b)
+	_, j.err = j.w.Write(b)
 }
 
-func (j *JsonWriter) writeDelimiter() {
+func (j *JSONWriter) writeDelimiter() {
 	if j.err == nil && j.b.Len() > 0 {
 		_, j.err = j.b.WriteString(",")
 	}
 }
 
-func (j *JsonWriter) writeInitial() {
+func (j *JSONWriter) writeInitial() {
 	if j.err != nil {
 		return
 	}
 	_, j.err = j.b.WriteString("[")
 }
 
-func (j *JsonWriter) writeClosing() {
+func (j *JSONWriter) writeClosing() {
 	if j.err != nil {
 		return
 	}
@@ -213,14 +230,14 @@ func (j *JsonWriter) writeClosing() {
 	_, j.err = j.b.WriteString("]")
 }
 
-func (j *JsonWriter) flush() {
+func (j *JSONWriter) flush() {
 	if j.err != nil {
 		return
 	}
 
-	_, j.err = j.f.Write(j.b.Bytes())
+	_, j.err = j.w.Write(j.b.Bytes())
 }
 
-func (j *JsonWriter) clean() {
+func (j *JSONWriter) clean() {
 	j.b.Reset()
 }
