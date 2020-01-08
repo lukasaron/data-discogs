@@ -76,6 +76,15 @@ func (x *XMLDecoder) SetOptions(opt Options) {
 
 // Decode data and save the result into the writer. The type of data is already defined by Option passed during creating
 // the decoder - otherwise Unknown file type is specified.
+//
+// The Options play important role in this function, especially the Block feature.
+// In more details, the Block consists of ItemSize, Limit and Skip items. The first one - ItemSize defines how many
+// units will be considered as one block, by default its 10 items. This number can be considered as 10 artists,
+// labels, etc. are processed at once, such as in one transaction into database.
+// The next option is Limit that defines how many blocks will be processed. By default there is no theoretical limit.
+// And the last block option that can be set is Skip that expresses how many blocks from the beginning will be omitted.
+//
+// Results of this function are logged with success or failure message indicating the block number for future running.
 func (x *XMLDecoder) Decode(w write.Writer) error {
 	if x.err != nil {
 		return x.err
@@ -115,6 +124,7 @@ func (x *XMLDecoder) Decode(w write.Writer) error {
 	return x.err
 }
 
+// Decodes artists from provided XML file and pays attention into Block options, specifically into ItemSize value.
 func (x *XMLDecoder) Artists() (int, []model.Artist, error) {
 	if x.err != nil {
 		return 0, nil, x.err
@@ -127,6 +137,7 @@ func (x *XMLDecoder) Artists() (int, []model.Artist, error) {
 	return len(artists), artists, x.err
 }
 
+// Decodes labels from provided XML file and pays attention into Block options, specifically into ItemSize value.
 func (x *XMLDecoder) Labels() (int, []model.Label, error) {
 	if x.err != nil {
 		return 0, nil, x.err
@@ -139,6 +150,7 @@ func (x *XMLDecoder) Labels() (int, []model.Label, error) {
 	return len(labels), labels, x.err
 }
 
+// Decodes masters from provided XML file and pays attention into Block options, specifically into ItemSize value.
 func (x *XMLDecoder) Masters() (int, []model.Master, error) {
 	if x.err != nil {
 		return 0, nil, x.err
@@ -152,6 +164,7 @@ func (x *XMLDecoder) Masters() (int, []model.Master, error) {
 	return len(masters), masters, x.err
 }
 
+// Decodes releases from provided XML file and pays attention into Block options, specifically into ItemSize value.
 func (x *XMLDecoder) Releases() (int, []model.Release, error) {
 	if x.err != nil {
 		return 0, nil, x.err
