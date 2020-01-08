@@ -608,7 +608,7 @@ func (s SQLWriter) flush() {
 		return
 	}
 
-	_, s.err = s.f.Write(s.b.Bytes())
+	_, s.err = s.w.Write(s.b.Bytes())
 }
 
 func (s SQLWriter) clean() {
