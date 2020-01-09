@@ -408,7 +408,7 @@ func (s SQLWriter) writeRelease(r model.Release) {
 		r.Released,
 		cleanText(r.Notes),
 		r.DataQuality,
-		r.masterID,
+		r.MasterID,
 		r.MainRelease),
 	)
 }
