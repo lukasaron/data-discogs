@@ -44,10 +44,12 @@ type QualityLevel int
 // QualityLevel constants mirror the Data Quality field defined by Discogs. Quality Level defines the order of these
 // data quality values to be able to filter input items based on the quality level. Moreover, the All value has been
 // added as a basic value (floor level), which covers all quality levels (this is a default value). When another value
-// is set the chosen quality level will be part of decoded data set and all levels above as well. For instance when the
-// value Correct is defined all decoded units with Data Quality level equals to Correct and Complete and Correct will
-// be in the final set. On the other hand each item having Quality Field with value Needs Minor Changes,
-// Needs Major Changes, Needs Vote and Entirely Incorrect will be ignored and will not be part of the result slice.
+// is set the chosen quality level will be part of decoded data set and all levels above as well.
+//
+// For instance when the value Correct is defined all decoded units with Data Quality level equals to
+// Correct and Complete and Correct will be in the final set.
+// On the other hand each item having Quality Field with value Needs Minor Changes, Needs Major Changes,
+// Needs Vote and Entirely Incorrect will be ignored and will not be part of the result slice.
 const (
 	All QualityLevel = iota
 	EntirelyIncorrect
