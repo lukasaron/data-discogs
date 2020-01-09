@@ -13,5 +13,10 @@ branches:
     - dev
     - master
 
+# install golint
+before_install:
+  - go get -v golang.org/x/lint/golint
+
 script:
+  - golint ./...
   - go test -v -race ./...
