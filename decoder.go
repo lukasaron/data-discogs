@@ -1,5 +1,4 @@
-// Package decode contains all necessary functionality to cover decoding of the Discogs data.
-package decode
+package discogs
 
 import (
 	"github.com/lukasaron/data-discogs/model"

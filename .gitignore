@@ -18,6 +18,7 @@ main.go
 
 # folders
 dbdata
+example
 
 # IntelliJ IDEA project
 .idea

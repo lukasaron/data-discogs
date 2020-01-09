@@ -22,8 +22,9 @@
 // Example of basic usage:
 //		import (
 //			"fmt"
-//			"github.com/lukasaron/data-discogs/decode"
+//			"github.com/lukasaron/data-discogs"
 //			"log"
+//			"os"
 //		)
 //
 //		func main() {
@@ -33,7 +34,7 @@
 //			}
 //			defer f.Close()
 //
-//			d := decode.NewXMLDecoder(f, nil)
+//			d := discogs.NewXMLDecoder(f, nil)
 //			// decodes 10 artists by default, Block ItemSize can be changed via Options
 //			num, artists, err := d.Artists()
 //			fmt.Println(num, err, artists)
@@ -41,30 +42,38 @@
 //
 // Example with SQL writer
 //
-//	func main() {
-//		f, err := os.Open("./data_samples/artists.xml")
-//		if err != nil {
-//			log.Fatal(err)
-//		}
-//		defer f.Close()
+//		import (
+//			"fmt"
+//			"github.com/lukasaron/data-discogs"
+//			"github.com/lukasaron/data-discogs/write"
+//			"log"
+//			"os"
+//		)
 //
-//		d := decode.NewXMLDecoder(f,
-//			&decode.Options{
-//				FileType: decode.Artists,
-//				Block: decode.Block{
+//		func main() {
+//			f, err := os.Open("./data_samples/artists.xml")
+//			if err != nil {
+//				log.Fatal(err)
+//			}
+//			defer f.Close()
+//
+//			d := discogs.NewXMLDecoder(f,
+//				&discogs.Options{
+//					FileType: discogs.Artists,
+//					Block: discogs.Block{
 //					ItemSize: 20, // number of items processed at once
 //				},
 //			})
 //
-//		o, _ := os.Create("./data_samples/artists.sql")
-//		defer o.Close()
+//			o, _ := os.Create("./data_samples/artists.sql")
+//			defer o.Close()
 //
-//		// for instance the SQL writer
-//		w := write.NewSQLWriter(o, nil)
-//		defer w.Close()
+//			// for instance the SQL writer
+//			w := write.NewSQLWriter(o, nil)
+//			defer w.Close()
 //
-//		err = d.Decode(w)
-//		fmt.Println(err)
-//	}
+//			err = d.Decode(w)
+//			fmt.Println(err)
+//		}
 //
 package discogs
