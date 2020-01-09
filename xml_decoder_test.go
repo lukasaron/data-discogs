@@ -1,7 +1,9 @@
 package discogs
 
 import (
+	"github.com/lukasaron/data-discogs/model"
 	"io"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -130,11 +132,13 @@ func TestXMLDecoder_SetOptions(t *testing.T) {
 	}
 
 	if opt.Block.ItemSize != defaultBlockSize {
-		t.Errorf("block size should be set to default value: %v, when the set value is invalid", defaultBlockSize)
+		t.Errorf("block size should be set to default value: %v, when the set value is invalid",
+			defaultBlockSize)
 	}
 
 	if opt.Block.Limit != defaultBlockLimit {
-		t.Errorf("block limit should be set to default value: %v, when the set value is invalid", defaultBlockLimit)
+		t.Errorf("block limit should be set to default value: %v, when the set value is invalid",
+			defaultBlockLimit)
 	}
 
 	if opt.Block.Skip != 0 {
@@ -175,7 +179,6 @@ func TestXMLDecoder_SetOptions(t *testing.T) {
 
 func TestXMLDecoder_Artists(t *testing.T) {
 	d := NewXMLDecoder(strings.NewReader(artists), nil)
-
 	num, a, err := d.Artists()
 	if num != 2 || len(a) != 2 {
 		t.Error("there should be 2 artists parsed")
@@ -191,8 +194,58 @@ func TestXMLDecoder_Artists(t *testing.T) {
 }
 
 func TestXMLDecoder_Artists_First(t *testing.T) {
-	d := NewXMLDecoder(strings.NewReader(artists), nil)
+	expectedArtist := model.Artist{
+		ID:       "1",
+		Name:     "The Persuader",
+		RealName: "Jesper Dahlbäck",
+		Images: []model.Image{
+			{
+				Height: "450",
+				Width:  "600",
+				Type:   "primary",
+			},
+			{
+				Height: "771",
+				Width:  "600",
+				Type:   "secondary",
+			},
+		},
+		DataQuality:    "Needs Vote",
+		NameVariations: []string{"Persuader", "The Presuader"},
+		Urls:           []string{"https://en.wikipedia.org/wiki/Jesper_Dahlbäck"},
+		Aliases: []model.Alias{
+			{
+				ID:   "239",
+				Name: "Jesper Dahlbäck",
+			},
+			{
+				ID:   "16055",
+				Name: "Groove Machine",
+			},
+			{
+				ID:   "19541",
+				Name: "Dick Track",
+			},
+			{
+				ID:   "25227",
+				Name: "Lenk",
+			},
+			{
+				ID:   "196957",
+				Name: "Janne Me' Amazonen",
+			},
+			{
+				ID:   "278760",
+				Name: "Faxid",
+			},
+			{
+				ID:   "439150",
+				Name: "The Pinguin Man",
+			},
+		},
+	}
 
+	d := NewXMLDecoder(strings.NewReader(artists), nil)
 	num, a, err := d.Artists()
 	if err != nil && err != io.EOF {
 		t.Error(err)
@@ -202,99 +255,54 @@ func TestXMLDecoder_Artists_First(t *testing.T) {
 		t.Error("wrong number of parsed artists")
 	}
 
-	artist := a[0]
-
-	if artist.ID != "1" {
-		t.Errorf("wrong artist id, expected: %s, got: %s", "1", artist.ID)
+	if !reflect.DeepEqual(a[0], expectedArtist) {
+		t.Error("expected artist differs from parsed artist")
 	}
-
-	if artist.Name != "The Persuader" {
-		t.Errorf("wrong name, expected: %s, got: %s", "The Persuader", artist.Name)
-	}
-
-	if artist.RealName != "Jesper Dahlbäck" {
-		t.Errorf("wrong real name, expected: %s, got: %s", "Jesper Dahlbäck", artist.RealName)
-	}
-
-	if artist.DataQuality != "Needs Vote" {
-		t.Errorf("wrong data quality, expected: %s, got: %s", "Needs Vote", artist.DataQuality)
-	}
-
-	if len(artist.Urls) != 1 {
-		t.Errorf("wrong number of urls, expected: %d, got: %d", 1, len(artist.Urls))
-	}
-
-	if artist.Urls[0] != "https://en.wikipedia.org/wiki/Jesper_Dahlbäck" {
-		t.Errorf("wrong url, expected: %s, got: %s", "https://en.wikipedia.org/wiki/Jesper_Dahlbäck", artist.Urls[0])
-	}
-
-	if len(artist.NameVariations) != 2 {
-		t.Errorf("wrong number of name variations, expected: %d, got: %d", 2, len(artist.NameVariations))
-	}
-
-	if artist.NameVariations[0] != "Persuader" {
-		t.Errorf("wrong name variation, expected: %s, got: %s", "Persuader", artist.NameVariations[0])
-	}
-
-	if artist.NameVariations[1] != "The Presuader" {
-		t.Errorf("wrong name variation, expected: %s, got: %s", "The Presuader", artist.NameVariations[1])
-	}
-
-	if len(artist.Images) != 2 {
-		t.Errorf("wrong number of images, expected: %d, got: %d", 2, len(artist.Images))
-	}
-
-	if len(artist.Aliases) != 7 {
-		t.Errorf("wrong number of aliases, expected: %d, got: %d", 7, len(artist.Aliases))
-	}
-
-	if artist.Aliases[0].ID != "239" || artist.Aliases[0].Name != "Jesper Dahlbäck" {
-		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
-			"239", artist.Aliases[0].ID,
-			"Jesper Dahlbäck", artist.Aliases[0].Name)
-	}
-
-	if artist.Aliases[1].ID != "16055" || artist.Aliases[1].Name != "Groove Machine" {
-		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
-			"16055", artist.Aliases[1].ID,
-			"Groove Machine", artist.Aliases[1].Name)
-	}
-
-	if artist.Aliases[2].ID != "19541" || artist.Aliases[2].Name != "Dick Track" {
-		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
-			"19541", artist.Aliases[2].ID,
-			"Dick Track", artist.Aliases[2].Name)
-	}
-
-	if artist.Aliases[3].ID != "25227" || artist.Aliases[3].Name != "Lenk" {
-		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
-			"25227", artist.Aliases[3].ID,
-			"Lenk", artist.Aliases[3].Name)
-	}
-
-	if artist.Aliases[4].ID != "196957" || artist.Aliases[4].Name != "Janne Me' Amazonen" {
-		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
-			"196957", artist.Aliases[4].ID,
-			"Janne Me' Amazonen", artist.Aliases[4].Name)
-	}
-
-	if artist.Aliases[5].ID != "278760" || artist.Aliases[5].Name != "Faxid" {
-		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
-			"278760", artist.Aliases[5].ID,
-			"Faxid", artist.Aliases[5].Name)
-	}
-
-	if artist.Aliases[6].ID != "439150" || artist.Aliases[6].Name != "The Pinguin Man" {
-		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
-			"439150", artist.Aliases[6].ID,
-			"The Pinguin Man", artist.Aliases[6].Name)
-	}
-
 }
 
 func TestXMLDecoder_Artists_Second(t *testing.T) {
-	d := NewXMLDecoder(strings.NewReader(artists), nil)
+	expectedArtist := model.Artist{
+		ID:          "2",
+		Name:        "Mr. James Barth & A.D.",
+		RealName:    "Cari Lekebusch & Alexi Delano",
+		DataQuality: "Correct",
+		NameVariations: []string{"Mr Barth & A.D.", "MR JAMES BARTH & A. D.",
+			"Mr. Barth & A.D.", "Mr. James Barth & A. D."},
+		Aliases: []model.Alias{
+			{
+				ID:   "2470",
+				Name: "Puente Latino",
+			},
+			{
+				ID:   "19536",
+				Name: "Yakari & Delano",
+			},
+			{
+				ID:   "103709",
+				Name: "Crushed Insect & The Sick Puppy",
+			},
+			{
+				ID:   "384581",
+				Name: "ADCL",
+			},
+			{
+				ID:   "1779857",
+				Name: "Alexi Delano & Cari Lekebusch",
+			},
+		},
+		Members: []model.Member{
+			{
+				ID:   "26",
+				Name: "Alexi Delano",
+			},
+			{
+				ID:   "27",
+				Name: "Cari Lekebusch",
+			},
+		},
+	}
 
+	d := NewXMLDecoder(strings.NewReader(artists), nil)
 	num, a, err := d.Artists()
 	if err != nil && err != io.EOF {
 		t.Error(err)
@@ -304,95 +312,8 @@ func TestXMLDecoder_Artists_Second(t *testing.T) {
 		t.Error("wrong number of parsed artists")
 	}
 
-	artist := a[1]
-
-	if artist.ID != "2" {
-		t.Errorf("wrong artist id, expected: %s, got: %s", "2", artist.ID)
-	}
-
-	if artist.Name != "Mr. James Barth & A.D." {
-		t.Errorf("wrong name, expected: %s, got: %s", "Mr. James Barth & A.D.", artist.Name)
-	}
-
-	if artist.RealName != "Cari Lekebusch & Alexi Delano" {
-		t.Errorf("wrong real name, expected: %s, got: %s", "Cari Lekebusch & Alexi Delano", artist.RealName)
-	}
-
-	if artist.DataQuality != "Correct" {
-		t.Errorf("wrong data quality, expected: %s, got: %s", "Correct", artist.DataQuality)
-	}
-
-	if len(artist.NameVariations) != 4 {
-		t.Errorf("wrong number of name variations, expected: %d, got: %d", 4, len(artist.NameVariations))
-
-	}
-
-	if artist.NameVariations[0] != "Mr Barth & A.D." {
-		t.Errorf("wrong name variation, expected: %s, got: %s", "Mr Barth & A.D.", artist.NameVariations[0])
-	}
-
-	if artist.NameVariations[1] != "MR JAMES BARTH & A. D." {
-		t.Errorf("wrong name variation, expected: %s, got: %s", "MR JAMES BARTH & A. D.", artist.NameVariations[1])
-	}
-
-	if artist.NameVariations[2] != "Mr. Barth & A.D." {
-		t.Errorf("wrong name variation, expected: %s, got: %s", "Mr. Barth & A.D.", artist.NameVariations[2])
-	}
-
-	if artist.NameVariations[3] != "Mr. James Barth & A. D." {
-		t.Errorf("wrong name variation, expected: %s, got: %s", "Mr. James Barth & A. D.", artist.NameVariations[3])
-	}
-
-	if len(artist.Aliases) != 5 {
-		t.Errorf("wrong number of aliases, expected: %d, got: %d", 5, len(artist.Aliases))
-
-	}
-
-	if artist.Aliases[0].ID != "2470" || artist.Aliases[0].Name != "Puente Latino" {
-		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
-			"2470", artist.Aliases[0].ID,
-			"Puente Latino", artist.Aliases[0].Name)
-	}
-
-	if artist.Aliases[1].ID != "19536" || artist.Aliases[1].Name != "Yakari & Delano" {
-		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
-			"19536", artist.Aliases[1].ID,
-			"Yakari & Delano", artist.Aliases[1].Name)
-	}
-
-	if artist.Aliases[2].ID != "103709" || artist.Aliases[2].Name != "Crushed Insect & The Sick Puppy" {
-		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
-			"103709", artist.Aliases[2].ID,
-			"Crushed Insect & The Sick Puppy", artist.Aliases[2].Name)
-	}
-
-	if artist.Aliases[3].ID != "384581" || artist.Aliases[3].Name != "ADCL" {
-		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
-			"384581", artist.Aliases[3].ID,
-			"ADCL", artist.Aliases[3].Name)
-	}
-
-	if artist.Aliases[4].ID != "1779857" || artist.Aliases[4].Name != "Alexi Delano & Cari Lekebusch" {
-		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
-			"1779857", artist.Aliases[4].ID,
-			"Alexi Delano & Cari Lekebusch", artist.Aliases[4].Name)
-	}
-
-	if len(artist.Members) != 2 {
-		t.Errorf("wrong number of members, expected: %d, got: %d", 5, len(artist.Members))
-
-	}
-
-	if artist.Members[0].ID != "26" || artist.Members[0].Name != "Alexi Delano" {
-		t.Errorf("wrong member, expected id: %s, got: %s, expected name: %s, got: %s",
-			"26", artist.Members[0].ID,
-			"Alexi Delano", artist.Members[0].Name)
-	}
-
-	if artist.Members[1].ID != "27" || artist.Members[1].Name != "Cari Lekebusch" {
-		t.Errorf("wrong member, expected id: %s, got: %s, expected name: %s, got: %s",
-			"27", artist.Members[1].ID,
-			"Cari Lekebusch", artist.Members[1].Name)
+	if !reflect.DeepEqual(a[1], expectedArtist) {
+		t.Error("expected artist differs from parsed artist")
 	}
 }
 
@@ -451,185 +372,133 @@ func TestXMLDecoder_Labels(t *testing.T) {
 }
 
 func TestXMLDecoder_Labels_First(t *testing.T) {
+	expectedLabel := model.Label{
+		ID:   "1",
+		Name: "Planet E",
+		Images: []model.Image{
+			{
+				Height: "24",
+				Width:  "132",
+				Type:   "primary",
+			},
+			{
+				Height: "126",
+				Width:  "587",
+				Type:   "secondary",
+			},
+			{
+				Height: "196",
+				Width:  "600",
+				Type:   "secondary",
+			},
+			{
+				Height: "121",
+				Width:  "275",
+				Type:   "secondary",
+			},
+			{
+				Height: "720",
+				Width:  "382",
+				Type:   "secondary",
+			},
+			{
+				Height: "398",
+				Width:  "500",
+				Type:   "secondary",
+			},
+			{
+				Height: "189",
+				Width:  "600",
+				Type:   "secondary",
+			},
+		},
+		ContactInfo: "Planet E Communications\r\nP.O. Box 27218\r\nDetroit, Michigan, MI 48227\r\nUSA\r\n\r\n" +
+			"Phone: +1 313 874 8729\r\nFax: +1 313 874 8732\r\nEmail: info@Planet-e.net",
+		Profile: "[a=Carl Craig]'s classic techno label founded in 1991.\r\n\r\n" +
+			"On at least 1 release, Planet E is listed as publisher.",
+		DataQuality: "Correct",
+		Urls: []string{"http://planet-e.net", "http://planetecommunications.bandcamp.com",
+			"http://www.facebook.com/planetedetroit", "http://www.flickr.com/photos/planetedetroit",
+			"http://plus.google.com/100841702106447505236", "http://www.instagram.com/carlcraignet",
+			"http://myspace.com/planetecom", "http://myspace.com/planetedetroit",
+			"http://soundcloud.com/planetedetroit", "http://twitter.com/planetedetroit", "http://vimeo.com/user1265384",
+			"http://en.wikipedia.org/wiki/Planet_E_Communications", "http://www.youtube.com/user/planetedetroit"},
+		SubLabels: []model.LabelLabel{
+			{
+				ID:   "86537",
+				Name: "Antidote (4)",
+			},
+			{
+				ID:   "41841",
+				Name: "Community Projects",
+			},
+			{
+				ID:   "153760",
+				Name: "Guilty Pleasures",
+			},
+			{
+				ID:   "31405",
+				Name: "I Ner Zon Sounds",
+			},
+			{
+				ID:   "277579",
+				Name: "Planet E Communications",
+			},
+			{
+				ID:   "294738",
+				Name: "Planet E Communications, Inc.",
+			},
+			{
+				ID:   "1560615",
+				Name: "Planet E Productions",
+			},
+			{
+				ID:   "488315",
+				Name: "TWPENTY",
+			},
+		},
+	}
+
 	d := NewXMLDecoder(strings.NewReader(labels), nil)
 	num, l, err := d.Labels()
 	if err != nil && err != io.EOF {
 		t.Error(err)
-
 	}
 
 	if num != 2 {
 		t.Error("wrong number of parsed labels")
 	}
 
-	label := l[0]
-
-	if label.ID != "1" {
-		t.Errorf("wrong label id, expected: %s, got: %s", "1", label.ID)
+	if !reflect.DeepEqual(l[0], expectedLabel) {
+		t.Error("expected label differs from parsed label")
 	}
 
-	if label.Name != "Planet E" {
-		t.Errorf("wrong label name, expected: %s, got: %s", "Planet E", label.Name)
-	}
-
-	if label.ContactInfo != "Planet E Communications\r\nP.O. Box 27218\r\nDetroit, Michigan, MI 48227\r\nUSA\r\n\r\nPhone: +1 313 874 8729\r\nFax: +1 313 874 8732\r\nEmail: info@Planet-e.net" {
-		t.Error("wrong contact info")
-	}
-
-	if label.Profile != "[a=Carl Craig]'s classic techno label founded in 1991.\r\n\r\nOn at least 1 release, Planet E is listed as publisher." {
-		t.Error("wrong profile")
-	}
-
-	if label.DataQuality != "Correct" {
-		t.Errorf("wrong data quality, expected: %s, got: %s", "Correct", label.DataQuality)
-	}
-
-	if len(label.Images) != 7 {
-		t.Error("wrong number of images")
-	}
-
-	if len(label.Urls) != 13 {
-		t.Error("wrong number of urls")
-	}
-
-	if label.Urls[0] != "http://planet-e.net" {
-		t.Errorf("wrong url, expected: %s, got: %s", "http://planet-e.net", label.Urls[0])
-	}
-
-	if label.Urls[1] != "http://planetecommunications.bandcamp.com" {
-		t.Errorf("wrong url, expected: %s, got: %s", "http://planetecommunications.bandcamp.com", label.Urls[1])
-	}
-
-	if label.Urls[2] != "http://www.facebook.com/planetedetroit" {
-		t.Errorf("wrong url, expected: %s, got: %s", "http://www.facebook.com/planetedetroit", label.Urls[2])
-	}
-
-	if label.Urls[3] != "http://www.flickr.com/photos/planetedetroit" {
-		t.Errorf("wrong url, expected: %s, got: %s", "http://www.flickr.com/photos/planetedetroit", label.Urls[3])
-	}
-
-	if label.Urls[4] != "http://plus.google.com/100841702106447505236" {
-		t.Errorf("wrong url, expected: %s, got: %s", "http://plus.google.com/100841702106447505236", label.Urls[4])
-	}
-
-	if label.Urls[5] != "http://www.instagram.com/carlcraignet" {
-		t.Errorf("wrong url, expected: %s, got: %s", "http://www.instagram.com/carlcraignet", label.Urls[5])
-	}
-
-	if label.Urls[6] != "http://myspace.com/planetecom" {
-		t.Errorf("wrong url, expected: %s, got: %s", "http://myspace.com/planetecom", label.Urls[6])
-	}
-
-	if label.Urls[7] != "http://myspace.com/planetedetroit" {
-		t.Errorf("wrong url, expected: %s, got: %s", "http://myspace.com/planetedetroit", label.Urls[7])
-	}
-
-	if label.Urls[8] != "http://soundcloud.com/planetedetroit" {
-		t.Errorf("wrong url, expected: %s, got: %s", "http://soundcloud.com/planetedetroit", label.Urls[8])
-	}
-
-	if label.Urls[9] != "http://twitter.com/planetedetroit" {
-		t.Errorf("wrong url, expected: %s, got: %s", "http://twitter.com/planetedetroit", label.Urls[9])
-	}
-
-	if label.Urls[10] != "http://vimeo.com/user1265384" {
-		t.Errorf("wrong url, expected: %s, got: %s", "http://vimeo.com/user1265384", label.Urls[10])
-	}
-
-	if label.Urls[11] != "http://en.wikipedia.org/wiki/Planet_E_Communications" {
-		t.Errorf("wrong url, expected: %s, got: %s", "http://en.wikipedia.org/wiki/Planet_E_Communications", label.Urls[11])
-	}
-
-	if label.Urls[12] != "http://www.youtube.com/user/planetedetroit" {
-		t.Errorf("wrong url, expected: %s, got: %s", "http://www.youtube.com/user/planetedetroit", label.Urls[12])
-	}
-
-	if len(label.SubLabels) != 8 {
-		t.Error("wrong number of sub labels")
-	}
-
-	if label.SubLabels[0].ID != "86537" || label.SubLabels[0].Name != "Antidote (4)" {
-		t.Error("wrong sublabel 0")
-	}
-
-	if label.SubLabels[1].ID != "41841" || label.SubLabels[1].Name != "Community Projects" {
-		t.Error("wrong sublabel 1")
-	}
-
-	if label.SubLabels[2].ID != "153760" || label.SubLabels[2].Name != "Guilty Pleasures" {
-		t.Error("wrong sublabel 2")
-	}
-
-	if label.SubLabels[3].ID != "31405" || label.SubLabels[3].Name != "I Ner Zon Sounds" {
-		t.Error("wrong sublabel 3")
-	}
-
-	if label.SubLabels[4].ID != "277579" || label.SubLabels[4].Name != "Planet E Communications" {
-		t.Error("wrong sublabel 4")
-	}
-
-	if label.SubLabels[5].ID != "294738" || label.SubLabels[5].Name != "Planet E Communications, Inc." {
-		t.Error("wrong sublabel 5")
-	}
-
-	if label.SubLabels[6].ID != "1560615" || label.SubLabels[6].Name != "Planet E Productions" {
-		t.Error("wrong sublabel 6")
-	}
-
-	if label.SubLabels[7].ID != "488315" || label.SubLabels[7].Name != "TWPENTY" {
-		t.Error("wrong sublabel 7")
-	}
 }
 
 func TestXMLDecoder_Labels_Second(t *testing.T) {
+	expectedLabel := model.Label{
+		ID:   "2",
+		Name: "Earthtones Recordings",
+		ContactInfo: "Seasons Recordings\r\n2236 Pacific Avenue\r\nSuite D\r\nCosta Mesa, CA  92627\r\n\r\n" +
+			"tel: +1.949.574.5255\r\nfax: +1.949.574.0255\r\n\r\nemail: jthinnes@seasonsrecordings.com\r\n",
+		Profile: "California deep house label founded by [a=Jamie Thinnes]. " +
+			"Now defunct and continued as [l=Seasons Recordings].",
+		DataQuality: "Correct",
+		Urls:        []string{"http://www.seasonsrecordings.com/"},
+	}
+
 	d := NewXMLDecoder(strings.NewReader(labels), nil)
 	num, l, err := d.Labels()
 	if err != nil && err != io.EOF {
 		t.Error(err)
-
 	}
 
 	if num != 2 {
 		t.Error("wrong number of parsed labels")
 	}
 
-	label := l[1]
-
-	if label.ID != "2" {
-		t.Errorf("wrong label id, expected: %s, got: %s", "2", label.ID)
-	}
-
-	if label.Name != "Earthtones Recordings" {
-		t.Errorf("wrong label name, expected: %s, got: %s", "Earthtones Recordings", label.Name)
-	}
-
-	if label.ContactInfo != "Seasons Recordings\r\n2236 Pacific Avenue\r\nSuite D\r\nCosta Mesa, CA  92627\r\n\r\ntel: +1.949.574.5255\r\nfax: +1.949.574.0255\r\n\r\nemail: jthinnes@seasonsrecordings.com\r\n" {
-		t.Error("wrong contact info")
-	}
-
-	if label.Profile != "California deep house label founded by [a=Jamie Thinnes]. Now defunct and continued as [l=Seasons Recordings]." {
-		t.Error("wrong profile")
-	}
-
-	if label.DataQuality != "Correct" {
-		t.Errorf("wrong data quality, expected: %s, got: %s", "Correct", label.DataQuality)
-	}
-
-	if len(label.Urls) != 1 {
-		t.Error("wrong number of urls")
-	}
-
-	if label.Urls[0] != "http://www.seasonsrecordings.com/" {
-		t.Errorf("wrong url, expected: %s, got: %s", "http://www.seasonsrecordings.com/", label.Urls[0])
-	}
-
-	if len(label.Images) != 0 {
-		t.Errorf("wrong number of images, expected: %d, got: %d", 0, len(label.Images))
-	}
-
-	if len(label.SubLabels) != 0 {
-		t.Errorf("wrong number of sub labels expected: %d, got: %d", 0, len(label.SubLabels))
-
+	if !reflect.DeepEqual(l[1], expectedLabel) {
+		t.Error("expected label differs from parsed label")
 	}
 }
 
@@ -721,6 +590,81 @@ func TestXMLDecoder_Masters_Block_ItemSize(t *testing.T) {
 }
 
 func TestXMLDecoder_Masters_First(t *testing.T) {
+	expectedMaster := model.Master{
+		ID:          "18500",
+		MainRelease: "155102",
+		Images: []model.Image{
+			{
+				Height: "588",
+				Width:  "600",
+				Type:   "primary",
+			},
+		},
+		Artists: []model.ReleaseArtist{
+			{
+				ID:   "212070",
+				Name: "Samuel L Session",
+				Anv:  "Samuel L",
+			},
+		},
+		Genres:      []string{"Electronic"},
+		Styles:      []string{"Techno"},
+		Year:        "2001",
+		Title:       "New Soil",
+		DataQuality: "Correct",
+		Videos: []model.Video{
+			{
+				Duration:    "489",
+				Embed:       "true",
+				Src:         "https://www.youtube.com/watch?v=f05Ai921itM",
+				Title:       "Samuel L - Velvet",
+				Description: "Samuel L - Velvet",
+			},
+			{
+				Duration:    "348",
+				Embed:       "true",
+				Src:         "https://www.youtube.com/watch?v=v23rSPG_StA",
+				Title:       "Samuel L - Danses D'Afrique",
+				Description: "Samuel L - Danses D'Afrique",
+			},
+			{
+				Duration:    "288",
+				Embed:       "true",
+				Src:         "https://www.youtube.com/watch?v=tHo82ha6p40",
+				Title:       "Samuel L - Body N' Soul",
+				Description: "Samuel L - Body N' Soul",
+			},
+			{
+				Duration:    "331",
+				Embed:       "true",
+				Src:         "https://www.youtube.com/watch?v=KDcqzHca5dk",
+				Title:       "Samuel L - Into The Groove",
+				Description: "Samuel L - Into The Groove",
+			},
+			{
+				Duration:    "334",
+				Embed:       "true",
+				Src:         "https://www.youtube.com/watch?v=3DIYjJFl8Dk",
+				Title:       "Samuel L - Soul Syndrome",
+				Description: "Samuel L - Soul Syndrome",
+			},
+			{
+				Duration:    "325",
+				Embed:       "true",
+				Src:         "https://www.youtube.com/watch?v=_o8yZMPqvNg",
+				Title:       "Samuel L - Lush",
+				Description: "Samuel L - Lush",
+			},
+			{
+				Duration:    "346",
+				Embed:       "true",
+				Src:         "https://www.youtube.com/watch?v=JPwwJSc_-30",
+				Title:       "Samuel L - Velvet ( Direct Me )",
+				Description: "Samuel L - Velvet ( Direct Me )",
+			},
+		},
+	}
+
 	d := NewXMLDecoder(strings.NewReader(masters), nil)
 	num, m, err := d.Masters()
 	if err != nil && err != io.EOF {
@@ -731,123 +675,68 @@ func TestXMLDecoder_Masters_First(t *testing.T) {
 		t.Error("there should be 2 masters decoded")
 	}
 
-	master := m[0]
-	if master.ID != "18500" {
-		t.Errorf("wrong master id, expected: %s, got: %s", "18500", master.ID)
-	}
-
-	if master.MainRelease != "155102" {
-		t.Errorf("wrong main release, expected: %s, got: %s", "155102", master.MainRelease)
-	}
-
-	if len(master.Images) != 1 {
-		t.Error("wrong number of images")
-	}
-
-	if master.Images[0].Height != "588" || master.Images[0].Width != "600" || master.Images[0].Type != "primary" {
-		t.Error("wrong image parameters")
-	}
-
-	if len(master.Artists) != 1 {
-		t.Error("wrong number of release artists")
-	}
-
-	if master.Artists[0].ID != "212070" ||
-		master.Artists[0].Name != "Samuel L Session" ||
-		master.Artists[0].Anv != "Samuel L" {
-		t.Error("wrong release artist")
-	}
-
-	if len(master.Genres) != 1 {
-		t.Error("wrong number of genres")
-	}
-
-	if master.Genres[0] != "Electronic" {
-		t.Errorf("wrong genre, expected: %s, got: %s", "Electronic", master.Genres[0])
-	}
-
-	if len(master.Styles) != 1 {
-		t.Error("wrong number of styles")
-	}
-
-	if master.Styles[0] != "Techno" {
-		t.Errorf("wrong style, expected: %s, got: %s", "Techno", master.Styles[0])
-	}
-
-	if master.Year != "2001" {
-		t.Errorf("wrong year, expected: %s, got: %s", "2001", master.Year)
-	}
-
-	if master.Title != "New Soil" {
-		t.Errorf("wrong title, expected: %s, got: %s", "New Soil", master.Title)
-	}
-
-	if master.DataQuality != "Correct" {
-		t.Errorf("wrong data quality, expected: %s, got: %s", "Correct", master.DataQuality)
-	}
-
-	if len(master.Videos) != 7 {
-		t.Error("wrong number of videos")
-	}
-
-	if master.Videos[0].Title != "Samuel L - Velvet" ||
-		master.Videos[0].Duration != "489" ||
-		master.Videos[0].Embed != "true" ||
-		master.Videos[0].Src != "https://www.youtube.com/watch?v=f05Ai921itM" ||
-		master.Videos[0].Description != "Samuel L - Velvet" {
-		t.Error("wrong video 0")
-	}
-
-	if master.Videos[1].Title != "Samuel L - Danses D'Afrique" ||
-		master.Videos[1].Duration != "348" ||
-		master.Videos[1].Embed != "true" ||
-		master.Videos[1].Src != "https://www.youtube.com/watch?v=v23rSPG_StA" ||
-		master.Videos[1].Description != "Samuel L - Danses D'Afrique" {
-		t.Error("wrong video 1")
-	}
-
-	if master.Videos[2].Title != "Samuel L - Body N' Soul" ||
-		master.Videos[2].Duration != "288" ||
-		master.Videos[2].Embed != "true" ||
-		master.Videos[2].Src != "https://www.youtube.com/watch?v=tHo82ha6p40" ||
-		master.Videos[2].Description != "Samuel L - Body N' Soul" {
-		t.Error("wrong video 2")
-	}
-
-	if master.Videos[3].Title != "Samuel L - Into The Groove" ||
-		master.Videos[3].Duration != "331" ||
-		master.Videos[3].Embed != "true" ||
-		master.Videos[3].Src != "https://www.youtube.com/watch?v=KDcqzHca5dk" ||
-		master.Videos[3].Description != "Samuel L - Into The Groove" {
-		t.Error("wrong video 3")
-	}
-
-	if master.Videos[4].Title != "Samuel L - Soul Syndrome" ||
-		master.Videos[4].Duration != "334" ||
-		master.Videos[4].Embed != "true" ||
-		master.Videos[4].Src != "https://www.youtube.com/watch?v=3DIYjJFl8Dk" ||
-		master.Videos[4].Description != "Samuel L - Soul Syndrome" {
-		t.Error("wrong video 4")
-	}
-
-	if master.Videos[5].Title != "Samuel L - Lush" ||
-		master.Videos[5].Duration != "325" ||
-		master.Videos[5].Embed != "true" ||
-		master.Videos[5].Src != "https://www.youtube.com/watch?v=_o8yZMPqvNg" ||
-		master.Videos[5].Description != "Samuel L - Lush" {
-		t.Error("wrong video 5")
-	}
-
-	if master.Videos[6].Title != "Samuel L - Velvet ( Direct Me )" ||
-		master.Videos[6].Duration != "346" ||
-		master.Videos[6].Embed != "true" ||
-		master.Videos[6].Src != "https://www.youtube.com/watch?v=JPwwJSc_-30" ||
-		master.Videos[6].Description != "Samuel L - Velvet ( Direct Me )" {
-		t.Error("wrong video 6")
+	if !reflect.DeepEqual(m[0], expectedMaster) {
+		t.Error("expected master differs from parsed master")
 	}
 }
 
 func TestXMLDecoder_Masters_Second(t *testing.T) {
+	expectedMaster := model.Master{
+		ID:          "18512",
+		MainRelease: "33699",
+		Images: []model.Image{
+			{
+				Height: "150",
+				Width:  "150",
+				Type:   "primary",
+			},
+			{
+				Height: "592",
+				Width:  "600",
+				Type:   "secondary",
+			},
+			{
+				Height: "592",
+				Width:  "600",
+				Type:   "secondary",
+			},
+		},
+		Artists: []model.ReleaseArtist{
+			{
+				ID:   "212070",
+				Name: "Samuel L Session",
+			},
+		},
+		Genres:      []string{"Electronic"},
+		Styles:      []string{"Tribal", "Techno"},
+		Year:        "2002",
+		Title:       "Psyche EP",
+		DataQuality: "Correct",
+		Videos: []model.Video{
+			{
+				Duration:    "118",
+				Embed:       "true",
+				Src:         "https://www.youtube.com/watch?v=QYf4j0Pd2FU",
+				Title:       "Samuel L. Session - Arrival",
+				Description: "Samuel L. Session - Arrival",
+			},
+			{
+				Duration:    "376",
+				Embed:       "true",
+				Src:         "https://www.youtube.com/watch?v=c_AfLqTdncI",
+				Title:       "Samuel L. Session - Psyche Part 1",
+				Description: "Samuel L. Session - Psyche Part 1",
+			},
+			{
+				Duration:    "419",
+				Embed:       "true",
+				Src:         "https://www.youtube.com/watch?v=0nxvR8Zl9wY",
+				Title:       "Samuel L. Session - Psyche Part 2",
+				Description: "Samuel L. Session - Psyche Part 2",
+			},
+		},
+	}
+
 	d := NewXMLDecoder(strings.NewReader(masters), nil)
 	num, m, err := d.Masters()
 	if err != nil && err != io.EOF {
@@ -858,97 +747,8 @@ func TestXMLDecoder_Masters_Second(t *testing.T) {
 		t.Error("there should be 2 masters decoded")
 	}
 
-	master := m[1]
-	if master.ID != "18512" {
-		t.Errorf("wrong master id, expected: %s, got: %s", "18512", master.ID)
-	}
-
-	if master.MainRelease != "33699" {
-		t.Errorf("wrong main release, expected: %s, got: %s", "33699", master.MainRelease)
-	}
-
-	if len(master.Images) != 3 {
-		t.Error("wrong number of images")
-	}
-
-	if master.Images[0].Height != "150" || master.Images[0].Width != "150" || master.Images[0].Type != "primary" {
-		t.Error("wrong image 0 parameters")
-	}
-
-	if master.Images[1].Height != "592" || master.Images[1].Width != "600" || master.Images[1].Type != "secondary" {
-		t.Error("wrong image 1 parameters")
-	}
-
-	if master.Images[2].Height != "592" || master.Images[2].Width != "600" || master.Images[2].Type != "secondary" {
-		t.Error("wrong image 2 parameters")
-	}
-
-	if len(master.Artists) != 1 {
-		t.Error("wrong number of release artists")
-	}
-
-	if master.Artists[0].ID != "212070" || master.Artists[0].Name != "Samuel L Session" {
-		t.Error("wrong release artist")
-	}
-
-	if len(master.Genres) != 1 {
-		t.Error("wrong number of genres")
-	}
-
-	if master.Genres[0] != "Electronic" {
-		t.Errorf("wrong genre, expected: %s, got: %s", "Electronic", master.Genres[0])
-	}
-
-	if len(master.Styles) != 2 {
-		t.Error("wrong number of styles")
-	}
-
-	if master.Styles[0] != "Tribal" {
-		t.Errorf("wrong style, expected: %s, got: %s", "Tribal", master.Styles[0])
-	}
-
-	if master.Styles[1] != "Techno" {
-		t.Errorf("wrong style, expected: %s, got: %s", "Techno", master.Styles[1])
-	}
-
-	if master.Year != "2002" {
-		t.Errorf("wrong year, expected: %s, got: %s", "2001", master.Year)
-	}
-
-	if master.Title != "Psyche EP" {
-		t.Errorf("wrong title, expected: %s, got: %s", "Psyche EP", master.Title)
-	}
-
-	if master.DataQuality != "Correct" {
-		t.Errorf("wrong data quality, expected: %s, got: %s", "Correct", master.DataQuality)
-	}
-
-	if len(master.Videos) != 3 {
-		t.Error("wrong number of videos")
-	}
-
-	if master.Videos[0].Title != "Samuel L. Session - Arrival" ||
-		master.Videos[0].Duration != "118" ||
-		master.Videos[0].Embed != "true" ||
-		master.Videos[0].Src != "https://www.youtube.com/watch?v=QYf4j0Pd2FU" ||
-		master.Videos[0].Description != "Samuel L. Session - Arrival" {
-		t.Error("wrong video 0")
-	}
-
-	if master.Videos[1].Title != "Samuel L. Session - Psyche Part 1" ||
-		master.Videos[1].Duration != "376" ||
-		master.Videos[1].Embed != "true" ||
-		master.Videos[1].Src != "https://www.youtube.com/watch?v=c_AfLqTdncI" ||
-		master.Videos[1].Description != "Samuel L. Session - Psyche Part 1" {
-		t.Error("wrong video 1")
-	}
-
-	if master.Videos[2].Title != "Samuel L. Session - Psyche Part 2" ||
-		master.Videos[2].Duration != "419" ||
-		master.Videos[2].Embed != "true" ||
-		master.Videos[2].Src != "https://www.youtube.com/watch?v=0nxvR8Zl9wY" ||
-		master.Videos[2].Description != "Samuel L. Session - Psyche Part 2" {
-		t.Error("wrong video 2")
+	if !reflect.DeepEqual(m[1], expectedMaster) {
+		t.Error("expected master differs from parsed master")
 	}
 }
 
@@ -1001,6 +801,379 @@ func TestXMLDecoder_Releases_Block_ItemSize(t *testing.T) {
 
 	if err == nil {
 		t.Error("EOF  error expected when there is nothing else to parse")
+	}
+}
+
+func TestXMLDecoder_Releases_First(t *testing.T) {
+	expectedRelease := model.Release{
+		ID:     "1",
+		Status: "Accepted",
+		Images: []model.Image{
+			{
+				Height: "600",
+				Width:  "600",
+				Type:   "primary",
+			},
+			{
+				Height: "600",
+				Width:  "600",
+				Type:   "secondary",
+			},
+			{
+				Height: "600",
+				Width:  "600",
+				Type:   "secondary",
+			},
+			{
+				Height: "600",
+				Width:  "600",
+				Type:   "secondary",
+			},
+		},
+		Artists: []model.ReleaseArtist{
+			{
+				ID:   "1",
+				Name: "The Persuader",
+			},
+		},
+		ExtraArtists: []model.ReleaseArtist{
+			{
+				ID:   "239",
+				Name: "Jesper Dahlbäck",
+				Role: "Music By [All Tracks By]",
+			},
+		},
+		Title: "Stockholm",
+		Formats: []model.Format{
+			{
+				Name:         "Vinyl",
+				Quantity:     "2",
+				Descriptions: []string{"12\"", "33 ⅓ RPM"},
+			},
+		},
+		Genres:   []string{"Electronic"},
+		Styles:   []string{"Deep House"},
+		Country:  "Sweden",
+		Released: "1999-03-00",
+		Notes: "The song titles are the names of six of Stockholm's 82 districts.\n\n" +
+			"Title on label: - Stockholm -\n\nRecorded at the Globe Studio, Stockholm\n\nFAX: +46 8 679 64 53",
+		DataQuality: "Needs Vote",
+		TrackList: []model.Track{
+			{
+				Position: "A",
+				Title:    "Östermalm",
+				Duration: "4:45",
+			},
+			{
+				Position: "B1",
+				Title:    "Vasastaden",
+				Duration: "6:11",
+			},
+			{
+				Position: "B2",
+				Title:    "Kungsholmen",
+				Duration: "2:49",
+			},
+			{
+				Position: "C1",
+				Title:    "Södermalm",
+				Duration: "5:38",
+			},
+			{
+				Position: "C2",
+				Title:    "Norrmalm",
+				Duration: "4:52",
+			},
+			{
+				Position: "D",
+				Title:    "Gamla Stan",
+				Duration: "5:16",
+			},
+		},
+		Identifiers: []model.Identifier{
+			{
+				Description: "A-Side Runout",
+				Type:        "Matrix / Runout",
+				Value:       "MPO SK 032 A1",
+			},
+			{
+				Description: "B-Side Runout",
+				Type:        "Matrix / Runout",
+				Value:       "MPO SK 032 B1",
+			},
+			{
+				Description: "C-Side Runout",
+				Type:        "Matrix / Runout",
+				Value:       "MPO SK 032 C1",
+			},
+			{
+				Description: "D-Side Runout",
+				Type:        "Matrix / Runout",
+				Value:       "MPO SK 032 D1",
+			},
+			{
+				Description: "Only On A-Side Runout",
+				Type:        "Matrix / Runout",
+				Value:       "G PHRUPMASTERGENERAL T27 LONDON",
+			},
+		},
+		Videos: []model.Video{
+			{
+				Duration:    "296",
+				Embed:       "true",
+				Src:         "https://www.youtube.com/watch?v=MpmbntGDyNE",
+				Title:       "The Persuader - Östermalm",
+				Description: "The Persuader - Östermalm",
+			},
+			{
+				Duration:    "376",
+				Embed:       "true",
+				Src:         "https://www.youtube.com/watch?v=Cawyll0pOI4",
+				Title:       "The Persuader - Vasastaden",
+				Description: "The Persuader - Vasastaden",
+			},
+			{
+				Duration:    "176",
+				Embed:       "true",
+				Src:         "https://www.youtube.com/watch?v=XExCZfMCXdo",
+				Title:       "The Persuader - Kungsholmen",
+				Description: "The Persuader - Kungsholmen",
+			},
+			{
+				Duration:    "341",
+				Embed:       "true",
+				Src:         "https://www.youtube.com/watch?v=WDZqiENap_U",
+				Title:       "The Persuader - Södermalm",
+				Description: "The Persuader - Södermalm",
+			},
+			{
+				Duration:    "301",
+				Embed:       "true",
+				Src:         "https://www.youtube.com/watch?v=EBBHR3EMN50",
+				Title:       "The Persuader - Norrmalm",
+				Description: "The Persuader - Norrmalm",
+			},
+			{
+				Duration:    "326",
+				Embed:       "true",
+				Src:         "https://www.youtube.com/watch?v=afMHNll9EVM",
+				Title:       "The Persuader - Gamla Stan",
+				Description: "The Persuader - Gamla Stan",
+			},
+		},
+		Labels: []model.ReleaseLabel{
+			{
+				ID:       "5",
+				Name:     "Svek",
+				Category: "SK032",
+			},
+		},
+		Companies: []model.Company{
+			{
+				ID:             "271046",
+				Name:           "The Globe Studios",
+				EntityType:     "23",
+				EntityTypeName: "Recorded At",
+				ResourceURL:    "https://api.discogs.com/labels/271046",
+			},
+			{
+				ID:             "56025",
+				Name:           "MPO",
+				EntityType:     "17",
+				EntityTypeName: "Pressed By",
+				ResourceURL:    "https://api.discogs.com/labels/56025",
+			},
+		},
+	}
+
+	d := NewXMLDecoder(strings.NewReader(releases), nil)
+	num, r, err := d.Releases()
+	if err != nil && err != io.EOF {
+		t.Error(err)
+	}
+
+	if num != 2 {
+		t.Error("wrong number of decoded releases")
+	}
+
+	if !reflect.DeepEqual(r[0], expectedRelease) {
+		t.Error("expected release differs from parsed release")
+	}
+}
+
+func TestXMLDecoder_Releases_Second(t *testing.T) {
+	expectedRelease := model.Release{
+		ID:     "2",
+		Status: "Accepted",
+		Images: []model.Image{
+			{
+				Height: "394",
+				Width:  "400",
+				Type:   "primary",
+			},
+			{
+				Height: "600",
+				Width:  "600",
+				Type:   "secondary",
+			},
+			{
+				Height: "600",
+				Width:  "600",
+				Type:   "secondary",
+			},
+		},
+		Artists: []model.ReleaseArtist{
+			{
+				ID:   "2",
+				Name: "Mr. James Barth & A.D.",
+			},
+		},
+		ExtraArtists: []model.ReleaseArtist{
+			{
+				ID:   "26",
+				Name: "Alexi Delano",
+				Role: "Producer, Recorded By",
+			},
+			{
+				ID:   "27",
+				Name: "Cari Lekebusch",
+				Role: "Producer, Recorded By",
+			},
+			{
+				ID:   "26",
+				Name: "Alexi Delano",
+				Anv:  "A. Delano",
+				Role: "Written-By",
+			},
+			{
+				ID:   "27",
+				Name: "Cari Lekebusch",
+				Anv:  "C. Lekebusch",
+				Role: "Written-By",
+			},
+		},
+		Title: "Knockin' Boots Vol 2 Of 2",
+		Formats: []model.Format{
+			{
+				Name:         "Vinyl",
+				Quantity:     "1",
+				Descriptions: []string{"12\"", "33 ⅓ RPM"},
+			},
+		},
+		Genres:      []string{"Electronic"},
+		Styles:      []string{"Broken Beat", "Techno", "Tech House"},
+		Country:     "Sweden",
+		Released:    "1998-06-00",
+		Notes:       "All joints recorded in NYC (Dec.97).",
+		DataQuality: "Correct",
+		MasterID:    "713738",
+		MainRelease: "true",
+		TrackList: []model.Track{
+			{
+				Position: "A1",
+				Title:    "A Sea Apart",
+				Duration: "5:08",
+			},
+			{
+				Position: "A2",
+				Title:    "Dutchmaster",
+				Duration: "4:21",
+			},
+			{
+				Position: "B1",
+				Title:    "Inner City Lullaby",
+				Duration: "4:22",
+			},
+			{
+				Position: "B2",
+				Title:    "Yeah Kid!",
+				Duration: "4:46",
+			},
+		},
+		Identifiers: []model.Identifier{
+			{
+				Description: "Side A Runout Etching",
+				Type:        "Matrix / Runout",
+				Value:       "MPO SK026-A -J.T.S.-",
+			},
+			{
+				Description: "Side B Runout Etching",
+				Type:        "Matrix / Runout",
+				Value:       "MPO SK026-B -J.T.S.-",
+			},
+		},
+		Videos: []model.Video{
+			{
+				Duration:    "310",
+				Embed:       "true",
+				Src:         "https://www.youtube.com/watch?v=MIgQNVhYILA",
+				Title:       "Mr. James Barth & A.D. - A Sea Apart",
+				Description: "Mr. James Barth & A.D. - A Sea Apart",
+			},
+			{
+				Duration:    "265",
+				Embed:       "true",
+				Src:         "https://www.youtube.com/watch?v=LgLchSRehhc",
+				Title:       "Mr. James Barth & A.D. - Dutchmaster",
+				Description: "Mr. James Barth & A.D. - Dutchmaster",
+			},
+			{
+				Duration:    "260",
+				Embed:       "true",
+				Src:         "https://www.youtube.com/watch?v=iaqHaULlqqg",
+				Title:       "Mr. James Barth & A.D. - Inner City Lullaby",
+				Description: "Mr. James Barth & A.D. - Inner City Lullaby",
+			},
+			{
+				Duration:    "290",
+				Embed:       "true",
+				Src:         "https://www.youtube.com/watch?v=x_Os7b-iWKs",
+				Title:       "Mr. James Barth & A.D. - Yeah Kid!",
+				Description: "Mr. James Barth & A.D. - Yeah Kid!",
+			},
+		},
+		Labels: []model.ReleaseLabel{
+			{
+				ID:       "5",
+				Name:     "Svek",
+				Category: "SK 026",
+			},
+			{
+				ID:       "5",
+				Name:     "Svek",
+				Category: "SK026",
+			},
+		},
+		Companies: []model.Company{
+			{
+				ID:             "266169",
+				Name:           "JTS Studios",
+				EntityType:     "29",
+				EntityTypeName: "Mastered At",
+				ResourceURL:    "https://api.discogs.com/labels/266169",
+			},
+			{
+				ID:             "56025",
+				Name:           "MPO",
+				EntityType:     "17",
+				EntityTypeName: "Pressed By",
+				ResourceURL:    "https://api.discogs.com/labels/56025",
+			},
+		},
+	}
+
+	d := NewXMLDecoder(strings.NewReader(releases), nil)
+	num, r, err := d.Releases()
+	if err != nil && err != io.EOF {
+		t.Error(err)
+	}
+
+	if num != 2 {
+		t.Error("wrong number of decoded releases")
+	}
+
+	if !reflect.DeepEqual(r[1], expectedRelease) {
+		t.Error("expected release differs from parsed release")
 	}
 }
 
