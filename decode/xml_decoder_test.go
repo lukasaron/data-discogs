@@ -435,8 +435,8 @@ func TestXMLDecoder_Labels_DataCheck_First(t *testing.T) {
 	_, l, _ := d.Labels()
 	label := l[0]
 
-	if label.Id != "1" {
-		t.Errorf("wrong label id, expected: %s, got: %s", "1", label.Id)
+	if label.ID != "1" {
+		t.Errorf("wrong label id, expected: %s, got: %s", "1", label.ID)
 	}
 
 	if label.Name != "Planet E" {
@@ -521,36 +521,36 @@ func TestXMLDecoder_Labels_DataCheck_First(t *testing.T) {
 		t.FailNow()
 	}
 
-	if label.SubLabels[0].Id != "86537" || label.SubLabels[0].Name != "Antidote (4)" {
-		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "86537", "Antidote (4)", label.SubLabels[0].Id, label.SubLabels[0].Name)
+	if label.SubLabels[0].ID != "86537" || label.SubLabels[0].Name != "Antidote (4)" {
+		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "86537", "Antidote (4)", label.SubLabels[0].ID, label.SubLabels[0].Name)
 	}
 
-	if label.SubLabels[1].Id != "41841" || label.SubLabels[1].Name != "Community Projects" {
-		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "41841", "Community Projects", label.SubLabels[1].Id, label.SubLabels[1].Name)
+	if label.SubLabels[1].ID != "41841" || label.SubLabels[1].Name != "Community Projects" {
+		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "41841", "Community Projects", label.SubLabels[1].ID, label.SubLabels[1].Name)
 	}
 
-	if label.SubLabels[2].Id != "153760" || label.SubLabels[2].Name != "Guilty Pleasures" {
-		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "153760", "Guilty Pleasures", label.SubLabels[2].Id, label.SubLabels[2].Name)
+	if label.SubLabels[2].ID != "153760" || label.SubLabels[2].Name != "Guilty Pleasures" {
+		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "153760", "Guilty Pleasures", label.SubLabels[2].ID, label.SubLabels[2].Name)
 	}
 
-	if label.SubLabels[3].Id != "31405" || label.SubLabels[3].Name != "I Ner Zon Sounds" {
-		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "31405", "I Ner Zon Sounds", label.SubLabels[3].Id, label.SubLabels[3].Name)
+	if label.SubLabels[3].ID != "31405" || label.SubLabels[3].Name != "I Ner Zon Sounds" {
+		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "31405", "I Ner Zon Sounds", label.SubLabels[3].ID, label.SubLabels[3].Name)
 	}
 
-	if label.SubLabels[4].Id != "277579" || label.SubLabels[4].Name != "Planet E Communications" {
-		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "277579", "Planet E Communications", label.SubLabels[4].Id, label.SubLabels[4].Name)
+	if label.SubLabels[4].ID != "277579" || label.SubLabels[4].Name != "Planet E Communications" {
+		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "277579", "Planet E Communications", label.SubLabels[4].ID, label.SubLabels[4].Name)
 	}
 
-	if label.SubLabels[5].Id != "294738" || label.SubLabels[5].Name != "Planet E Communications, Inc." {
-		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "294738", "Planet E Communications, Inc.", label.SubLabels[5].Id, label.SubLabels[5].Name)
+	if label.SubLabels[5].ID != "294738" || label.SubLabels[5].Name != "Planet E Communications, Inc." {
+		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "294738", "Planet E Communications, Inc.", label.SubLabels[5].ID, label.SubLabels[5].Name)
 	}
 
-	if label.SubLabels[6].Id != "1560615" || label.SubLabels[6].Name != "Planet E Productions" {
-		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "1560615", "Planet E Productions", label.SubLabels[6].Id, label.SubLabels[6].Name)
+	if label.SubLabels[6].ID != "1560615" || label.SubLabels[6].Name != "Planet E Productions" {
+		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "1560615", "Planet E Productions", label.SubLabels[6].ID, label.SubLabels[6].Name)
 	}
 
-	if label.SubLabels[7].Id != "488315" || label.SubLabels[7].Name != "TWPENTY" {
-		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "488315", "TWPENTY", label.SubLabels[7].Id, label.SubLabels[7].Name)
+	if label.SubLabels[7].ID != "488315" || label.SubLabels[7].Name != "TWPENTY" {
+		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "488315", "TWPENTY", label.SubLabels[7].ID, label.SubLabels[7].Name)
 	}
 }
 
