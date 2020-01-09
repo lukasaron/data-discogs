@@ -45,13 +45,6 @@ func NewDBWriter(db *sql.DB, options *Options) Writer {
 	}
 }
 
-// Reset function removes the state error. The reason to have this feature is when a user want's to try recover from
-// previous mistake/error.
-func (db DBWriter) Reset() error {
-	db.err = nil
-	return nil
-}
-
 // Close function shutdowns opened database connection
 func (db DBWriter) Close() error {
 	return db.db.Close()

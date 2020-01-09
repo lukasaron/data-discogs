@@ -215,13 +215,6 @@ func (s SQLWriter) WriteReleases(releases []model.Release) error {
 	return s.err
 }
 
-// Reset function removes the inner state error and also reset the inner buffer.
-func (s SQLWriter) Reset() error {
-	s.err = nil
-	s.clean()
-	return nil
-}
-
 // Close function has no behavior implemented.
 func (s SQLWriter) Close() error {
 	return nil

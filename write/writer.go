@@ -33,7 +33,6 @@ type Writer interface {
 	WriteRelease(release model.Release) error
 	WriteReleases(releases []model.Release) error
 	Options() Options
-	Reset() error
 	Close() error
 }
 

@@ -47,13 +47,6 @@ func NewJSONWriter(output io.Writer, options *Options) Writer {
 	}
 }
 
-// Reset function removes the inner state error and also reset the inner buffer.
-func (j *JSONWriter) Reset() error {
-	j.clean()
-	j.err = nil
-	return nil
-}
-
 // Close function does nothing here.
 func (j *JSONWriter) Close() error {
 	return nil
@@ -223,11 +216,11 @@ func (j *JSONWriter) marshalAndWrite(d interface{}) {
 		return
 	}
 
-	_, j.err = j.w.Write(b)
+	_, j.err = j.b.Write(b)
 }
 
 func (j *JSONWriter) writeDelimiter() {
-	if j.err == nil && j.b.Len() > 0 {
+	if j.err == nil && j.b.Len() > 1 {
 		_, j.err = j.b.WriteString(",")
 	}
 }
