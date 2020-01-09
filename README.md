@@ -9,10 +9,12 @@ directly into SQL database. For this purpose three different writers were create
 
 The intention of using this parser is a library, which means there is not an executable part provided. The project has no other dependencies than the Golang language itself. 
 
+## Writers
+
 There are three existing writers supported by default: **JSON**, **SQL** and **DB**. 
 More writers can be created by implementing the `writer` interface
 
-#### JSON Writer
+### JSON Writer
 As the name prompts this writer transforms input XML into JSON format. This JSON writer can be used as a solution that converts data into any NoSQL database.
 
 #### SQL Writer
@@ -25,3 +27,68 @@ Before using this writer all required data tables need to be created. For that p
 You can also set up indexes on any column you want, to facilitate this process there is also a script for that `sql_scripts/indexes.sql`. 
 
 To speed up a data transformation I would rather recommend creating indexes after the whole processing is completed.
+
+### Examples of usage
+
+Basically, decoding of artists without using a writer can be done as easy like this: 
+```go
+package main
+ 
+import (
+    "fmt"
+    "github.com/lukasaron/data-discogs"
+    "log"
+    "os"
+)
+
+func main() {
+    f, err := os.Open("./data_samples/artists.xml")
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer f.Close()
+
+    d := discogs.NewXMLDecoder(f, nil)
+    // decodes 10 artists by default, Block ItemSize can be changed via Options
+    num, artists, err := d.Artists()
+    fmt.Println(num, err, artists)
+}
+```
+The need of saving the result into SQL insert statements solves the second example: 
+```go
+package main
+
+import (
+    "fmt"
+    "github.com/lukasaron/data-discogs"
+    "github.com/lukasaron/data-discogs/write"
+    "log"
+    "os"
+)
+
+func main() {
+    f, err := os.Open("./data_samples/artists.xml")
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer f.Close()
+
+    d := discogs.NewXMLDecoder(f,
+        &discogs.Options{
+            FileType: discogs.Artists,
+            Block: discogs.Block{
+            ItemSize: 20, // number of items processed at once
+        },
+    })
+
+    o, _ := os.Create("./data_samples/artists.sql")
+    defer o.Close()
+
+    // for instance the SQL writer
+    w := write.NewSQLWriter(o, nil)
+    defer w.Close()
+
+    err = d.Decode(w)
+    fmt.Println(err)
+}
+```
