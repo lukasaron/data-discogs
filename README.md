@@ -30,7 +30,7 @@ To speed up a data transformation I would rather recommend creating indexes afte
 
 ### Examples of usage
 
-Basically, decoding of artists without using a writer can be done as easy like this: 
+Decoding of artists without using a writer can be done as easy like this: 
 ```go
 package main
  
@@ -54,7 +54,8 @@ func main() {
     fmt.Println(num, err, artists)
 }
 ```
-The need of saving the result into SQL insert statements solves the second example: 
+For the need of saving a result into output, there are writers. For instance, the SQL writer creates insert statements
+and saves them into the output.
 ```go
 package main
 
