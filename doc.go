@@ -35,6 +35,9 @@
 // To speed up a data transformation I would rather recommend creating indexes after the whole processing is completed.
 //
 // Example of basic usage:
+//
+//		package main
+//
 //		import (
 //			"fmt"
 //			"github.com/lukasaron/data-discogs"
@@ -56,6 +59,8 @@
 //		}
 //
 // Example with SQL writer
+//
+//		package main
 //
 //		import (
 //			"fmt"
