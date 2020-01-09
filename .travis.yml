@@ -13,7 +13,5 @@ branches:
     - dev
     - master
 
-# Run lint first and then tests
 script:
-  - golint ./...
   - go test -v -race ./...
