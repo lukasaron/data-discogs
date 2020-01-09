@@ -4,11 +4,7 @@
 *.dll
 *.so
 *.dylib
-
 data_discogs
-_main.go
-main
-main.go
 
 # Test binary, build with `go test -c`
 *.test
@@ -17,7 +13,6 @@ main.go
 *.out
 
 # folders
-dbdata
 example
 
 # IntelliJ IDEA project
