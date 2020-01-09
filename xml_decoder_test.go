@@ -117,7 +117,7 @@ func TestXMLDecoder_SetOptions(t *testing.T) {
 			Limit:    -1,
 			Skip:     -1,
 		},
-		FileType: Artists,
+		FileType: Releases,
 	})
 
 	opt := d.Options()
@@ -125,8 +125,8 @@ func TestXMLDecoder_SetOptions(t *testing.T) {
 		t.Error("there should be Needs Vote quality level")
 	}
 
-	if opt.FileType != Artists {
-		t.Error("there should be Artists file type")
+	if opt.FileType != Releases {
+		t.Error("there should be releases file type")
 	}
 
 	if opt.Block.ItemSize != defaultBlockSize {
@@ -190,10 +190,18 @@ func TestXMLDecoder_Artists(t *testing.T) {
 	}
 }
 
-func TestXMLDecoder_Artists_DataCheck_First(t *testing.T) {
+func TestXMLDecoder_Artists_First(t *testing.T) {
 	d := NewXMLDecoder(strings.NewReader(artists), nil)
 
-	_, a, _ := d.Artists()
+	num, a, err := d.Artists()
+	if err != nil && err != io.EOF {
+		t.Error(err)
+	}
+
+	if num != 2 {
+		t.Error("wrong number of parsed artists")
+	}
+
 	artist := a[0]
 
 	if artist.ID != "1" {
@@ -216,7 +224,7 @@ func TestXMLDecoder_Artists_DataCheck_First(t *testing.T) {
 		t.Errorf("wrong number of urls, expected: %d, got: %d", 1, len(artist.Urls))
 	}
 
-	if len(artist.Urls) == 1 && artist.Urls[0] != "https://en.wikipedia.org/wiki/Jesper_Dahlbäck" {
+	if artist.Urls[0] != "https://en.wikipedia.org/wiki/Jesper_Dahlbäck" {
 		t.Errorf("wrong url, expected: %s, got: %s", "https://en.wikipedia.org/wiki/Jesper_Dahlbäck", artist.Urls[0])
 	}
 
@@ -224,11 +232,11 @@ func TestXMLDecoder_Artists_DataCheck_First(t *testing.T) {
 		t.Errorf("wrong number of name variations, expected: %d, got: %d", 2, len(artist.NameVariations))
 	}
 
-	if len(artist.NameVariations) == 2 && artist.NameVariations[0] != "Persuader" {
+	if artist.NameVariations[0] != "Persuader" {
 		t.Errorf("wrong name variation, expected: %s, got: %s", "Persuader", artist.NameVariations[0])
 	}
 
-	if len(artist.NameVariations) == 2 && artist.NameVariations[1] != "The Presuader" {
+	if artist.NameVariations[1] != "The Presuader" {
 		t.Errorf("wrong name variation, expected: %s, got: %s", "The Presuader", artist.NameVariations[1])
 	}
 
@@ -240,43 +248,43 @@ func TestXMLDecoder_Artists_DataCheck_First(t *testing.T) {
 		t.Errorf("wrong number of aliases, expected: %d, got: %d", 7, len(artist.Aliases))
 	}
 
-	if len(artist.Aliases) == 7 && (artist.Aliases[0].ID != "239" || artist.Aliases[0].Name != "Jesper Dahlbäck") {
+	if artist.Aliases[0].ID != "239" || artist.Aliases[0].Name != "Jesper Dahlbäck" {
 		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
 			"239", artist.Aliases[0].ID,
 			"Jesper Dahlbäck", artist.Aliases[0].Name)
 	}
 
-	if len(artist.Aliases) == 7 && (artist.Aliases[1].ID != "16055" || artist.Aliases[1].Name != "Groove Machine") {
+	if artist.Aliases[1].ID != "16055" || artist.Aliases[1].Name != "Groove Machine" {
 		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
 			"16055", artist.Aliases[1].ID,
 			"Groove Machine", artist.Aliases[1].Name)
 	}
 
-	if len(artist.Aliases) == 7 && (artist.Aliases[2].ID != "19541" || artist.Aliases[2].Name != "Dick Track") {
+	if artist.Aliases[2].ID != "19541" || artist.Aliases[2].Name != "Dick Track" {
 		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
 			"19541", artist.Aliases[2].ID,
 			"Dick Track", artist.Aliases[2].Name)
 	}
 
-	if len(artist.Aliases) == 7 && (artist.Aliases[3].ID != "25227" || artist.Aliases[3].Name != "Lenk") {
+	if artist.Aliases[3].ID != "25227" || artist.Aliases[3].Name != "Lenk" {
 		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
 			"25227", artist.Aliases[3].ID,
 			"Lenk", artist.Aliases[3].Name)
 	}
 
-	if len(artist.Aliases) == 7 && (artist.Aliases[4].ID != "196957" || artist.Aliases[4].Name != "Janne Me' Amazonen") {
+	if artist.Aliases[4].ID != "196957" || artist.Aliases[4].Name != "Janne Me' Amazonen" {
 		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
 			"196957", artist.Aliases[4].ID,
 			"Janne Me' Amazonen", artist.Aliases[4].Name)
 	}
 
-	if len(artist.Aliases) == 7 && (artist.Aliases[5].ID != "278760" || artist.Aliases[5].Name != "Faxid") {
+	if artist.Aliases[5].ID != "278760" || artist.Aliases[5].Name != "Faxid" {
 		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
 			"278760", artist.Aliases[5].ID,
 			"Faxid", artist.Aliases[5].Name)
 	}
 
-	if len(artist.Aliases) == 7 && (artist.Aliases[6].ID != "439150" || artist.Aliases[6].Name != "The Pinguin Man") {
+	if artist.Aliases[6].ID != "439150" || artist.Aliases[6].Name != "The Pinguin Man" {
 		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
 			"439150", artist.Aliases[6].ID,
 			"The Pinguin Man", artist.Aliases[6].Name)
@@ -284,15 +292,22 @@ func TestXMLDecoder_Artists_DataCheck_First(t *testing.T) {
 
 }
 
-func TestXMLDecoder_Artists_DataCheck_Second(t *testing.T) {
+func TestXMLDecoder_Artists_Second(t *testing.T) {
 	d := NewXMLDecoder(strings.NewReader(artists), nil)
 
-	_, a, _ := d.Artists()
+	num, a, err := d.Artists()
+	if err != nil && err != io.EOF {
+		t.Error(err)
+	}
+
+	if num != 2 {
+		t.Error("wrong number of parsed artists")
+	}
+
 	artist := a[1]
 
 	if artist.ID != "2" {
 		t.Errorf("wrong artist id, expected: %s, got: %s", "2", artist.ID)
-		t.FailNow()
 	}
 
 	if artist.Name != "Mr. James Barth & A.D." {
@@ -309,53 +324,55 @@ func TestXMLDecoder_Artists_DataCheck_Second(t *testing.T) {
 
 	if len(artist.NameVariations) != 4 {
 		t.Errorf("wrong number of name variations, expected: %d, got: %d", 4, len(artist.NameVariations))
+
 	}
 
-	if len(artist.NameVariations) == 4 && artist.NameVariations[0] != "Mr Barth & A.D." {
+	if artist.NameVariations[0] != "Mr Barth & A.D." {
 		t.Errorf("wrong name variation, expected: %s, got: %s", "Mr Barth & A.D.", artist.NameVariations[0])
 	}
 
-	if len(artist.NameVariations) == 4 && artist.NameVariations[1] != "MR JAMES BARTH & A. D." {
+	if artist.NameVariations[1] != "MR JAMES BARTH & A. D." {
 		t.Errorf("wrong name variation, expected: %s, got: %s", "MR JAMES BARTH & A. D.", artist.NameVariations[1])
 	}
 
-	if len(artist.NameVariations) == 4 && artist.NameVariations[2] != "Mr. Barth & A.D." {
+	if artist.NameVariations[2] != "Mr. Barth & A.D." {
 		t.Errorf("wrong name variation, expected: %s, got: %s", "Mr. Barth & A.D.", artist.NameVariations[2])
 	}
 
-	if len(artist.NameVariations) == 4 && artist.NameVariations[3] != "Mr. James Barth & A. D." {
+	if artist.NameVariations[3] != "Mr. James Barth & A. D." {
 		t.Errorf("wrong name variation, expected: %s, got: %s", "Mr. James Barth & A. D.", artist.NameVariations[3])
 	}
 
 	if len(artist.Aliases) != 5 {
 		t.Errorf("wrong number of aliases, expected: %d, got: %d", 5, len(artist.Aliases))
+
 	}
 
-	if len(artist.Aliases) == 5 && (artist.Aliases[0].ID != "2470" || artist.Aliases[0].Name != "Puente Latino") {
+	if artist.Aliases[0].ID != "2470" || artist.Aliases[0].Name != "Puente Latino" {
 		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
 			"2470", artist.Aliases[0].ID,
 			"Puente Latino", artist.Aliases[0].Name)
 	}
 
-	if len(artist.Aliases) == 5 && (artist.Aliases[1].ID != "19536" || artist.Aliases[1].Name != "Yakari & Delano") {
+	if artist.Aliases[1].ID != "19536" || artist.Aliases[1].Name != "Yakari & Delano" {
 		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
 			"19536", artist.Aliases[1].ID,
 			"Yakari & Delano", artist.Aliases[1].Name)
 	}
 
-	if len(artist.Aliases) == 5 && (artist.Aliases[2].ID != "103709" || artist.Aliases[2].Name != "Crushed Insect & The Sick Puppy") {
+	if artist.Aliases[2].ID != "103709" || artist.Aliases[2].Name != "Crushed Insect & The Sick Puppy" {
 		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
 			"103709", artist.Aliases[2].ID,
 			"Crushed Insect & The Sick Puppy", artist.Aliases[2].Name)
 	}
 
-	if len(artist.Aliases) == 5 && (artist.Aliases[3].ID != "384581" || artist.Aliases[3].Name != "ADCL") {
+	if artist.Aliases[3].ID != "384581" || artist.Aliases[3].Name != "ADCL" {
 		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
 			"384581", artist.Aliases[3].ID,
 			"ADCL", artist.Aliases[3].Name)
 	}
 
-	if len(artist.Aliases) == 5 && (artist.Aliases[4].ID != "1779857" || artist.Aliases[4].Name != "Alexi Delano & Cari Lekebusch") {
+	if artist.Aliases[4].ID != "1779857" || artist.Aliases[4].Name != "Alexi Delano & Cari Lekebusch" {
 		t.Errorf("wrong alias, expected id: %s, got: %s, expected name: %s, got: %s",
 			"1779857", artist.Aliases[4].ID,
 			"Alexi Delano & Cari Lekebusch", artist.Aliases[4].Name)
@@ -363,15 +380,16 @@ func TestXMLDecoder_Artists_DataCheck_Second(t *testing.T) {
 
 	if len(artist.Members) != 2 {
 		t.Errorf("wrong number of members, expected: %d, got: %d", 5, len(artist.Members))
+
 	}
 
-	if len(artist.Members) == 2 && (artist.Members[0].ID != "26" || artist.Members[0].Name != "Alexi Delano") {
+	if artist.Members[0].ID != "26" || artist.Members[0].Name != "Alexi Delano" {
 		t.Errorf("wrong member, expected id: %s, got: %s, expected name: %s, got: %s",
 			"26", artist.Members[0].ID,
 			"Alexi Delano", artist.Members[0].Name)
 	}
 
-	if len(artist.Members) == 2 && (artist.Members[1].ID != "27" || artist.Members[1].Name != "Cari Lekebusch") {
+	if artist.Members[1].ID != "27" || artist.Members[1].Name != "Cari Lekebusch" {
 		t.Errorf("wrong member, expected id: %s, got: %s, expected name: %s, got: %s",
 			"27", artist.Members[1].ID,
 			"Cari Lekebusch", artist.Members[1].Name)
@@ -386,21 +404,23 @@ func TestXMLDecoder_Artists_Block_ItemSize(t *testing.T) {
 	})
 
 	num, a, err := d.Artists()
-	if num != 1 || len(a) != 1 {
-		t.Error("there should be 1 artist parsed")
-	}
-
 	if err != nil {
 		t.Errorf("no error expected when there are still some data to process, got %v", err)
+
+	}
+
+	if num != 1 || len(a) != 1 {
+		t.Error("there should be 1 artist parsed")
 	}
 
 	num, a, err = d.Artists()
-	if num != 1 || len(a) != 1 {
-		t.Error("there should be 1 artist parsed")
-	}
-
 	if err != nil {
 		t.Errorf("no error expected when there are still some data to process, got %v", err)
+
+	}
+
+	if num != 1 || len(a) != 1 {
+		t.Error("there should be 1 artist parsed")
 	}
 
 	num, a, err = d.Artists()
@@ -430,9 +450,18 @@ func TestXMLDecoder_Labels(t *testing.T) {
 	}
 }
 
-func TestXMLDecoder_Labels_DataCheck_First(t *testing.T) {
+func TestXMLDecoder_Labels_First(t *testing.T) {
 	d := NewXMLDecoder(strings.NewReader(labels), nil)
-	_, l, _ := d.Labels()
+	num, l, err := d.Labels()
+	if err != nil && err != io.EOF {
+		t.Error(err)
+
+	}
+
+	if num != 2 {
+		t.Error("wrong number of parsed labels")
+	}
+
 	label := l[0]
 
 	if label.ID != "1" {
@@ -461,7 +490,6 @@ func TestXMLDecoder_Labels_DataCheck_First(t *testing.T) {
 
 	if len(label.Urls) != 13 {
 		t.Error("wrong number of urls")
-		t.FailNow()
 	}
 
 	if label.Urls[0] != "http://planet-e.net" {
@@ -518,45 +546,95 @@ func TestXMLDecoder_Labels_DataCheck_First(t *testing.T) {
 
 	if len(label.SubLabels) != 8 {
 		t.Error("wrong number of sub labels")
-		t.FailNow()
 	}
 
 	if label.SubLabels[0].ID != "86537" || label.SubLabels[0].Name != "Antidote (4)" {
-		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "86537", "Antidote (4)", label.SubLabels[0].ID, label.SubLabels[0].Name)
+		t.Error("wrong sublabel 0")
 	}
 
 	if label.SubLabels[1].ID != "41841" || label.SubLabels[1].Name != "Community Projects" {
-		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "41841", "Community Projects", label.SubLabels[1].ID, label.SubLabels[1].Name)
+		t.Error("wrong sublabel 1")
 	}
 
 	if label.SubLabels[2].ID != "153760" || label.SubLabels[2].Name != "Guilty Pleasures" {
-		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "153760", "Guilty Pleasures", label.SubLabels[2].ID, label.SubLabels[2].Name)
+		t.Error("wrong sublabel 2")
 	}
 
 	if label.SubLabels[3].ID != "31405" || label.SubLabels[3].Name != "I Ner Zon Sounds" {
-		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "31405", "I Ner Zon Sounds", label.SubLabels[3].ID, label.SubLabels[3].Name)
+		t.Error("wrong sublabel 3")
 	}
 
 	if label.SubLabels[4].ID != "277579" || label.SubLabels[4].Name != "Planet E Communications" {
-		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "277579", "Planet E Communications", label.SubLabels[4].ID, label.SubLabels[4].Name)
+		t.Error("wrong sublabel 4")
 	}
 
 	if label.SubLabels[5].ID != "294738" || label.SubLabels[5].Name != "Planet E Communications, Inc." {
-		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "294738", "Planet E Communications, Inc.", label.SubLabels[5].ID, label.SubLabels[5].Name)
+		t.Error("wrong sublabel 5")
 	}
 
 	if label.SubLabels[6].ID != "1560615" || label.SubLabels[6].Name != "Planet E Productions" {
-		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "1560615", "Planet E Productions", label.SubLabels[6].ID, label.SubLabels[6].Name)
+		t.Error("wrong sublabel 6")
 	}
 
 	if label.SubLabels[7].ID != "488315" || label.SubLabels[7].Name != "TWPENTY" {
-		t.Errorf("wrong sublabel, expected ID: %s, Name: %s, got ID: %s, Name: %s", "488315", "TWPENTY", label.SubLabels[7].ID, label.SubLabels[7].Name)
+		t.Error("wrong sublabel 7")
+	}
+}
+
+func TestXMLDecoder_Labels_Second(t *testing.T) {
+	d := NewXMLDecoder(strings.NewReader(labels), nil)
+	num, l, err := d.Labels()
+	if err != nil && err != io.EOF {
+		t.Error(err)
+
+	}
+
+	if num != 2 {
+		t.Error("wrong number of parsed labels")
+	}
+
+	label := l[1]
+
+	if label.ID != "2" {
+		t.Errorf("wrong label id, expected: %s, got: %s", "2", label.ID)
+	}
+
+	if label.Name != "Earthtones Recordings" {
+		t.Errorf("wrong label name, expected: %s, got: %s", "Earthtones Recordings", label.Name)
+	}
+
+	if label.ContactInfo != "Seasons Recordings\r\n2236 Pacific Avenue\r\nSuite D\r\nCosta Mesa, CA  92627\r\n\r\ntel: +1.949.574.5255\r\nfax: +1.949.574.0255\r\n\r\nemail: jthinnes@seasonsrecordings.com\r\n" {
+		t.Error("wrong contact info")
+	}
+
+	if label.Profile != "California deep house label founded by [a=Jamie Thinnes]. Now defunct and continued as [l=Seasons Recordings]." {
+		t.Error("wrong profile")
+	}
+
+	if label.DataQuality != "Correct" {
+		t.Errorf("wrong data quality, expected: %s, got: %s", "Correct", label.DataQuality)
+	}
+
+	if len(label.Urls) != 1 {
+		t.Error("wrong number of urls")
+	}
+
+	if label.Urls[0] != "http://www.seasonsrecordings.com/" {
+		t.Errorf("wrong url, expected: %s, got: %s", "http://www.seasonsrecordings.com/", label.Urls[0])
+	}
+
+	if len(label.Images) != 0 {
+		t.Errorf("wrong number of images, expected: %d, got: %d", 0, len(label.Images))
+	}
+
+	if len(label.SubLabels) != 0 {
+		t.Errorf("wrong number of sub labels expected: %d, got: %d", 0, len(label.SubLabels))
+
 	}
 }
 
 func TestXMLDecoder_Labels_Block_ItemSize(t *testing.T) {
 	d := NewXMLDecoder(strings.NewReader(labels), &Options{
-		FileType: Labels,
 		Block: Block{
 			ItemSize: 1,
 		},
@@ -591,9 +669,7 @@ func TestXMLDecoder_Labels_Block_ItemSize(t *testing.T) {
 }
 
 func TestXMLDecoder_Masters(t *testing.T) {
-	d := NewXMLDecoder(strings.NewReader(masters), &Options{
-		FileType: Masters,
-	})
+	d := NewXMLDecoder(strings.NewReader(masters), nil)
 
 	num, m, err := d.Masters()
 	if num != 2 || len(m) != 2 {
@@ -611,7 +687,6 @@ func TestXMLDecoder_Masters(t *testing.T) {
 
 func TestXMLDecoder_Masters_Block_ItemSize(t *testing.T) {
 	d := NewXMLDecoder(strings.NewReader(masters), &Options{
-		FileType: Masters,
 		Block: Block{
 			ItemSize: 1,
 		},
@@ -645,10 +720,240 @@ func TestXMLDecoder_Masters_Block_ItemSize(t *testing.T) {
 	}
 }
 
+func TestXMLDecoder_Masters_First(t *testing.T) {
+	d := NewXMLDecoder(strings.NewReader(masters), nil)
+	num, m, err := d.Masters()
+	if err != nil && err != io.EOF {
+		t.Error(err)
+	}
+
+	if num != 2 {
+		t.Error("there should be 2 masters decoded")
+	}
+
+	master := m[0]
+	if master.ID != "18500" {
+		t.Errorf("wrong master id, expected: %s, got: %s", "18500", master.ID)
+	}
+
+	if master.MainRelease != "155102" {
+		t.Errorf("wrong main release, expected: %s, got: %s", "155102", master.MainRelease)
+	}
+
+	if len(master.Images) != 1 {
+		t.Error("wrong number of images")
+	}
+
+	if master.Images[0].Height != "588" || master.Images[0].Width != "600" || master.Images[0].Type != "primary" {
+		t.Error("wrong image parameters")
+	}
+
+	if len(master.Artists) != 1 {
+		t.Error("wrong number of release artists")
+	}
+
+	if master.Artists[0].ID != "212070" ||
+		master.Artists[0].Name != "Samuel L Session" ||
+		master.Artists[0].Anv != "Samuel L" {
+		t.Error("wrong release artist")
+	}
+
+	if len(master.Genres) != 1 {
+		t.Error("wrong number of genres")
+	}
+
+	if master.Genres[0] != "Electronic" {
+		t.Errorf("wrong genre, expected: %s, got: %s", "Electronic", master.Genres[0])
+	}
+
+	if len(master.Styles) != 1 {
+		t.Error("wrong number of styles")
+	}
+
+	if master.Styles[0] != "Techno" {
+		t.Errorf("wrong style, expected: %s, got: %s", "Techno", master.Styles[0])
+	}
+
+	if master.Year != "2001" {
+		t.Errorf("wrong year, expected: %s, got: %s", "2001", master.Year)
+	}
+
+	if master.Title != "New Soil" {
+		t.Errorf("wrong title, expected: %s, got: %s", "New Soil", master.Title)
+	}
+
+	if master.DataQuality != "Correct" {
+		t.Errorf("wrong data quality, expected: %s, got: %s", "Correct", master.DataQuality)
+	}
+
+	if len(master.Videos) != 7 {
+		t.Error("wrong number of videos")
+	}
+
+	if master.Videos[0].Title != "Samuel L - Velvet" ||
+		master.Videos[0].Duration != "489" ||
+		master.Videos[0].Embed != "true" ||
+		master.Videos[0].Src != "https://www.youtube.com/watch?v=f05Ai921itM" ||
+		master.Videos[0].Description != "Samuel L - Velvet" {
+		t.Error("wrong video 0")
+	}
+
+	if master.Videos[1].Title != "Samuel L - Danses D'Afrique" ||
+		master.Videos[1].Duration != "348" ||
+		master.Videos[1].Embed != "true" ||
+		master.Videos[1].Src != "https://www.youtube.com/watch?v=v23rSPG_StA" ||
+		master.Videos[1].Description != "Samuel L - Danses D'Afrique" {
+		t.Error("wrong video 1")
+	}
+
+	if master.Videos[2].Title != "Samuel L - Body N' Soul" ||
+		master.Videos[2].Duration != "288" ||
+		master.Videos[2].Embed != "true" ||
+		master.Videos[2].Src != "https://www.youtube.com/watch?v=tHo82ha6p40" ||
+		master.Videos[2].Description != "Samuel L - Body N' Soul" {
+		t.Error("wrong video 2")
+	}
+
+	if master.Videos[3].Title != "Samuel L - Into The Groove" ||
+		master.Videos[3].Duration != "331" ||
+		master.Videos[3].Embed != "true" ||
+		master.Videos[3].Src != "https://www.youtube.com/watch?v=KDcqzHca5dk" ||
+		master.Videos[3].Description != "Samuel L - Into The Groove" {
+		t.Error("wrong video 3")
+	}
+
+	if master.Videos[4].Title != "Samuel L - Soul Syndrome" ||
+		master.Videos[4].Duration != "334" ||
+		master.Videos[4].Embed != "true" ||
+		master.Videos[4].Src != "https://www.youtube.com/watch?v=3DIYjJFl8Dk" ||
+		master.Videos[4].Description != "Samuel L - Soul Syndrome" {
+		t.Error("wrong video 4")
+	}
+
+	if master.Videos[5].Title != "Samuel L - Lush" ||
+		master.Videos[5].Duration != "325" ||
+		master.Videos[5].Embed != "true" ||
+		master.Videos[5].Src != "https://www.youtube.com/watch?v=_o8yZMPqvNg" ||
+		master.Videos[5].Description != "Samuel L - Lush" {
+		t.Error("wrong video 5")
+	}
+
+	if master.Videos[6].Title != "Samuel L - Velvet ( Direct Me )" ||
+		master.Videos[6].Duration != "346" ||
+		master.Videos[6].Embed != "true" ||
+		master.Videos[6].Src != "https://www.youtube.com/watch?v=JPwwJSc_-30" ||
+		master.Videos[6].Description != "Samuel L - Velvet ( Direct Me )" {
+		t.Error("wrong video 6")
+	}
+}
+
+func TestXMLDecoder_Masters_Second(t *testing.T) {
+	d := NewXMLDecoder(strings.NewReader(masters), nil)
+	num, m, err := d.Masters()
+	if err != nil && err != io.EOF {
+		t.Error(err)
+	}
+
+	if num != 2 {
+		t.Error("there should be 2 masters decoded")
+	}
+
+	master := m[1]
+	if master.ID != "18512" {
+		t.Errorf("wrong master id, expected: %s, got: %s", "18512", master.ID)
+	}
+
+	if master.MainRelease != "33699" {
+		t.Errorf("wrong main release, expected: %s, got: %s", "33699", master.MainRelease)
+	}
+
+	if len(master.Images) != 3 {
+		t.Error("wrong number of images")
+	}
+
+	if master.Images[0].Height != "150" || master.Images[0].Width != "150" || master.Images[0].Type != "primary" {
+		t.Error("wrong image 0 parameters")
+	}
+
+	if master.Images[1].Height != "592" || master.Images[1].Width != "600" || master.Images[1].Type != "secondary" {
+		t.Error("wrong image 1 parameters")
+	}
+
+	if master.Images[2].Height != "592" || master.Images[2].Width != "600" || master.Images[2].Type != "secondary" {
+		t.Error("wrong image 2 parameters")
+	}
+
+	if len(master.Artists) != 1 {
+		t.Error("wrong number of release artists")
+	}
+
+	if master.Artists[0].ID != "212070" || master.Artists[0].Name != "Samuel L Session" {
+		t.Error("wrong release artist")
+	}
+
+	if len(master.Genres) != 1 {
+		t.Error("wrong number of genres")
+	}
+
+	if master.Genres[0] != "Electronic" {
+		t.Errorf("wrong genre, expected: %s, got: %s", "Electronic", master.Genres[0])
+	}
+
+	if len(master.Styles) != 2 {
+		t.Error("wrong number of styles")
+	}
+
+	if master.Styles[0] != "Tribal" {
+		t.Errorf("wrong style, expected: %s, got: %s", "Tribal", master.Styles[0])
+	}
+
+	if master.Styles[1] != "Techno" {
+		t.Errorf("wrong style, expected: %s, got: %s", "Techno", master.Styles[1])
+	}
+
+	if master.Year != "2002" {
+		t.Errorf("wrong year, expected: %s, got: %s", "2001", master.Year)
+	}
+
+	if master.Title != "Psyche EP" {
+		t.Errorf("wrong title, expected: %s, got: %s", "Psyche EP", master.Title)
+	}
+
+	if master.DataQuality != "Correct" {
+		t.Errorf("wrong data quality, expected: %s, got: %s", "Correct", master.DataQuality)
+	}
+
+	if len(master.Videos) != 3 {
+		t.Error("wrong number of videos")
+	}
+
+	if master.Videos[0].Title != "Samuel L. Session - Arrival" ||
+		master.Videos[0].Duration != "118" ||
+		master.Videos[0].Embed != "true" ||
+		master.Videos[0].Src != "https://www.youtube.com/watch?v=QYf4j0Pd2FU" ||
+		master.Videos[0].Description != "Samuel L. Session - Arrival" {
+		t.Error("wrong video 0")
+	}
+
+	if master.Videos[1].Title != "Samuel L. Session - Psyche Part 1" ||
+		master.Videos[1].Duration != "376" ||
+		master.Videos[1].Embed != "true" ||
+		master.Videos[1].Src != "https://www.youtube.com/watch?v=c_AfLqTdncI" ||
+		master.Videos[1].Description != "Samuel L. Session - Psyche Part 1" {
+		t.Error("wrong video 1")
+	}
+
+	if master.Videos[2].Title != "Samuel L. Session - Psyche Part 2" ||
+		master.Videos[2].Duration != "419" ||
+		master.Videos[2].Embed != "true" ||
+		master.Videos[2].Src != "https://www.youtube.com/watch?v=0nxvR8Zl9wY" ||
+		master.Videos[2].Description != "Samuel L. Session - Psyche Part 2" {
+		t.Error("wrong video 2")
+	}
+}
+
 func TestXMLDecoder_Releases(t *testing.T) {
-	d := NewXMLDecoder(strings.NewReader(releases), &Options{
-		FileType: Releases,
-	})
+	d := NewXMLDecoder(strings.NewReader(releases), nil)
 
 	num, r, err := d.Releases()
 	if num != 2 || len(r) != 2 {
@@ -666,7 +971,6 @@ func TestXMLDecoder_Releases(t *testing.T) {
 
 func TestXMLDecoder_Releases_Block_ItemSize(t *testing.T) {
 	d := NewXMLDecoder(strings.NewReader(releases), &Options{
-		FileType: Releases,
 		Block: Block{
 			ItemSize: 1,
 		},
