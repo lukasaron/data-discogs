@@ -2,3 +2,18 @@ language: go
 
 go:
   - 1.13.x
+
+# Only clone the most recent commit.
+git:
+  depth: 1
+
+# perform the CI on limit amount of branches
+branches:
+  only:
+    - dev
+    - master
+
+# Run lint first and then tests
+script:
+  - golint ./...
+  - go test -v -race ./...
