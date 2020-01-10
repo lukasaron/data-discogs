@@ -2,6 +2,7 @@
 
 [![GoDoc](https://godoc.org/github.com/lukasaron/data-discogs?status.svg)](https://godoc.org/github.com/lukasaron/data-discogs)
 [![Build Status](https://travis-ci.com/lukasaron/data-discogs.svg?branch=master)](https://travis-ci.com/lukasaron/data-discogs)
+[![Go Report Card](https://goreportcard.com/badge/github.com/lukasaron/data-discogs)](https://goreportcard.com/report/github.com/lukasaron/data-discogs)
 
 Data Discogs Parser introduces a way to categorize XML data dumps from Discogs: https://data.discogs.com. 
 The library can parse provided XML files from Discogs and then save results into JSON or SQL file and lastly 
