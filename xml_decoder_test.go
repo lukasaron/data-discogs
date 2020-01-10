@@ -412,10 +412,8 @@ func TestXMLDecoder_Labels_First(t *testing.T) {
 				Type:   "secondary",
 			},
 		},
-		ContactInfo: "Planet E Communications\r\nP.O. Box 27218\r\nDetroit, Michigan, MI 48227\r\nUSA\r\n\r\n" +
-			"Phone: +1 313 874 8729\r\nFax: +1 313 874 8732\r\nEmail: info@Planet-e.net",
-		Profile: "[a=Carl Craig]'s classic techno label founded in 1991.\r\n\r\n" +
-			"On at least 1 release, Planet E is listed as publisher.",
+		ContactInfo: "Planet E Communications",
+		Profile:     "[a=Carl Craig]'s classic techno label founded in 1991.",
 		DataQuality: "Correct",
 		Urls: []string{"http://planet-e.net", "http://planetecommunications.bandcamp.com",
 			"http://www.facebook.com/planetedetroit", "http://www.flickr.com/photos/planetedetroit",
@@ -1187,16 +1185,8 @@ var artists = `
 
 var labels = `
 <labels>
-<label><images><image height="24" type="primary" uri="" uri150="" width="132"/><image height="126" type="secondary" uri="" uri150="" width="587"/><image height="196" type="secondary" uri="" uri150="" width="600"/><image height="121" type="secondary" uri="" uri150="" width="275"/><image height="720" type="secondary" uri="" uri150="" width="382"/><image height="398" type="secondary" uri="" uri150="" width="500"/><image height="189" type="secondary" uri="" uri150="" width="600"/></images><id>1</id><name>Planet E</name><contactinfo>Planet E Communications&#13;
-P.O. Box 27218&#13;
-Detroit, Michigan, MI 48227&#13;
-USA&#13;
-&#13;
-Phone: +1 313 874 8729&#13;
-Fax: +1 313 874 8732&#13;
-Email: info@Planet-e.net</contactinfo><profile>[a=Carl Craig]'s classic techno label founded in 1991.&#13;
-&#13;
-On at least 1 release, Planet E is listed as publisher.</profile><data_quality>Correct</data_quality><urls><url>http://planet-e.net</url><url>http://planetecommunications.bandcamp.com</url><url>http://www.facebook.com/planetedetroit</url><url>http://www.flickr.com/photos/planetedetroit</url><url>http://plus.google.com/100841702106447505236</url><url>http://www.instagram.com/carlcraignet</url><url>http://myspace.com/planetecom</url><url>http://myspace.com/planetedetroit</url><url>http://soundcloud.com/planetedetroit</url><url>http://twitter.com/planetedetroit</url><url>http://vimeo.com/user1265384</url><url>http://en.wikipedia.org/wiki/Planet_E_Communications</url><url>http://www.youtube.com/user/planetedetroit</url></urls><sublabels><label id="86537">Antidote (4)</label><label id="41841">Community Projects</label><label id="153760">Guilty Pleasures</label><label id="31405">I Ner Zon Sounds</label><label id="277579">Planet E Communications</label><label id="294738">Planet E Communications, Inc.</label><label id="1560615">Planet E Productions</label><label id="488315">TWPENTY</label></sublabels></label>
+<label><images><image height="24" type="primary" uri="" uri150="" width="132"/><image height="126" type="secondary" uri="" uri150="" width="587"/><image height="196" type="secondary" uri="" uri150="" width="600"/><image height="121" type="secondary" uri="" uri150="" width="275"/><image height="720" type="secondary" uri="" uri150="" width="382"/><image height="398" type="secondary" uri="" uri150="" width="500"/><image height="189" type="secondary" uri="" uri150="" width="600"/></images><id>1</id><name>Planet E</name><contactinfo>Planet E Communications</contactinfo>
+<profile>[a=Carl Craig]'s classic techno label founded in 1991.</profile><data_quality>Correct</data_quality><urls><url>http://planet-e.net</url><url>http://planetecommunications.bandcamp.com</url><url>http://www.facebook.com/planetedetroit</url><url>http://www.flickr.com/photos/planetedetroit</url><url>http://plus.google.com/100841702106447505236</url><url>http://www.instagram.com/carlcraignet</url><url>http://myspace.com/planetecom</url><url>http://myspace.com/planetedetroit</url><url>http://soundcloud.com/planetedetroit</url><url>http://twitter.com/planetedetroit</url><url>http://vimeo.com/user1265384</url><url>http://en.wikipedia.org/wiki/Planet_E_Communications</url><url>http://www.youtube.com/user/planetedetroit</url></urls><sublabels><label id="86537">Antidote (4)</label><label id="41841">Community Projects</label><label id="153760">Guilty Pleasures</label><label id="31405">I Ner Zon Sounds</label><label id="277579">Planet E Communications</label><label id="294738">Planet E Communications, Inc.</label><label id="1560615">Planet E Productions</label><label id="488315">TWPENTY</label></sublabels></label>
 <label><id>2</id><name>Earthtones Recordings</name><contactinfo>Seasons Recordings&#13;
 2236 Pacific Avenue&#13;
 Suite D&#13;
