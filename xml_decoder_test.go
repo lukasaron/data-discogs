@@ -479,10 +479,9 @@ func TestXMLDecoder_Labels_First(t *testing.T) {
 
 func TestXMLDecoder_Labels_Second(t *testing.T) {
 	expectedLabel := model.Label{
-		ID:   "2",
-		Name: "Earthtones Recordings",
-		ContactInfo: "Seasons Recordings\r\n2236 Pacific Avenue\r\nSuite D\r\nCosta Mesa, CA  92627\r\n\r\n" +
-			"tel: +1.949.574.5255\r\nfax: +1.949.574.0255\r\n\r\nemail: jthinnes@seasonsrecordings.com\r\n",
+		ID:          "2",
+		Name:        "Earthtones Recordings",
+		ContactInfo: "Seasons Recordings 2236 Pacific Avenue Suite D",
 		Profile: "California deep house label founded by [a=Jamie Thinnes]. " +
 			"Now defunct and continued as [l=Seasons Recordings].",
 		DataQuality: "Correct",
@@ -1183,40 +1182,495 @@ func TestXMLDecoder_Releases_Second(t *testing.T) {
 
 var artists = `
 <artists>
-<artist><images><image height="450" type="primary" uri="" uri150="" width="600"/><image height="771" type="secondary" uri="" uri150="" width="600"/></images><id>1</id><name>The Persuader</name><realname>Jesper Dahlbäck</realname><profile></profile><data_quality>Needs Vote</data_quality><urls><url>https://en.wikipedia.org/wiki/Jesper_Dahlbäck</url></urls><namevariations><name>Persuader</name><name>The Presuader</name></namevariations><aliases><name id="239">Jesper Dahlbäck</name><name id="16055">Groove Machine</name><name id="19541">Dick Track</name><name id="25227">Lenk</name><name id="196957">Janne Me' Amazonen</name><name id="278760">Faxid</name><name id="439150">The Pinguin Man</name></aliases></artist>
-<artist><id>2</id><name>Mr. James Barth &amp; A.D.</name><realname>Cari Lekebusch &amp; Alexi Delano</realname><profile></profile><data_quality>Correct</data_quality><namevariations><name>Mr Barth &amp; A.D.</name><name>MR JAMES BARTH &amp; A. D.</name><name>Mr. Barth &amp; A.D.</name><name>Mr. James Barth &amp; A. D.</name></namevariations><aliases><name id="2470">Puente Latino</name><name id="19536">Yakari &amp; Delano</name><name id="103709">Crushed Insect &amp; The Sick Puppy</name><name id="384581">ADCL</name><name id="1779857">Alexi Delano &amp; Cari Lekebusch</name></aliases><members><id>26</id><name id="26">Alexi Delano</name><id>27</id><name id="27">Cari Lekebusch</name></members></artist>
+    <artist>
+        <images>
+            <image height="450" type="primary" uri="" uri150="" width="600" />
+            <image height="771" type="secondary" uri="" uri150="" width="600" />
+        </images>
+        <id>1</id>
+        <name>The Persuader</name>
+        <realname>Jesper Dahlbäck</realname>
+        <profile></profile>
+        <data_quality>Needs Vote</data_quality>
+        <urls>
+            <url>https://en.wikipedia.org/wiki/Jesper_Dahlbäck</url>
+        </urls>
+        <namevariations>
+            <name>Persuader</name>
+            <name>The Presuader</name>
+        </namevariations>
+        <aliases>
+            <name id="239">Jesper Dahlbäck</name>
+            <name id="16055">Groove Machine</name>
+            <name id="19541">Dick Track</name>
+            <name id="25227">Lenk</name>
+            <name id="196957">Janne Me' Amazonen</name>
+            <name id="278760">Faxid</name>
+            <name id="439150">The Pinguin Man</name>
+        </aliases>
+    </artist>
+    <artist>
+        <id>2</id>
+        <name>Mr. James Barth &amp; A.D.</name>
+        <realname>Cari Lekebusch &amp; Alexi Delano</realname>
+        <profile></profile>
+        <data_quality>Correct</data_quality>
+        <namevariations>
+            <name>Mr Barth &amp; A.D.</name>
+            <name>MR JAMES BARTH &amp; A. D.</name>
+            <name>Mr. Barth &amp; A.D.</name>
+            <name>Mr. James Barth &amp; A. D.</name>
+        </namevariations>
+        <aliases>
+            <name id="2470">Puente Latino</name>
+            <name id="19536">Yakari &amp; Delano</name>
+            <name id="103709">Crushed Insect &amp; The Sick Puppy</name>
+            <name id="384581">ADCL</name>
+            <name id="1779857">Alexi Delano &amp; Cari Lekebusch</name>
+        </aliases>
+        <members>
+            <id>26</id>
+            <name id="26">Alexi Delano</name>
+            <id>27</id>
+            <name id="27">Cari Lekebusch</name>
+        </members>
+    </artist>
 </artists>`
 
 var labels = `
 <labels>
-<label><images><image height="24" type="primary" uri="" uri150="" width="132"/><image height="126" type="secondary" uri="" uri150="" width="587"/><image height="196" type="secondary" uri="" uri150="" width="600"/><image height="121" type="secondary" uri="" uri150="" width="275"/><image height="720" type="secondary" uri="" uri150="" width="382"/><image height="398" type="secondary" uri="" uri150="" width="500"/><image height="189" type="secondary" uri="" uri150="" width="600"/></images><id>1</id><name>Planet E</name><contactinfo>Planet E Communications</contactinfo>
-<profile>[a=Carl Craig]'s classic techno label founded in 1991.</profile><data_quality>Correct</data_quality><urls><url>http://planet-e.net</url><url>http://planetecommunications.bandcamp.com</url><url>http://www.facebook.com/planetedetroit</url><url>http://www.flickr.com/photos/planetedetroit</url><url>http://plus.google.com/100841702106447505236</url><url>http://www.instagram.com/carlcraignet</url><url>http://myspace.com/planetecom</url><url>http://myspace.com/planetedetroit</url><url>http://soundcloud.com/planetedetroit</url><url>http://twitter.com/planetedetroit</url><url>http://vimeo.com/user1265384</url><url>http://en.wikipedia.org/wiki/Planet_E_Communications</url><url>http://www.youtube.com/user/planetedetroit</url></urls><sublabels><label id="86537">Antidote (4)</label><label id="41841">Community Projects</label><label id="153760">Guilty Pleasures</label><label id="31405">I Ner Zon Sounds</label><label id="277579">Planet E Communications</label><label id="294738">Planet E Communications, Inc.</label><label id="1560615">Planet E Productions</label><label id="488315">TWPENTY</label></sublabels></label>
-<label><id>2</id><name>Earthtones Recordings</name><contactinfo>Seasons Recordings&#13;
-2236 Pacific Avenue&#13;
-Suite D&#13;
-Costa Mesa, CA  92627&#13;
-&#13;
-tel: +1.949.574.5255&#13;
-fax: +1.949.574.0255&#13;
-&#13;
-email: jthinnes@seasonsrecordings.com&#13;
-</contactinfo><profile>California deep house label founded by [a=Jamie Thinnes]. Now defunct and continued as [l=Seasons Recordings].</profile><data_quality>Correct</data_quality><urls><url>http://www.seasonsrecordings.com/</url></urls></label>
+    <label>
+        <images>
+            <image height="24" type="primary" uri="" uri150="" width="132" />
+            <image height="126" type="secondary" uri="" uri150="" width="587" />
+            <image height="196" type="secondary" uri="" uri150="" width="600" />
+            <image height="121" type="secondary" uri="" uri150="" width="275" />
+            <image height="720" type="secondary" uri="" uri150="" width="382" />
+            <image height="398" type="secondary" uri="" uri150="" width="500" />
+            <image height="189" type="secondary" uri="" uri150="" width="600" />
+        </images>
+        <id>1</id>
+        <name>Planet E</name>
+        <contactinfo>Planet E Communications</contactinfo>
+        <profile>[a=Carl Craig]'s classic techno label founded in 1991.</profile>
+        <data_quality>Correct</data_quality>
+        <urls>
+            <url>http://planet-e.net</url>
+            <url>http://planetecommunications.bandcamp.com</url>
+            <url>http://www.facebook.com/planetedetroit</url>
+            <url>http://www.flickr.com/photos/planetedetroit</url>
+            <url>http://plus.google.com/100841702106447505236</url>
+            <url>http://www.instagram.com/carlcraignet</url>
+            <url>http://myspace.com/planetecom</url>
+            <url>http://myspace.com/planetedetroit</url>
+            <url>http://soundcloud.com/planetedetroit</url>
+            <url>http://twitter.com/planetedetroit</url>
+            <url>http://vimeo.com/user1265384</url>
+            <url>http://en.wikipedia.org/wiki/Planet_E_Communications</url>
+            <url>http://www.youtube.com/user/planetedetroit</url>
+        </urls>
+        <sublabels>
+            <label id="86537">Antidote (4)</label>
+            <label id="41841">Community Projects</label>
+            <label id="153760">Guilty Pleasures</label>
+            <label id="31405">I Ner Zon Sounds</label>
+            <label id="277579">Planet E Communications</label>
+            <label id="294738">Planet E Communications, Inc.</label>
+            <label id="1560615">Planet E Productions</label>
+            <label id="488315">TWPENTY</label>
+        </sublabels>
+    </label>
+    <label>
+        <id>2</id>
+        <name>Earthtones Recordings</name>
+        <contactinfo>Seasons Recordings 2236 Pacific Avenue Suite D</contactinfo>
+        <profile>California deep house label founded by [a=Jamie Thinnes]. Now defunct and continued as [l=Seasons Recordings].</profile>
+        <data_quality>Correct</data_quality>
+        <urls>
+            <url>http://www.seasonsrecordings.com/</url>
+        </urls>
+    </label>
 </labels>`
 
 var masters = `
 <masters>
-<master id="18500"><main_release>155102</main_release><images><image height="588" type="primary" uri="" uri150="" width="600"/></images><artists><artist><id>212070</id><name>Samuel L Session</name><anv>Samuel L</anv><join></join><role></role><tracks></tracks></artist></artists><genres><genre>Electronic</genre></genres><styles><style>Techno</style></styles><year>2001</year><title>New Soil</title><data_quality>Correct</data_quality><videos><video duration="489" embed="true" src="https://www.youtube.com/watch?v=f05Ai921itM"><title>Samuel L - Velvet</title><description>Samuel L - Velvet</description></video><video duration="348" embed="true" src="https://www.youtube.com/watch?v=v23rSPG_StA"><title>Samuel L - Danses D'Afrique</title><description>Samuel L - Danses D'Afrique</description></video><video duration="288" embed="true" src="https://www.youtube.com/watch?v=tHo82ha6p40"><title>Samuel L - Body N' Soul</title><description>Samuel L - Body N' Soul</description></video><video duration="331" embed="true" src="https://www.youtube.com/watch?v=KDcqzHca5dk"><title>Samuel L - Into The Groove</title><description>Samuel L - Into The Groove</description></video><video duration="334" embed="true" src="https://www.youtube.com/watch?v=3DIYjJFl8Dk"><title>Samuel L - Soul Syndrome</title><description>Samuel L - Soul Syndrome</description></video><video duration="325" embed="true" src="https://www.youtube.com/watch?v=_o8yZMPqvNg"><title>Samuel L - Lush</title><description>Samuel L - Lush</description></video><video duration="346" embed="true" src="https://www.youtube.com/watch?v=JPwwJSc_-30"><title>Samuel L - Velvet ( Direct Me )</title><description>Samuel L - Velvet ( Direct Me )</description></video></videos></master>
-<master id="18512"><main_release>33699</main_release><images><image height="150" type="primary" uri="" uri150="" width="150"/><image height="592" type="secondary" uri="" uri150="" width="600"/><image height="592" type="secondary" uri="" uri150="" width="600"/></images><artists><artist><id>212070</id><name>Samuel L Session</name><anv></anv><join></join><role></role><tracks></tracks></artist></artists><genres><genre>Electronic</genre></genres><styles><style>Tribal</style><style>Techno</style></styles><year>2002</year><title>Psyche EP</title><data_quality>Correct</data_quality><videos><video duration="118" embed="true" src="https://www.youtube.com/watch?v=QYf4j0Pd2FU"><title>Samuel L. Session - Arrival</title><description>Samuel L. Session - Arrival</description></video><video duration="376" embed="true" src="https://www.youtube.com/watch?v=c_AfLqTdncI"><title>Samuel L. Session - Psyche Part 1</title><description>Samuel L. Session - Psyche Part 1</description></video><video duration="419" embed="true" src="https://www.youtube.com/watch?v=0nxvR8Zl9wY"><title>Samuel L. Session - Psyche Part 2</title><description>Samuel L. Session - Psyche Part 2</description></video></videos></master>
+    <master id="18500">
+        <main_release>155102</main_release>
+        <images>
+            <image height="588" type="primary" uri="" uri150="" width="600" />
+        </images>
+        <artists>
+            <artist>
+                <id>212070</id>
+                <name>Samuel L Session</name>
+                <anv>Samuel L</anv>
+                <join></join>
+                <role></role>
+                <tracks></tracks>
+            </artist>
+        </artists>
+        <genres>
+            <genre>Electronic</genre>
+        </genres>
+        <styles>
+            <style>Techno</style>
+        </styles>
+        <year>2001</year>
+        <title>New Soil</title>
+        <data_quality>Correct</data_quality>
+        <videos>
+            <video duration="489" embed="true" src="https://www.youtube.com/watch?v=f05Ai921itM">
+                <title>Samuel L - Velvet</title>
+                <description>Samuel L - Velvet</description>
+            </video>
+            <video duration="348" embed="true" src="https://www.youtube.com/watch?v=v23rSPG_StA">
+                <title>Samuel L - Danses D'Afrique</title>
+                <description>Samuel L - Danses D'Afrique</description>
+            </video>
+            <video duration="288" embed="true" src="https://www.youtube.com/watch?v=tHo82ha6p40">
+                <title>Samuel L - Body N' Soul</title>
+                <description>Samuel L - Body N' Soul</description>
+            </video>
+            <video duration="331" embed="true" src="https://www.youtube.com/watch?v=KDcqzHca5dk">
+                <title>Samuel L - Into The Groove</title>
+                <description>Samuel L - Into The Groove</description>
+            </video>
+            <video duration="334" embed="true" src="https://www.youtube.com/watch?v=3DIYjJFl8Dk">
+                <title>Samuel L - Soul Syndrome</title>
+                <description>Samuel L - Soul Syndrome</description>
+            </video>
+            <video duration="325" embed="true" src="https://www.youtube.com/watch?v=_o8yZMPqvNg">
+                <title>Samuel L - Lush</title>
+                <description>Samuel L - Lush</description>
+            </video>
+            <video duration="346" embed="true" src="https://www.youtube.com/watch?v=JPwwJSc_-30">
+                <title>Samuel L - Velvet ( Direct Me )</title>
+                <description>Samuel L - Velvet ( Direct Me )</description>
+            </video>
+        </videos>
+    </master>
+    <master id="18512">
+        <main_release>33699</main_release>
+        <images>
+            <image height="150" type="primary" uri="" uri150="" width="150" />
+            <image height="592" type="secondary" uri="" uri150="" width="600" />
+            <image height="592" type="secondary" uri="" uri150="" width="600" />
+        </images>
+        <artists>
+            <artist>
+                <id>212070</id>
+                <name>Samuel L Session</name>
+                <anv></anv>
+                <join></join>
+                <role></role>
+                <tracks></tracks>
+            </artist>
+        </artists>
+        <genres>
+            <genre>Electronic</genre>
+        </genres>
+        <styles>
+            <style>Tribal</style>
+            <style>Techno</style>
+        </styles>
+        <year>2002</year>
+        <title>Psyche EP</title>
+        <data_quality>Correct</data_quality>
+        <videos>
+            <video duration="118" embed="true" src="https://www.youtube.com/watch?v=QYf4j0Pd2FU">
+                <title>Samuel L. Session - Arrival</title>
+                <description>Samuel L. Session - Arrival</description>
+            </video>
+            <video duration="376" embed="true" src="https://www.youtube.com/watch?v=c_AfLqTdncI">
+                <title>Samuel L. Session - Psyche Part 1</title>
+                <description>Samuel L. Session - Psyche Part 1</description>
+            </video>
+            <video duration="419" embed="true" src="https://www.youtube.com/watch?v=0nxvR8Zl9wY">
+                <title>Samuel L. Session - Psyche Part 2</title>
+                <description>Samuel L. Session - Psyche Part 2</description>
+            </video>
+        </videos>
+    </master>
 </masters>`
 
 var releases = `
 <releases>
-<release id="1" status="Accepted"><images><image height="600" type="primary" uri="" uri150="" width="600"/><image height="600" type="secondary" uri="" uri150="" width="600"/><image height="600" type="secondary" uri="" uri150="" width="600"/><image height="600" type="secondary" uri="" uri150="" width="600"/></images><artists><artist><id>1</id><name>The Persuader</name><anv></anv><join></join><role></role><tracks></tracks></artist></artists><title>Stockholm</title><labels><label catno="SK032" id="5" name="Svek"/></labels><extraartists><artist><id>239</id><name>Jesper Dahlbäck</name><anv></anv><join></join><role>Music By [All Tracks By]</role><tracks></tracks></artist></extraartists><formats><format name="Vinyl" qty="2" text=""><descriptions><description>12"</description><description>33 ⅓ RPM</description></descriptions></format></formats><genres><genre>Electronic</genre></genres><styles><style>Deep House</style></styles><country>Sweden</country><released>1999-03-00</released><notes>The song titles are the names of six of Stockholm's 82 districts.
+    <release id="1" status="Accepted">
+        <images>
+            <image height="600" type="primary" uri="" uri150="" width="600" />
+            <image height="600" type="secondary" uri="" uri150="" width="600" />
+            <image height="600" type="secondary" uri="" uri150="" width="600" />
+            <image height="600" type="secondary" uri="" uri150="" width="600" />
+        </images>
+        <artists>
+            <artist>
+                <id>1</id>
+                <name>The Persuader</name>
+                <anv></anv>
+                <join></join>
+                <role></role>
+                <tracks></tracks>
+            </artist>
+        </artists>
+        <title>Stockholm</title>
+        <labels>
+            <label catno="SK032" id="5" name="Svek" />
+        </labels>
+        <extraartists>
+            <artist>
+                <id>239</id>
+                <name>Jesper Dahlbäck</name>
+                <anv></anv>
+                <join></join>
+                <role>Music By [All Tracks By]</role>
+                <tracks></tracks>
+            </artist>
+        </extraartists>
+        <formats>
+            <format name="Vinyl" qty="2" text="">
+                <descriptions>
+                    <description>12"</description>
+                    <description>33 ⅓ RPM</description>
+                </descriptions>
+            </format>
+        </formats>
+        <genres>
+            <genre>Electronic</genre>
+        </genres>
+        <styles>
+            <style>Deep House</style>
+        </styles>
+        <country>Sweden</country>
+        <released>1999-03-00</released>
+        <notes>The song titles are the names of six of Stockholm's 82 districts.
 
 Title on label: - Stockholm -
 
 Recorded at the Globe Studio, Stockholm
 
-FAX: +46 8 679 64 53</notes><data_quality>Needs Vote</data_quality><tracklist><track><position>A</position><title>Östermalm</title><duration>4:45</duration></track><track><position>B1</position><title>Vasastaden</title><duration>6:11</duration></track><track><position>B2</position><title>Kungsholmen</title><duration>2:49</duration></track><track><position>C1</position><title>Södermalm</title><duration>5:38</duration></track><track><position>C2</position><title>Norrmalm</title><duration>4:52</duration></track><track><position>D</position><title>Gamla Stan</title><duration>5:16</duration></track></tracklist><identifiers><identifier description="A-Side Runout" type="Matrix / Runout" value="MPO SK 032 A1"/><identifier description="B-Side Runout" type="Matrix / Runout" value="MPO SK 032 B1"/><identifier description="C-Side Runout" type="Matrix / Runout" value="MPO SK 032 C1"/><identifier description="D-Side Runout" type="Matrix / Runout" value="MPO SK 032 D1"/><identifier description="Only On A-Side Runout" type="Matrix / Runout" value="G PHRUPMASTERGENERAL T27 LONDON"/></identifiers><videos><video duration="296" embed="true" src="https://www.youtube.com/watch?v=MpmbntGDyNE"><title>The Persuader - Östermalm</title><description>The Persuader - Östermalm</description></video><video duration="376" embed="true" src="https://www.youtube.com/watch?v=Cawyll0pOI4"><title>The Persuader - Vasastaden</title><description>The Persuader - Vasastaden</description></video><video duration="176" embed="true" src="https://www.youtube.com/watch?v=XExCZfMCXdo"><title>The Persuader - Kungsholmen</title><description>The Persuader - Kungsholmen</description></video><video duration="341" embed="true" src="https://www.youtube.com/watch?v=WDZqiENap_U"><title>The Persuader - Södermalm</title><description>The Persuader - Södermalm</description></video><video duration="301" embed="true" src="https://www.youtube.com/watch?v=EBBHR3EMN50"><title>The Persuader - Norrmalm</title><description>The Persuader - Norrmalm</description></video><video duration="326" embed="true" src="https://www.youtube.com/watch?v=afMHNll9EVM"><title>The Persuader - Gamla Stan</title><description>The Persuader - Gamla Stan</description></video></videos><companies><company><id>271046</id><name>The Globe Studios</name><catno></catno><entity_type>23</entity_type><entity_type_name>Recorded At</entity_type_name><resource_url>https://api.discogs.com/labels/271046</resource_url></company><company><id>56025</id><name>MPO</name><catno></catno><entity_type>17</entity_type><entity_type_name>Pressed By</entity_type_name><resource_url>https://api.discogs.com/labels/56025</resource_url></company></companies></release>
-<release id="2" status="Accepted"><images><image height="394" type="primary" uri="" uri150="" width="400"/><image height="600" type="secondary" uri="" uri150="" width="600"/><image height="600" type="secondary" uri="" uri150="" width="600"/></images><artists><artist><id>2</id><name>Mr. James Barth &amp; A.D.</name><anv></anv><join></join><role></role><tracks></tracks></artist></artists><title>Knockin' Boots Vol 2 Of 2</title><labels><label catno="SK 026" id="5" name="Svek"/><label catno="SK026" id="5" name="Svek"/></labels><extraartists><artist><id>26</id><name>Alexi Delano</name><anv></anv><join></join><role>Producer, Recorded By</role><tracks></tracks></artist><artist><id>27</id><name>Cari Lekebusch</name><anv></anv><join></join><role>Producer, Recorded By</role><tracks></tracks></artist><artist><id>26</id><name>Alexi Delano</name><anv>A. Delano</anv><join></join><role>Written-By</role><tracks></tracks></artist><artist><id>27</id><name>Cari Lekebusch</name><anv>C. Lekebusch</anv><join></join><role>Written-By</role><tracks></tracks></artist></extraartists><formats><format name="Vinyl" qty="1" text=""><descriptions><description>12"</description><description>33 ⅓ RPM</description></descriptions></format></formats><genres><genre>Electronic</genre></genres><styles><style>Broken Beat</style><style>Techno</style><style>Tech House</style></styles><country>Sweden</country><released>1998-06-00</released><notes>All joints recorded in NYC (Dec.97).</notes><data_quality>Correct</data_quality><master_id is_main_release="true">713738</master_id><tracklist><track><position>A1</position><title>A Sea Apart</title><duration>5:08</duration></track><track><position>A2</position><title>Dutchmaster</title><duration>4:21</duration></track><track><position>B1</position><title>Inner City Lullaby</title><duration>4:22</duration></track><track><position>B2</position><title>Yeah Kid!</title><duration>4:46</duration></track></tracklist><identifiers><identifier description="Side A Runout Etching" type="Matrix / Runout" value="MPO SK026-A -J.T.S.-"/><identifier description="Side B Runout Etching" type="Matrix / Runout" value="MPO SK026-B -J.T.S.-"/></identifiers><videos><video duration="310" embed="true" src="https://www.youtube.com/watch?v=MIgQNVhYILA"><title>Mr. James Barth &amp; A.D. - A Sea Apart</title><description>Mr. James Barth &amp; A.D. - A Sea Apart</description></video><video duration="265" embed="true" src="https://www.youtube.com/watch?v=LgLchSRehhc"><title>Mr. James Barth &amp; A.D. - Dutchmaster</title><description>Mr. James Barth &amp; A.D. - Dutchmaster</description></video><video duration="260" embed="true" src="https://www.youtube.com/watch?v=iaqHaULlqqg"><title>Mr. James Barth &amp; A.D. - Inner City Lullaby</title><description>Mr. James Barth &amp; A.D. - Inner City Lullaby</description></video><video duration="290" embed="true" src="https://www.youtube.com/watch?v=x_Os7b-iWKs"><title>Mr. James Barth &amp; A.D. - Yeah Kid!</title><description>Mr. James Barth &amp; A.D. - Yeah Kid!</description></video></videos><companies><company><id>266169</id><name>JTS Studios</name><catno></catno><entity_type>29</entity_type><entity_type_name>Mastered At</entity_type_name><resource_url>https://api.discogs.com/labels/266169</resource_url></company><company><id>56025</id><name>MPO</name><catno></catno><entity_type>17</entity_type><entity_type_name>Pressed By</entity_type_name><resource_url>https://api.discogs.com/labels/56025</resource_url></company></companies></release>
+FAX: +46 8 679 64 53</notes>
+        <data_quality>Needs Vote</data_quality>
+        <tracklist>
+            <track>
+                <position>A</position>
+                <title>Östermalm</title>
+                <duration>4:45</duration>
+            </track>
+            <track>
+                <position>B1</position>
+                <title>Vasastaden</title>
+                <duration>6:11</duration>
+            </track>
+            <track>
+                <position>B2</position>
+                <title>Kungsholmen</title>
+                <duration>2:49</duration>
+            </track>
+            <track>
+                <position>C1</position>
+                <title>Södermalm</title>
+                <duration>5:38</duration>
+            </track>
+            <track>
+                <position>C2</position>
+                <title>Norrmalm</title>
+                <duration>4:52</duration>
+            </track>
+            <track>
+                <position>D</position>
+                <title>Gamla Stan</title>
+                <duration>5:16</duration>
+            </track>
+        </tracklist>
+        <identifiers>
+            <identifier description="A-Side Runout" type="Matrix / Runout" value="MPO SK 032 A1" />
+            <identifier description="B-Side Runout" type="Matrix / Runout" value="MPO SK 032 B1" />
+            <identifier description="C-Side Runout" type="Matrix / Runout" value="MPO SK 032 C1" />
+            <identifier description="D-Side Runout" type="Matrix / Runout" value="MPO SK 032 D1" />
+            <identifier description="Only On A-Side Runout" type="Matrix / Runout" value="G PHRUPMASTERGENERAL T27 LONDON" />
+        </identifiers>
+        <videos>
+            <video duration="296" embed="true" src="https://www.youtube.com/watch?v=MpmbntGDyNE">
+                <title>The Persuader - Östermalm</title>
+                <description>The Persuader - Östermalm</description>
+            </video>
+            <video duration="376" embed="true" src="https://www.youtube.com/watch?v=Cawyll0pOI4">
+                <title>The Persuader - Vasastaden</title>
+                <description>The Persuader - Vasastaden</description>
+            </video>
+            <video duration="176" embed="true" src="https://www.youtube.com/watch?v=XExCZfMCXdo">
+                <title>The Persuader - Kungsholmen</title>
+                <description>The Persuader - Kungsholmen</description>
+            </video>
+            <video duration="341" embed="true" src="https://www.youtube.com/watch?v=WDZqiENap_U">
+                <title>The Persuader - Södermalm</title>
+                <description>The Persuader - Södermalm</description>
+            </video>
+            <video duration="301" embed="true" src="https://www.youtube.com/watch?v=EBBHR3EMN50">
+                <title>The Persuader - Norrmalm</title>
+                <description>The Persuader - Norrmalm</description>
+            </video>
+            <video duration="326" embed="true" src="https://www.youtube.com/watch?v=afMHNll9EVM">
+                <title>The Persuader - Gamla Stan</title>
+                <description>The Persuader - Gamla Stan</description>
+            </video>
+        </videos>
+        <companies>
+            <company>
+                <id>271046</id>
+                <name>The Globe Studios</name>
+                <catno></catno>
+                <entity_type>23</entity_type>
+                <entity_type_name>Recorded At</entity_type_name>
+                <resource_url>https://api.discogs.com/labels/271046</resource_url>
+            </company>
+            <company>
+                <id>56025</id>
+                <name>MPO</name>
+                <catno></catno>
+                <entity_type>17</entity_type>
+                <entity_type_name>Pressed By</entity_type_name>
+                <resource_url>https://api.discogs.com/labels/56025</resource_url>
+            </company>
+        </companies>
+    </release>
+    <release id="2" status="Accepted">
+        <images>
+            <image height="394" type="primary" uri="" uri150="" width="400" />
+            <image height="600" type="secondary" uri="" uri150="" width="600" />
+            <image height="600" type="secondary" uri="" uri150="" width="600" />
+        </images>
+        <artists>
+            <artist>
+                <id>2</id>
+                <name>Mr. James Barth &amp; A.D.</name>
+                <anv></anv>
+                <join></join>
+                <role></role>
+                <tracks></tracks>
+            </artist>
+        </artists>
+        <title>Knockin' Boots Vol 2 Of 2</title>
+        <labels>
+            <label catno="SK 026" id="5" name="Svek" />
+            <label catno="SK026" id="5" name="Svek" />
+        </labels>
+        <extraartists>
+            <artist>
+                <id>26</id>
+                <name>Alexi Delano</name>
+                <anv></anv>
+                <join></join>
+                <role>Producer, Recorded By</role>
+                <tracks></tracks>
+            </artist>
+            <artist>
+                <id>27</id>
+                <name>Cari Lekebusch</name>
+                <anv></anv>
+                <join></join>
+                <role>Producer, Recorded By</role>
+                <tracks></tracks>
+            </artist>
+            <artist>
+                <id>26</id>
+                <name>Alexi Delano</name>
+                <anv>A. Delano</anv>
+                <join></join>
+                <role>Written-By</role>
+                <tracks></tracks>
+            </artist>
+            <artist>
+                <id>27</id>
+                <name>Cari Lekebusch</name>
+                <anv>C. Lekebusch</anv>
+                <join></join>
+                <role>Written-By</role>
+                <tracks></tracks>
+            </artist>
+        </extraartists>
+        <formats>
+            <format name="Vinyl" qty="1" text="">
+                <descriptions>
+                    <description>12"</description>
+                    <description>33 ⅓ RPM</description>
+                </descriptions>
+            </format>
+        </formats>
+        <genres>
+            <genre>Electronic</genre>
+        </genres>
+        <styles>
+            <style>Broken Beat</style>
+            <style>Techno</style>
+            <style>Tech House</style>
+        </styles>
+        <country>Sweden</country>
+        <released>1998-06-00</released>
+        <notes>All joints recorded in NYC (Dec.97).</notes>
+        <data_quality>Correct</data_quality>
+        <master_id is_main_release="true">713738</master_id>
+        <tracklist>
+            <track>
+                <position>A1</position>
+                <title>A Sea Apart</title>
+                <duration>5:08</duration>
+            </track>
+            <track>
+                <position>A2</position>
+                <title>Dutchmaster</title>
+                <duration>4:21</duration>
+            </track>
+            <track>
+                <position>B1</position>
+                <title>Inner City Lullaby</title>
+                <duration>4:22</duration>
+            </track>
+            <track>
+                <position>B2</position>
+                <title>Yeah Kid!</title>
+                <duration>4:46</duration>
+            </track>
+        </tracklist>
+        <identifiers>
+            <identifier description="Side A Runout Etching" type="Matrix / Runout" value="MPO SK026-A -J.T.S.-" />
+            <identifier description="Side B Runout Etching" type="Matrix / Runout" value="MPO SK026-B -J.T.S.-" />
+        </identifiers>
+        <videos>
+            <video duration="310" embed="true" src="https://www.youtube.com/watch?v=MIgQNVhYILA">
+                <title>Mr. James Barth &amp; A.D. - A Sea Apart</title>
+                <description>Mr. James Barth &amp; A.D. - A Sea Apart</description>
+            </video>
+            <video duration="265" embed="true" src="https://www.youtube.com/watch?v=LgLchSRehhc">
+                <title>Mr. James Barth &amp; A.D. - Dutchmaster</title>
+                <description>Mr. James Barth &amp; A.D. - Dutchmaster</description>
+            </video>
+            <video duration="260" embed="true" src="https://www.youtube.com/watch?v=iaqHaULlqqg">
+                <title>Mr. James Barth &amp; A.D. - Inner City Lullaby</title>
+                <description>Mr. James Barth &amp; A.D. - Inner City Lullaby</description>
+            </video>
+            <video duration="290" embed="true" src="https://www.youtube.com/watch?v=x_Os7b-iWKs">
+                <title>Mr. James Barth &amp; A.D. - Yeah Kid!</title>
+                <description>Mr. James Barth &amp; A.D. - Yeah Kid!</description>
+            </video>
+        </videos>
+        <companies>
+            <company>
+                <id>266169</id>
+                <name>JTS Studios</name>
+                <catno></catno>
+                <entity_type>29</entity_type>
+                <entity_type_name>Mastered At</entity_type_name>
+                <resource_url>https://api.discogs.com/labels/266169</resource_url>
+            </company>
+            <company>
+                <id>56025</id>
+                <name>MPO</name>
+                <catno></catno>
+                <entity_type>17</entity_type>
+                <entity_type_name>Pressed By</entity_type_name>
+                <resource_url>https://api.discogs.com/labels/56025</resource_url>
+            </company>
+        </companies>
+    </release>
 </releases>`
