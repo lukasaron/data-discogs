@@ -22,7 +22,6 @@ type Writer interface {
 	WriteRelease(release model.Release) error
 	WriteReleases(releases []model.Release) error
 	Options() Options
-	Close() error
 }
 
 // Options related to writing settings. At this stage only one option is available - Exclude images. This specific option

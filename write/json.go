@@ -36,11 +36,6 @@ func NewJSONWriter(output io.Writer, options *Options) Writer {
 	}
 }
 
-// Close function does nothing here.
-func (j *JSONWriter) Close() error {
-	return nil
-}
-
 // Options function returns the current options. It could be useful to get the default options.
 func (j JSONWriter) Options() Options {
 	return j.o

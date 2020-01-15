@@ -204,11 +204,6 @@ func (s SQLWriter) WriteReleases(releases []model.Release) error {
 	return s.err
 }
 
-// Close function has no behavior implemented.
-func (s SQLWriter) Close() error {
-	return nil
-}
-
 // Options function returns the current options. It could be useful to get the default options.
 func (s SQLWriter) Options() Options {
 	return s.o

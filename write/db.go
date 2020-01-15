@@ -34,11 +34,6 @@ func NewDBWriter(db *sql.DB, options *Options) Writer {
 	}
 }
 
-// Close function shutdowns opened database connection
-func (db DBWriter) Close() error {
-	return db.db.Close()
-}
-
 // Options function gets options. Can be used to get the default values.
 func (db DBWriter) Options() Options {
 	return db.o
