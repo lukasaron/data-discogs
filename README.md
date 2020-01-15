@@ -53,7 +53,7 @@ func main() {
     d := discogs.NewXMLDecoder(f, nil)
     // decodes 10 artists by default, Block ItemSize can be changed via Options
     num, artists, err := d.Artists()
-    fmt.Println(num, err, artists)
+    fmt.Printf("%d, %v, %+v", num, err, artists)
 }
 ```
 For the need of saving a result into output, there are writers. For instance, the SQL writer creates insert statements
@@ -89,7 +89,6 @@ func main() {
 
     // for instance the SQL writer
     w := write.NewSQLWriter(o, nil)
-    defer w.Close()
 
     err = d.Decode(w)
     fmt.Println(err)
