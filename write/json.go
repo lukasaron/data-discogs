@@ -22,7 +22,7 @@ type JSONWriter struct {
 
 // NewJSONWriter creates a new Writer instance based on the provided output writer (for instance a file).
 // Options with ExcludeImages can be set when we don't want images as part of the final solution.
-// When this is not the case and we want images in the result JSON the Option has to be passed as a second argument.
+// When this is not the case and we want images in the result JSON the Option can be omitted.
 func NewJSONWriter(output io.Writer, options *Options) Writer {
 
 	if options == nil {
