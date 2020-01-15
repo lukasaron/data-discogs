@@ -9,9 +9,8 @@ import (
 	"github.com/lukasaron/data-discogs/model"
 )
 
-/*
-The Writer interface specify all necessary methods for writing Disocgs data that could be useful during processing Discogs dump.
-*/
+//  The Writer interface specify all necessary methods for writing Disocgs data that could be useful
+// during processing Discogs dump.
 type Writer interface {
 	WriteArtist(artist model.Artist) error
 	WriteArtists(artists []model.Artist) error
