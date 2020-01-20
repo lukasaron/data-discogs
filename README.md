@@ -30,8 +30,7 @@ You can also set up indexes on any column you want, to facilitate this process t
 
 To speed up a data transformation I would rather recommend creating indexes after the whole processing is completed.
 
-## Instalation
-Installation:
+## Installation
 ```go 
 go get github.com/lukasaron/data-discogs
 ```
